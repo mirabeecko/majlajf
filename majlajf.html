@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profi Dashboard v3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Tmavé korporátní pozadí */
+            color: #f8fafc;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism efekt pro karty */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            background: rgba(51, 65, 85, 0.8);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Kontejner pro video */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        /* Vlastní scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .search-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input:focus {
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-6 lg:p-8">
+
+    <div class="max-w-[1600px] mx-auto space-y-6">
+        
+        <!-- HEADER: Počasí, Hodiny a Vyhledávání -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            
+            <!-- Widget Počasí & Čas -->
+            <div class="lg:col-span-4 glass-card p-4 rounded-3xl flex items-center justify-between">
+                <div class="space-y-1">
+                    <div id="clock" class="text-4xl font-extrabold tracking-tighter text-blue-400">00:00:00</div>
+                    <div id="date" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">Načítám...</div>
+                    <div class="flex items-center gap-1.5 text-blue-500 pt-2">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                        <span class="text-[10px] font-black uppercase tracking-tighter">Horní Krupka</span>
+                    </div>
+                </div>
+                <div class="w-48 h-20 rounded-xl overflow-hidden border border-slate-700">
+                    <!-- Windy Widget -->
+                    <iframe src="https://www.meteoblue.com/en/weather/widget/three/krupka_czech-republic_3072978?geoloc=fixed&nocurrent=0&noforecast=0&days=4&tempunit=CELSIUS&windunit=KILOMETER_PER_HOUR&layout=dark"  frameborder="0" scrolling="NO" allowtransparency="true" class="w-full h-full scale-125 origin-center"></iframe>
+                </div>
+            </div>
+
+            <!-- Vyhledávací centrum -->
+            <div class="lg:col-span-8 glass-card p-4 rounded-3xl grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Google -->
+                <form action="https://www.google.com/search" method="GET" target="_blank" class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=google.com" class="w-4 h-4 opacity-50 group-focus-within:opacity-100 transition-opacity">
+                    </div>
+                    <input type="text" name="q" placeholder="Hledat na Google..." class="search-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all">
+                </form>
+                <!-- NIC.CZ -->
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=nic.cz" class="w-4 h-4 opacity-50">
+                    </div>
+                    <input type="text" placeholder="Ověřit .cz doménu..." onkeydown="if(event.key==='Enter') window.open('https://www.nic.cz/whois/domain/'+this.value, '_blank')" class="search-input w-full pl-10 pr-4 py-2.5 rounded-xl text-sm focus:outline-none transition-all">
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN GRID: Segmentované služby -->
+        <div class="grid grid-cols-1 gap-6">
+            
+            <!-- MOJE SLUŽBY (WEBDO24) -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-cyan-500 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-cyan-500/80">Moje Služby</h2>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                    <a href="https://webdo24.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-blue-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=webdo24.cz" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-blue-100">Webdo24.cz</span>
+                    </a>
+                    <a href="https://tjkrupka.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-yellow-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=tjkrupka.cz" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-yellow-100">TJKrupka.cz</span>
+                    </a>
+                    <a href="https://morefun.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-pink-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=morefun.cz" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-pink-100">Morefun.cz</span>
+                    </a>
+                    <a href="https://cloud.webdo24.cz/apps/dashboard/" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-cyan-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-cyan-100">Nextcloud</span>
+                    </a>
+                    <a href="https://grafana.webdo24.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-orange-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=grafana.com" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-orange-200">Grafana</span>
+                    </a>
+                    <a href="https://web.webdo24.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-emerald-500/30">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-8 h-8 rounded">
+                        <span class="text-[10px] font-bold text-emerald-200">Gen_weby</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- API SCHEMA & BILLINGS -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-3 ml-1">
+                        <div class="h-3 w-1 bg-indigo-500 rounded-full"></div>
+                        <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500/80">API SCHEMA !</h2>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <a href="https://tests.webdo24.cz/pipeline-schema-static.html" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-indigo-500/30">
+                            <div class="w-8 h-8 flex items-center justify-center bg-indigo-500/20 rounded text-indigo-400 font-bold text-xs">API</div>
+                            <span class="text-[10px] font-bold text-indigo-100">Pipeline</span>
+                        </a>
+                        <a href="https://web.webdo24.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-8 h-8 rounded">
+                            <span class="text-[10px] font-bold">Web.webdo</span>
+                        </a>
+                        <a href="https://cloud.webdo24.cz" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-8 h-8 rounded">
+                            <span class="text-[10px] font-bold">Cloud.webdo</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-3 ml-1">
+                        <div class="h-3 w-1 bg-rose-500 rounded-full"></div>
+                        <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-rose-500/80">API BILLINGS</h2>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-rose-500/30">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=openai.com" class="w-8 h-8 rounded invert">
+                            <span class="text-[10px] font-bold text-rose-100">OpenAI</span>
+                        </a>
+                        <a href="https://platform.claude.com/settings/billing" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-rose-500/30">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.ai" class="w-8 h-8 rounded">
+                            <span class="text-[10px] font-bold text-rose-100">Claude</span>
+                        </a>
+                        <a href="https://platform.deepseek.com/usage" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5 border-rose-500/30">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=deepseek.com" class="w-8 h-8 rounded">
+                            <span class="text-[10px] font-bold text-rose-100">DeepSeek</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI MODELY -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-amber-500 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">LLM Aplikace</h2>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                    <a href="https://gemini.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/lamda/images/favicon_v1_150160d13ff2730ca7da.svg" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Gemini</span>
+                    </a>
+                    <a href="https://chatgpt.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=chatgpt.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">ChatGPT</span>
+                    </a>
+                    <a href="https://claude.ai" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.ai" class="w-8 h-8 rounded-lg">
+                        <span class="text-[10px] font-bold">Claude</span>
+                    </a>
+                    <a href="https://chat.deepseek.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=deepseek.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">DeepSeek</span>
+                    </a>
+                    <a href="https://notebooklm.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/classroom/ic_notebooklm.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">NotebookLM</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- GOOGLE WORKSPACE -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-blue-500 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Google Workspace</h2>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                    <a href="https://mail.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/gmail_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Gmail</span>
+                    </a>
+                    <a href="https://drive.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Disk</span>
+                    </a>
+                    <a href="https://docs.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/docs_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Dokumenty</span>
+                    </a>
+                    <a href="https://sheets.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/sheets_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Tabulky</span>
+                    </a>
+                    <a href="https://slides.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/slides_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold text-amber-400">Prezentace</span>
+                    </a>
+                    <a href="https://calendar.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/calendar_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Kalendář</span>
+                    </a>
+                    <a href="https://maps.google.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.gstatic.com/images/branding/product/2x/maps_2020q4_48dp.png" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Mapy</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- VÝVOJ & CLOUD -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-purple-500 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Vývoj & Cloud</h2>
+                </div>
+                <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+                    <a href="https://github.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=github.com" class="w-8 h-8 invert">
+                        <span class="text-[10px] font-bold">GitHub</span>
+                    </a>
+                    <a href="https://vercel.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=vercel.com" class="w-8 h-8 invert">
+                        <span class="text-[10px] font-bold">Vercel</span>
+                    </a>
+                    <a href="https://www.hetzner.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=hetzner.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Hetzner</span>
+                    </a>
+                    <a href="https://developer.android.com/studio" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=developer.android.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold leading-tight">Android Studio</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- OSTATNÍ NÁSTROJE -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-green-500 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Nástroje & Komunita</h2>
+                </div>
+                <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2 text-center">
+                    <a href="https://facebook.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=facebook.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Facebook</span>
+                    </a>
+                    <a href="https://spotify.com" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=spotify.com" class="w-8 h-8">
+                        <span class="text-[10px] font-bold text-green-400">Spotify</span>
+                    </a>
+                    <a href="https://start.me" target="_blank" class="glass-card p-2 rounded-xl flex flex-col items-center gap-1.5">
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=start.me" class="w-8 h-8">
+                        <span class="text-[10px] font-bold">Start.me</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- YOUTUBE PLAYER -->
+            <section>
+                <div class="flex items-center gap-2 mb-3 ml-1">
+                    <div class="h-3 w-1 bg-red-600 rounded-full"></div>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">YouTube Stream</h2>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                    <div class="lg:col-span-3">
+                        <div class="video-container glass-card shadow-inner">
+                            <iframe src="https://www.youtube.com/embed/videoseries?list=PLirAqAtl_h2r5g8xGajEwdXd3x1sZh8hC" title="YouTube player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                        <a href="https://youtube.com" target="_blank" class="glass-card p-3 rounded-xl flex items-center gap-3">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=youtube.com" class="w-6 h-6">
+                            <span class="text-[11px] font-bold uppercase tracking-wider">YouTube Home</span>
+                        </a>
+                        <a href="https://studio.youtube.com" target="_blank" class="glass-card p-3 rounded-xl flex items-center gap-3">
+                            <img src="https://www.google.com/s2/favicons?sz=64&domain=youtube.com" class="w-6 h-6">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-red-500">Studio</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('cs-CZ', { hour12: false });
+            document.getElementById('date').textContent = now.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
