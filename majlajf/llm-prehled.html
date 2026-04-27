@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Průvodce LLM (2024/2025)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stonebg: '#FAF9F6',
+                        stonetext: '#2d2d2a',
+                        cardbg: '#FFFFFF',
+                        bordercolor: '#E5E4E2',
+                        accentwarm: '#D97743',
+                        accentgreen: '#4A7C59',
+                        accentblue: '#3B6B8A'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Chosen Palette: Warm Neutrals (Off-white background, soft stone text, terracotta and muted green/blue accents for clarity and calm harmony) -->
+    
+    <!-- Application Structure Plan: 
+         The SPA uses a dashboard-style layout divided into three strategic sections to facilitate user understanding:
+         1. "Rádce podle potřeby" (Need-based Advisor): An interactive translation of the report's decision table. Users click their primary use case to instantly see the recommended model. This task-oriented entry point prioritizes user goals.
+         2. "Analýza paměti" (Memory/Context Analysis): A dedicated visual section using a logarithmic bar chart to compare context windows. This visually explains the massive disparity between models like GPT-4o (128k) and Kimi (10M).
+         3. "Katalog a detaily" (Catalog & Details): A master-detail interface for deep exploration. A list of all models allows users to click and view comprehensive profiles (pros, cons, pricing, alternatives) without scrolling through a long document.
+    -->
+
+    <!-- Visualization & Content Choices: 
+         - Goal: Recommend based on task -> Viz: Interactive Choice Grid -> Interaction: Click card to update recommendation banner -> Justification: Directly answers "What should I use for X?" without making the user read everything.
+         - Goal: Compare context limits -> Viz: Chart.js Bar Chart (Logarithmic Y-axis) -> Interaction: Hover tooltips -> Justification: A linear scale would make 128k invisible next to 10M. Log scale accurately shows relative scale. Library: Chart.js.
+         - Goal: Present detailed text -> Viz: Master-Detail UI Component -> Interaction: Click list item to swap detail pane content -> Justification: Keeps the UI clean and prevents text fatigue.
+         - NO SVG/Mermaid used. Icons are implemented via Unicode emojis styled with CSS/Tailwind. 
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        /* Custom Styles & Chart Container Constraints */
+        body {
+            background-color: theme('colors.stonebg');
+            color: theme('colors.stonetext');
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 45vh;
+            min-height: 300px;
+            max-height: 450px;
+        }
+
+        /* Smooth transitions */
+        .transition-all-custom {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .active-model-tab {
+            background-color: theme('colors.stonebg');
+            border-left: 4px solid theme('colors.accentwarm');
+            font-weight: 600;
+        }
+        
+        /* Hide scrollbar for clean lists */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-bordercolor shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-stonetext flex items-center gap-2">
+                    <span class="text-accentwarm">🤖</span> Průvodce LLM <span class="text-sm bg-bordercolor text-stonetext px-2 py-1 rounded-full font-medium ml-2">2024/2025</span>
+                </h1>
+                <p class="text-gray-500 mt-1">Interaktivní srovnání špičkových jazykových modelů na trhu.</p>
+            </div>
+            <nav class="flex gap-4 text-sm font-medium">
+                <a href="#radce" class="hover:text-accentwarm transition-colors">Rádce</a>
+                <a href="#kontext" class="hover:text-accentwarm transition-colors">Data</a>
+                <a href="#katalog" class="hover:text-accentwarm transition-colors">Katalog</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 w-full">
+
+        <!-- Section 1: Rádce (Use Cases) -->
+        <section id="radce" class="scroll-mt-24">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold border-b-2 border-accentwarm inline-block pb-1 mb-2">Jaký je váš hlavní cíl?</h2>
+                <p class="text-gray-600">Vyberte, k čemu plánujete AI nejčastěji využívat, a objevte nejlepší model pro vaši potřebu. Tato sekce vychází z expertní rychlé rozhodovací tabulky.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Use Case Selection Grid -->
+                <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" id="use-case-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+
+                <!-- Recommendation Result Box -->
+                <div class="bg-white rounded-xl shadow-sm border border-bordercolor p-6 flex flex-col justify-center items-center text-center transition-all-custom" id="recommendation-box">
+                    <div class="text-6xl mb-4 opacity-50">👆</div>
+                    <h3 class="text-xl font-bold text-gray-400 mb-2">Vyberte potřebu vlevo</h3>
+                    <p class="text-gray-500 text-sm">Zde se zobrazí doporučený model s odůvodněním.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Data & Grafy (Context Window) -->
+        <section id="kontext" class="scroll-mt-24 bg-white rounded-xl shadow-sm border border-bordercolor p-6 md:p-8">
+            <div class="mb-6 text-center md:text-left">
+                <h2 class="text-2xl font-bold border-b-2 border-accentblue inline-block pb-1 mb-2">Srovnání paměti (Context Window)</h2>
+                <p class="text-gray-600 max-w-3xl">Kontextové okno určuje, kolik textu (nebo dat) dokáže model "udržet v hlavě" najednou. Některé modely zvládnou pár kapitol knihy, jiné celou podnikovou dokumentaci. <em>Poznámka: Graf používá logaritmickou škálu kvůli extrémním rozdílům.</em></p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="contextChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Section 3: Katalog modelů (Deep Dive) -->
+        <section id="katalog" class="scroll-mt-24">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold border-b-2 border-accentgreen inline-block pb-1 mb-2">Detailní profily modelů</h2>
+                <p class="text-gray-600">Prozkoumejte silné stránky, slabiny, ceny a alternativy pro každého z hlavních hráčů na trhu (včetně asijských inovátorů).</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row bg-white rounded-xl shadow-sm border border-bordercolor overflow-hidden h-[600px] md:h-[500px]">
+                
+                <!-- Sidebar List -->
+                <div class="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-bordercolor bg-gray-50 flex flex-col">
+                    <div class="p-4 border-b border-bordercolor font-semibold text-gray-500 uppercase tracking-wider text-xs">
+                        Dostupné modely
+                    </div>
+                    <ul class="overflow-y-auto no-scrollbar flex-grow" id="model-list">
+                        <!-- List items injected by JS -->
+                    </ul>
+                </div>
+
+                <!-- Detail Pane -->
+                <div class="w-full md:w-2/3 p-6 md:p-8 overflow-y-auto" id="model-detail-pane">
+                    <!-- Content injected by JS -->
+                    <div class="h-full flex flex-col items-center justify-center text-gray-400">
+                        <div class="text-4xl mb-4">🔍</div>
+                        <p>Vyberte model ze seznamu pro zobrazení detailů.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-bordercolor mt-12 py-8 text-center text-gray-500 text-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>Založeno na zdrojovém reportu "Srovnání špičkových LLM (2024/2025)". Ceny a parametry se mohou v čase měnit.</p>
+            <p class="mt-2 text-xl space-x-2">
+                <span>🤖</span> <span>📈</span> <span>💡</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- DATA STORE ---
+            const modelsData = [
+                { 
+                    id: 'claude', 
+                    name: 'Claude 3.5 Sonnet / Opus', 
+                    company: 'Anthropic', 
+                    context: 200000, 
+                    price: 'Předplatné $20/měsíc; API: $3 (Sonnet) / $15 (Opus) za 1M input tokenů.', 
+                    pros: 'Neuvěřitelně "lidské" psaní, nejlepší model pro programování, vynikající vizuální analýza (grafy, screenshoty). Má funkci "Artifacts" pro interaktivní náhledy kódu.', 
+                    cons: 'Extrémně velké datasety (nad 200k tokenů).', 
+                    alt: 'Gemini 1.5 Pro',
+                    altReason: '(pokud potřebujete analyzovat celou knihu nebo dlouhé video)',
+                    icon: '📝',
+                    color: '#D97743' // Warm accent
+                },
+                { 
+                    id: 'gemini', 
+                    name: 'Gemini 1.5 Pro', 
+                    company: 'Google', 
+                    context: 2000000, 
+                    price: 'Zdarma v rámci AI Studia (omezeně); $20/měsíc v rámci Google One AI Premium.', 
+                    pros: 'Bezkonkurenční kontextové okno. Do Gemini můžete nahrát hodinové video, tisícistránkové PDF nebo celý repozitář kódu a on v něm najde konkrétní informaci. Skvělá multimodality.', 
+                    cons: 'Často bývá až příliš "opatrný" (silná cenzura) a může mít problémy s velmi komplexním logickým uvažováním oproti Claude/o1.', 
+                    alt: 'Claude 3.5 Sonnet / DeepSeek-R1',
+                    altReason: '(pro kreativní psaní / pro matematiku)',
+                    icon: '🧠',
+                    color: '#3B6B8A' // Blue accent
+                },
+                { 
+                    id: 'deepseek', 
+                    name: 'DeepSeek-V3 / R1', 
+                    company: 'DeepSeek', 
+                    context: 128000, 
+                    price: 'Extrémně levné (zlomek ceny GPT-4o), často dostupné zdarma přes web.', 
+                    pros: 'Model R1 je špičkový v "reasoningu" (uvažování) podobně jako OpenAI o1. Exceluje v matematice, logice a kódování za zlomek nákladů.', 
+                    cons: 'U citlivých politických témat (podléhá čínským regulacím), občasná nestabilita serverů kvůli obrovskému zájmu.', 
+                    alt: 'GPT-4o / Llama 3',
+                    altReason: '(pro stabilitu a univerzálnost / pro lokální běh bez cenzury)',
+                    icon: '🐋',
+                    color: '#4A7C59' // Green accent
+                },
+                { 
+                    id: 'gpt4o', 
+                    name: 'GPT-4o / o1-preview', 
+                    company: 'OpenAI', 
+                    context: 128000, 
+                    price: '$20/měsíc (Plus); API: $2.50 (input) / $10 (output) za 1M tokenů.', 
+                    pros: 'Nejlepší ekosystém (GPTs, integrace, mobilní aplikace), špičkový Voice Mode. Model o1 je určen pro vědecké výpočty a extrémně těžké logické úlohy.', 
+                    cons: 'Programování (Sonnet je často přesnější), tón textu může působit až moc roboticky ("jako AI").', 
+                    alt: 'Claude 3.5 Sonnet',
+                    altReason: '(kódování a psaní)',
+                    icon: '⚡',
+                    color: '#6B7280' // Gray
+                },
+                { 
+                    id: 'llama', 
+                    name: 'Llama 3.1 / 3.2', 
+                    company: 'Meta', 
+                    context: 128000, 
+                    price: 'Zdarma ke stažení (lze provozovat lokálně na vlastním PC).', 
+                    pros: 'Soukromí. Můžete jej spustit offline na vlastním hardwaru. Verze 405B konkuruje GPT-4o. Skvělá pro vývojáře, kteří chtějí stavět vlastní aplikace bez závislosti na API třetích stran.', 
+                    cons: 'Verze běžící na běžných PC (8B, 70B) nejsou tak chytré jako cloudoví giganti.', 
+                    alt: 'GPT-4o',
+                    altReason: '(pokud nemáte k dispozici výkonné GPU servery)',
+                    icon: '🦙',
+                    color: '#8B5CF6' // Purple
+                },
+                { 
+                    id: 'kimi', 
+                    name: 'Kimi', 
+                    company: 'Moonshot AI', 
+                    context: 10000000, // Representing "až 10 milionů"
+                    price: 'Většinou zdarma (čínské rozhraní).', 
+                    pros: 'Práce s extrémně dlouhými texty a paměť. V Číně je brán jako přímý konkurent Gemini.', 
+                    cons: 'Uživatelé mimo Čínu mohou mít problém s registrací (vyžaduje čínské číslo). Podpora jiných jazyků než čínštiny a angličtiny je slabší.', 
+                    alt: 'Gemini 1.5 Pro',
+                    altReason: '(pro globální dostupnost a češtinu)',
+                    icon: '🌙',
+                    color: '#F59E0B' // Amber
+                }
+            ];
+
+            const useCasesData = [
+                { id: 'write_code', title: 'Psaní a kódování', modelId: 'claude', reason: 'Nejpřirozenější text a nejméně chyb v kódu.', icon: '💻' },
+                { id: 'long_docs', title: 'Dlouhá PDF / Videa', modelId: 'gemini', reason: 'Zvládne pojmout miliony slov najednou.', icon: '📚' },
+                { id: 'math_logic', title: 'Logika a Matematika', modelId: 'deepseek', reason: 'Modely s řetězcem uvažování (Chain of Thought).', icon: '🧮' },
+                { id: 'privacy', title: 'Soukromí a Offline', modelId: 'llama', reason: 'Můžete jej mít na vlastním disku, naprosté soukromí.', icon: '🔒' },
+                { id: 'all_in_one', title: 'Vše v jednom (App)', modelId: 'gpt4o', reason: 'Nejlepší mobilní aplikace, hlasové funkce a doplňky.', icon: '📱' }
+            ];
+
+            // --- SECTION 1: USE CASES LOGIC ---
+            const gridContainer = document.getElementById('use-case-grid');
+            const recBox = document.getElementById('recommendation-box');
+            let activeUseCaseId = null;
+
+            function renderUseCases() {
+                gridContainer.innerHTML = '';
+                useCasesData.forEach(uc => {
+                    const btn = document.createElement('button');
+                    const isActive = activeUseCaseId === uc.id;
+                    
+                    btn.className = `flex items-center gap-4 p-4 rounded-xl border text-left transition-all-custom 
+                        ${isActive ? 'border-accentwarm bg-[#FFF4EF] shadow-md transform scale-[1.02]' : 'border-bordercolor bg-white hover:border-gray-300 hover:shadow-sm'}`;
+                    
+                    btn.innerHTML = `
+                        <div class="text-3xl bg-gray-50 p-2 rounded-lg">${uc.icon}</div>
+                        <div>
+                            <div class="font-bold text-stonetext">${uc.title}</div>
+                        </div>
+                    `;
+                    
+                    btn.onclick = () => selectUseCase(uc.id);
+                    gridContainer.appendChild(btn);
+                });
+            }
+
+            function selectUseCase(id) {
+                activeUseCaseId = id;
+                renderUseCases();
+                
+                const uc = useCasesData.find(u => u.id === id);
+                const model = modelsData.find(m => m.id === uc.modelId);
+                
+                if(model && uc) {
+                    recBox.innerHTML = `
+                        <div class="text-sm font-bold text-gray-400 uppercase tracking-wide mb-2">Doporučený model</div>
+                        <div class="text-5xl mb-4">${model.icon}</div>
+                        <h3 class="text-2xl font-bold text-stonetext mb-2">${model.name}</h3>
+                        <p class="text-lg text-accentwarm font-medium mb-4">"${uc.reason}"</p>
+                        <button onclick="document.getElementById('katalog').scrollIntoView({behavior: 'smooth'}); selectModel('${model.id}');" 
+                                class="mt-4 px-6 py-2 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-colors text-sm font-medium">
+                            Zobrazit detaily modelu
+                        </button>
+                    `;
+                    recBox.classList.add('bg-[#FFF4EF]', 'border-accentwarm');
+                    recBox.classList.remove('bg-white', 'border-bordercolor');
+                }
+            }
+            renderUseCases(); // Initial render
+
+            // --- SECTION 2: CHART.JS LOGIC ---
+            const ctx = document.getElementById('contextChart').getContext('2d');
+            
+            // Format number to 'k' or 'M'
+            const formatNumber = (num) => {
+                if(num >= 1000000) return (num / 1000000) + 'M';
+                if(num >= 1000) return (num / 1000) + 'k';
+                return num;
+            };
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: modelsData.map(m => m.name.split(' / ')[0]), // Shorten labels
+                    datasets: [{
+                        label: 'Max. počet tokenů',
+                        data: modelsData.map(m => m.context),
+                        backgroundColor: modelsData.map(m => m.color),
+                        borderRadius: 6,
+                        barPercentage: 0.7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255,255,255,0.95)',
+                            titleColor: '#000',
+                            bodyColor: '#333',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let val = context.raw;
+                                    return ` Tokeny: ${val.toLocaleString('cs-CZ')} (${formatNumber(val)})`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'logarithmic',
+                            title: {
+                                display: true,
+                                text: 'Počet tokenů (Logaritmická škála)',
+                                font: { weight: 'bold' }
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    if (value === 100000 || value === 1000000 || value === 10000000) {
+                                        return formatNumber(value);
+                                    }
+                                    return null;
+                                }
+                            },
+                            grid: { color: '#f3f4f6' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // --- SECTION 3: CATALOG MASTER-DETAIL LOGIC ---
+            const listContainer = document.getElementById('model-list');
+            const detailPane = document.getElementById('model-detail-pane');
+            let activeModelId = modelsData[0].id; // Default to first
+
+            function renderModelList() {
+                listContainer.innerHTML = '';
+                modelsData.forEach(model => {
+                    const li = document.createElement('li');
+                    const isActive = activeModelId === model.id;
+                    
+                    li.className = `p-4 cursor-pointer transition-colors border-b border-bordercolor flex items-center gap-3
+                                  ${isActive ? 'active-model-tab' : 'bg-white hover:bg-gray-50'}`;
+                    
+                    li.innerHTML = `
+                        <div class="text-xl">${model.icon}</div>
+                        <div>
+                            <div class="font-bold text-sm ${isActive ? 'text-gray-900' : 'text-gray-700'}">${model.name}</div>
+                            <div class="text-xs text-gray-500">${model.company}</div>
+                        </div>
+                    `;
+                    
+                    li.onclick = () => selectModel(model.id);
+                    listContainer.appendChild(li);
+                });
+            }
+
+            // Expose globally for the button in Section 1 to use
+            window.selectModel = function(id) {
+                activeModelId = id;
+                renderModelList();
+                
+                const model = modelsData.find(m => m.id === id);
+                if (!model) return;
+
+                detailPane.innerHTML = `
+                    <div class="animate-fade-in">
+                        <div class="flex items-start justify-between mb-6">
+                            <div>
+                                <div class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">${model.company}</div>
+                                <h3 class="text-3xl font-bold text-stonetext flex items-center gap-3">
+                                    ${model.icon} ${model.name}
+                                </h3>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-gray-500 uppercase">Context Window</div>
+                                <div class="font-mono font-bold text-lg bg-gray-100 px-3 py-1 rounded-md inline-block mt-1">
+                                    ${formatNumber(model.context)}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 bg-blue-50 border border-blue-100 p-4 rounded-lg text-sm flex gap-3">
+                            <div class="text-xl">💳</div>
+                            <div>
+                                <strong class="block text-blue-900 mb-1">Cenový model</strong>
+                                <span class="text-blue-800">${model.price}</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-6 mb-6">
+                            <div>
+                                <h4 class="font-bold text-lg flex items-center gap-2 mb-2 text-green-700">
+                                    <span class="text-xl">✓</span> V čem vyniká
+                                </h4>
+                                <p class="text-gray-700 leading-relaxed pl-7">${model.pros}</p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-bold text-lg flex items-center gap-2 mb-2 text-red-700">
+                                    <span class="text-xl">✗</span> Pro co se nehodí
+                                </h4>
+                                <p class="text-gray-700 leading-relaxed pl-7">${model.cons}</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-bordercolor">
+                            <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider mb-3">Lepší alternativa pro slabiny</h4>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 flex items-center gap-3">
+                                <div class="text-2xl text-gray-400">🔀</div>
+                                <div>
+                                    <span class="font-bold text-gray-900">${model.alt}</span> 
+                                    <span class="text-gray-600 text-sm ml-1">${model.altReason}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Initialization
+            renderModelList();
+            selectModel(activeModelId); // Load first model details
+
+            // Helper class for animation added dynamically
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.4s ease-out forwards;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
