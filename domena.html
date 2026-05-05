@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doména .cz | WebDo24.cz | Registrace a správa</title>
+  <meta name="description" content="Registrace domény .cz za 290 Kč/rok. Správa DNS, přeposílání e-mailů, technická podpora. Doplňková služba k webu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT:'#0B3954', 900:'#051D2E', 800:'#0B3954', 700:'#114B6E', 600:'#1A6892' },
+            teal: { DEFAULT:'#00C4B5', 600:'#00A89B', 400:'#3FE0D2' },
+            coral:{ DEFAULT:'#FF3366', 600:'#E51F52', 400:'#FF6688' },
+            ivory:{ DEFAULT:'#F4F8FB' }
+          },
+          fontFamily: { sans:['Outfit','system-ui','sans-serif'] },
+          boxShadow: {
+            glow:'0 0 0 1px rgba(0,196,181,.25), 0 18px 50px -20px rgba(0,196,181,.55)',
+            coral:'0 0 0 1px rgba(255,51,102,.30), 0 18px 50px -20px rgba(255,51,102,.55)',
+            card:'0 30px 60px -30px rgba(0,0,0,.55)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-navy-900 text-ivory antialiased">
+
+<div id="notif-wrap" aria-live="polite"></div>
+<div id="mobile-cta" class="fixed bottom-0 left-0 right-0 z-50 p-3 bg-gradient-to-t from-navy-900 via-navy-900/95 to-transparent border-t border-white/5 lg:hidden">
+  <a href="checkout.html?model=domain" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl bg-teal text-navy-900 font-extrabold shadow-glow text-sm">Chci doménu &rarr;</a>
+</div>
+
+<header class="fixed top-0 w-full z-40 backdrop-blur-md bg-navy-900/80 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 group">
+      <span class="w-9 h-9 rounded-xl grid place-items-center bg-gradient-to-br from-teal to-coral text-navy-900 font-black text-lg shadow-glow">W</span>
+      <span class="font-extrabold tracking-tight text-lg">WebDo<span class="text-teal">24</span><span class="text-coral">.cz</span></span>
+    </a>
+    <nav class="hidden lg:flex items-center gap-7 text-sm text-ivory/70">
+      <a href="index.html" class="hover:text-teal transition">Úvod</a>
+      <a href="#obsah" class="hover:text-teal transition">Co obsahuje</a>
+      <a href="#faq" class="hover:text-teal transition">FAQ</a>
+    </nav>
+    <a href="checkout.html?model=domain" class="hidden lg:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal text-navy-900 font-bold text-sm hover:bg-teal-400 transition shadow-glow">Chci doménu &rarr;</a>
+    <button id="menuToggle" class="lg:hidden flex flex-col gap-1.5 w-8 h-8 justify-center items-center" aria-label="Menu">
+      <span class="w-5 h-0.5 bg-white rounded block"></span>
+      <span class="w-5 h-0.5 bg-white rounded block"></span>
+      <span class="w-4 h-0.5 bg-white rounded block self-end"></span>
+    </button>
+  </div>
+  <div id="mobMenu" class="lg:hidden hidden bg-navy-900/98 backdrop-blur-xl border-b border-white/5">
+    <div class="px-4 py-4 flex flex-col gap-1">
+      <a href="index.html" class="px-4 py-3 rounded-xl text-ivory/60 hover:text-white hover:bg-teal/10 transition text-sm">Úvod</a>
+      <a href="#obsah" class="px-4 py-3 rounded-xl text-ivory/60 hover:text-white hover:bg-teal/10 transition text-sm">Co obsahuje</a>
+      <a href="checkout.html?model=domain" class="mt-2 text-center px-5 py-3 rounded-xl bg-teal text-navy-900 font-extrabold text-sm shadow-glow">Chci doménu &rarr;</a>
+    </div>
+  </div>
+</header>
+
+<!-- ========== HERO ========== -->
+<section class="relative overflow-hidden pt-28 pb-20 sm:pt-32 sm:pb-28">
+  <div class="hero-bg absolute inset-0"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-navy-900/60 via-navy-800/40 to-navy-900"></div>
+  <div class="blob w-[420px] h-[420px] bg-teal/[0.08] -top-20 -left-28"></div>
+  <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+    <span class="tag tag-teal mb-6 inline-block">Doplňková služba</span>
+    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight mb-6">
+      Doména .cz.<br>
+      <span class="grad-teal">Vaše adresa na internetu.</span><br>
+      <span class="text-white">Bez starostí, bez překvapení.</span>
+    </h1>
+    <p class="text-lg text-ivory/70 max-w-2xl mx-auto mb-8">
+      Od <strong class="text-white">290 Kč/rok</strong> vám zajistíme doménu .cz včetně správy DNS, e-mailových přesměrování a technické podpory. Nepřevádíte ji na nás — zůstává vaše.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+      <a href="checkout.html?model=domain" class="btn-teal px-8 py-4 text-base font-black rounded-2xl text-center">Chci doménu &rarr;</a>
+      <a href="#obsah" class="btn-ghost px-8 py-4 text-base font-bold rounded-2xl text-center">Co obsahuje</a>
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-5 text-xs text-ivory/50">
+      <span class="flex items-center gap-1.5"><span class="text-teal font-bold">&#10003;</span> Zůstává vaše</span>
+      <span class="flex items-center gap-1.5"><span class="text-teal font-bold">&#10003;</span> Správa DNS v ceně</span>
+      <span class="flex items-center gap-1.5"><span class="text-teal font-bold">&#10003;</span> E-mail přesměrování</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== OBSAH ========== -->
+<section id="obsah" class="py-20 sm:py-28 bg-navy-900/50 border-y border-white/5">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14 rev">
+      <span class="tag tag-teal mb-4 inline-block">Co obsahuje</span>
+      <h2 class="text-3xl sm:text-5xl font-black mb-4">Co je v ceně <span class="grad-teal">domény</span>?</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glass rounded-2xl p-7 card-h revL">
+        <div class="text-4xl mb-4">&#127760;</div>
+        <h3 class="text-xl font-black mb-3">Registrace .cz</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Zajistíme registraci domény .cz na vaše jméno (IČO). Zůstává vaším majetkem, nepřevádíte ji na nás. Plná transparentnost.</p>
+      </div>
+      <div class="glass rounded-2xl p-7 card-h rev" style="transition-delay:.12s">
+        <div class="text-4xl mb-4">&#128187;</div>
+        <h3 class="text-xl font-black mb-3">Správa DNS</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Kompletní nastavení DNS záznamů — A, CNAME, MX, TXT. Propojení s vaším webem, e-mailem a dalšími službami. Vše zařídíme.</p>
+      </div>
+      <div class="glass rounded-2xl p-7 card-h revR" style="transition-delay:.24s">
+        <div class="text-4xl mb-4">&#128231;</div>
+        <h3 class="text-xl font-black mb-3">E-mail přesměrování</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Nastavení přesměrování e-mailů z vaší domény na váš stávající e-mail (např. info@vasefirma.cz → vas@gmail.com).</p>
+      </div>
+      <div class="glass rounded-2xl p-7 card-h revL" style="transition-delay:.06s">
+        <div class="text-4xl mb-4">&#128272;</div>
+        <h3 class="text-xl font-black mb-3">Whois ochrana</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Vaše osobní údaje nejsou veřejně viditelné v whois databázi. Ochrana soukromí jako standard.</p>
+      </div>
+      <div class="glass rounded-2xl p-7 card-h rev" style="transition-delay:.18s">
+        <div class="text-4xl mb-4">&#128260;</div>
+        <h3 class="text-xl font-black mb-3">Obnova a prodloužení</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Hlídáme expiraci domény a upozorníme vás včas. Prodloužení za stejnou cenu — 290 Kč/rok. Žádná skrytá zdražení.</p>
+      </div>
+      <div class="glass rounded-2xl p-7 card-h revR" style="transition-delay:.3s">
+        <div class="text-4xl mb-4">&#128172;</div>
+        <h3 class="text-xl font-black mb-3">Technická podpora</h3>
+        <p class="text-sm text-ivory/60 leading-relaxed">Potřebujete změnit DNS, přidat subdoménu nebo řešíte problém? Pomůžeme — e-mailem nebo telefonicky.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SROVNÁNÍ ========== -->
+<section class="py-20 sm:py-28">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-14 rev">
+      <span class="tag tag-coral mb-4 inline-block">Srovnání</span>
+      <h2 class="text-3xl sm:text-5xl font-black mb-4">Proč přes <span class="grad-coral">WebDo24</span>?</h2>
+    </div>
+    <div class="glass rounded-2xl overflow-hidden rev">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm min-w-[560px]">
+          <thead>
+            <tr class="border-b border-teal/10 bg-teal/[0.07]">
+              <th class="text-left px-5 py-4 font-semibold text-ivory/50">Kritérium</th>
+              <th class="px-4 py-4 font-black text-center text-teal bg-teal/[0.08]">WebDo24</th>
+              <th class="px-4 py-4 font-bold text-center text-ivory/50">Forpsi</th>
+              <th class="px-4 py-4 font-bold text-center text-ivory/50">Active24</th>
+            </tr>
+          </thead>
+          <tbody class="text-ivory/70">
+            <tr class="trow border-b border-white/[0.03]"><td class="px-5 py-3.5">Cena za .cz / rok</td><td class="text-center font-black text-teal">290 Kč</td><td class="text-center">349 Kč</td><td class="text-center">379 Kč</td></tr>
+            <tr class="trow border-b border-white/[0.03]"><td class="px-5 py-3.5">Nastavení DNS v ceně</td><td class="text-center text-teal font-bold">&#10003; Ano</td><td class="text-center text-ivory/40">Základní</td><td class="text-center text-ivory/40">Základní</td></tr>
+            <tr class="trow border-b border-white/[0.03]"><td class="px-5 py-3.5">E-mail přesměrování</td><td class="text-center text-teal font-bold">&#10003; Ano</td><td class="text-center text-coral">&#10007; Zvlášť</td><td class="text-center text-coral">&#10007; Zvlášť</td></tr>
+            <tr class="trow border-b border-white/[0.03]"><td class="px-5 py-3.5">Whois ochrana</td><td class="text-center text-teal font-bold">&#10003; Ano</td><td class="text-center text-coral">&#10007; Ne</td><td class="text-center text-coral">&#10007; Ne</td></tr>
+            <tr class="trow border-b border-white/[0.03]"><td class="px-5 py-3.5">Technická podpora</td><td class="text-center text-teal font-bold">&#10003; Zahrnuta</td><td class="text-center text-ivory/40">Placená</td><td class="text-center text-ivory/40">Placená</td></tr>
+            <tr class="trow"><td class="px-5 py-3.5">Doména zůstává vaše</td><td class="text-center text-teal font-bold">&#10003; Ano</td><td class="text-center text-teal font-bold">&#10003; Ano</td><td class="text-center text-teal font-bold">&#10003; Ano</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mt-8 glass rounded-2xl p-6 rev">
+      <p class="text-sm text-ivory/70 leading-relaxed"><strong class="text-white">Shrnutí:</strong> U velkých registrátorů zaplatíte víc a dostanete jen doménu — DNS si nastavíte sami, podporu platíte zvlášť. <strong class="text-teal">Za 290 Kč/rok u nás dostanete doménu + kompletní správu + podporu.</strong> A doména zůstává výhradně vaše.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FAQ ========== -->
+<section id="faq" class="py-20 sm:py-28 bg-navy-900/50 border-t border-white/5">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12 rev">
+      <span class="tag tag-teal mb-4 inline-block">FAQ — Doména</span>
+      <h2 class="text-3xl sm:text-4xl font-black mb-4">Otázky k <span class="grad-teal">doméně</span></h2>
+    </div>
+    <div class="space-y-3">
+      <div class="glass rounded-2xl overflow-hidden rev"><button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-semibold text-sm hover:text-teal transition-colors"><span>Zůstane doména moje?</span><span class="faq-ico text-teal text-xl flex-shrink-0 transition-transform duration-300">+</span></button><div class="faq-body"><div class="px-6 pb-5 text-ivory/60 text-sm leading-relaxed"><strong>Ano, stoprocentně.</strong> Doména se registruje na vaše jméno (osobní jméno nebo IČO). My ji pouze spravujeme technicky. Kdykoliv si ji můžete převést k jinému registrátorovi — bez sankcí, bez skrytých podmínek.</div></div></div>
+      <div class="glass rounded-2xl overflow-hidden rev" style="transition-delay:.06s"><button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-semibold text-sm hover:text-teal transition-colors"><span>Můžu mít jinou koncovku než .cz?</span><span class="faq-ico text-teal text-xl flex-shrink-0 transition-transform duration-300">+</span></button><div class="faq-body"><div class="px-6 pb-5 text-ivory/60 text-sm leading-relaxed">Standardně nabízíme .cz za 290 Kč/rok. Pro jiné koncovky (.com, .eu, .sk atd.) nás <a href="tel:735870711" class="text-teal hover:underline">kontaktujte</a> — cenu vám sdělíme individuálně. Většinu standardních koncovek umíme zajistit.</div></div></div>
+      <div class="glass rounded-2xl overflow-hidden rev" style="transition-delay:.12s"><button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-semibold text-sm hover:text-teal transition-colors"><span>Co když už doménu mám?</span><span class="faq-ico text-teal text-xl flex-shrink-0 transition-transform duration-300">+</span></button><div class="faq-body"><div class="px-6 pb-5 text-ivory/60 text-sm leading-relaxed">Pokud už doménu vlastníte, nemusíte nic platit. Nastavíme ji na váš web zdarma jako součást služby. Tato cena 290 Kč/rok platí pouze pro novou registraci.</div></div></div>
+      <div class="glass rounded-2xl overflow-hidden rev" style="transition-delay:.18s"><button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-semibold text-sm hover:text-teal transition-colors"><span>Jak funguje e-mail přesměrování?</span><span class="faq-ico text-teal text-xl flex-shrink-0 transition-transform duration-300">+</span></button><div class="faq-body"><div class="px-6 pb-5 text-ivory/60 text-sm leading-relaxed">Nastavíme MX záznamy tak, aby e-maily zaslané na @vasedomena.cz byly automaticky přesměrovány na váš stávající e-mail (Gmail, Seznam, Outlook...). Zákazníci vidí profesionální adresu, vy čtete e-maily tam, kde jste zvyklí.</div></div></div>
+      <div class="glass rounded-2xl overflow-hidden rev" style="transition-delay:.24s"><button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-semibold text-sm hover:text-teal transition-colors"><span>Jak funguje platba a obnova?</span><span class="faq-ico text-teal text-xl flex-shrink-0 transition-transform duration-300">+</span></button><div class="faq-body"><div class="px-6 pb-5 text-ivory/60 text-sm leading-relaxed"><strong>290 Kč/rok</strong>, platba předem. Hlídáme expiraci a upozorníme vás 30 dní předem. Prodloužení za stejnou cenu — žádná skrytá zdražení. Můžete kdykoliv převést k jinému registrátorovi.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CTA ========== -->
+<section class="py-20 sm:py-28 relative overflow-hidden">
+  <div class="blob w-[500px] h-[500px] bg-teal/[0.06] top-0 left-1/2 -translate-x-1/2"></div>
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 relative z-10 text-center">
+    <div class="rev">
+      <span class="tag tag-coral mb-4 inline-block">Začněte hned</span>
+      <h2 class="text-3xl sm:text-4xl font-black mb-4">Doména .cz za <span class="grad-teal">290 Kč/rok</span></h2>
+      <p class="text-ivory/60 mb-8">Registrace, DNS správa, e-mail přesměrování — vše v jedné ceně.</p>
+      <a href="checkout.html?model=domain" class="btn-teal px-10 py-5 text-lg font-black rounded-2xl inline-block">Chci doménu &rarr;</a>
+      <p class="text-xs text-ivory/30 mt-4">Nebo nám napište na <a href="mailto:info@webdo24.cz" class="text-teal hover:underline">info@webdo24.cz</a> &bull; <a href="tel:735870711" class="text-teal hover:underline">735 870 711</a></p>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-navy-900 border-t border-white/5 py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+      <div class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-teal to-coral flex items-center justify-center text-navy-900 font-black text-sm">W</span>
+        <span class="font-black text-xl">WebDo<span class="text-teal">24</span><span class="text-coral">.cz</span></span>
+      </div>
+      <div class="flex flex-wrap gap-6 text-sm text-ivory/50 justify-center">
+        <a href="index.html" class="hover:text-white transition">Úvod</a>
+        <a href="model-start.html" class="hover:text-white transition">START</a>
+        <a href="model-pro.html" class="hover:text-white transition">PRO</a>
+        <a href="model-elite.html" class="hover:text-white transition">ELITE</a>
+        <a href="vip-sprava.html" class="hover:text-white transition">VIP Správa</a>
+        <a href="domena.html" class="hover:text-white transition text-teal">Doména</a>
+        <a href="index.html#vop" class="hover:text-white transition">VOP</a>
+      </div>
+    </div>
+    <div class="border-t border-white/[0.04] pt-6 text-center text-xs text-ivory/30">&copy; 2025 WebDo24.cz &bull; <a href="tel:735870711" class="text-teal hover:underline">735 870 711</a></div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -101,6 +101,14 @@
       <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-teal to-coral flex items-center justify-center text-navy-900 font-black text-sm">W</span>
       <span class="font-black text-xl">WebDo<span class="text-teal">24</span><span class="text-coral">.cz</span></span>
     </div>
+    <div class="flex flex-wrap gap-4 text-xs text-ivory/40 justify-center mb-4">
+      <a href="index.html" class="hover:text-white transition">Úvod</a>
+      <a href="model-start.html" class="hover:text-white transition">START</a>
+      <a href="model-pro.html" class="hover:text-white transition">PRO</a>
+      <a href="model-elite.html" class="hover:text-white transition">ELITE</a>
+      <a href="vip-sprava.html" class="hover:text-white transition">VIP Správa</a>
+      <a href="domena.html" class="hover:text-white transition">Doména</a>
+    </div>
     <p class="text-xs text-ivory/30">&copy; 2025 WebDo24.cz &bull; <a href="tel:735870711" class="text-teal hover:underline">735 870 711</a></p>
   </div>
 </footer>
@@ -163,6 +171,40 @@ const MODELS = {
       'Okamžité plné vlastnictví kódu'
     ],
     note: 'Záloha 50 % při podpisu, doplatek 50 % při předání. Marketingový balíček v ceně.'
+  },
+  vip: {
+    name: 'VIP Správa — Bezpečnost + aktualizace',
+    price: 490,
+    priceLabel: '490 Kč/měsíc',
+    color: 'yellow',
+    stripeUrl: '#',
+    features: [
+      'Nepřetržitý bezpečnostní monitoring',
+      'Pravidelné aktualizace a záplaty',
+      'Týdenní automatické zálohy',
+      'Priorita při úpravách (reakce do 4h)',
+      'Měsíční report výkonu (e-mail)',
+      'Prioritní technická podpora',
+      'Bez závazku — měsíční výpovědní lhůta'
+    ],
+    note: 'Platba předem na následující měsíc. Lze zrušit kdykoliv s měsíční výpovědní lhůtou.'
+  },
+  domain: {
+    name: 'Doména .cz — Registrace a správa',
+    price: 290,
+    priceLabel: '290 Kč/rok',
+    color: 'teal',
+    stripeUrl: '#',
+    features: [
+      'Registrace domény .cz na vaše jméno',
+      'Kompletní správa DNS záznamů',
+      'E-mail přesměrování v ceně',
+      'Whois ochrana soukromí',
+      'Hlídání expirace + upozornění',
+      'Technická podpora',
+      'Doména zůstává vaše — plná kontrola'
+    ],
+    note: 'Platba předem na rok. Prodloužení za stejnou cenu. Převod k jinému registrátorovi možný kdykoliv.'
   }
 };
 
@@ -176,31 +218,14 @@ function renderCheckout() {
   const model = MODELS[modelKey] || MODELS.pro;
   const isElite = modelKey === 'elite';
   const accent = model.color === 'coral' ? 'coral' : 'teal';
-  const accentHex = accent === 'coral' ? '#FF3366' : '#00C4B5';
-  const borderClass = accent === 'coral' ? 'border-coral/20' : 'border-teal/10';
-  const glowClass = accent === 'coral' ? 'shadow-coral' : 'shadow-glow';
-  const badgeHtml = model.badge ? `<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-${accent} to-${accent}-600 px-4 py-1 rounded-full text-[10px] font-black text-navy-900 uppercase tracking-widest whitespace-nowrap shadow-lg">&#11088; ${model.badge}</div>` : '';
+  const accentHex = accent === 'coral' ? '#FF3366' : (accent === 'yellow' ? '#FACC15' : '#00C4B5');
+  const borderClass = accent === 'coral' ? 'border-coral/20' : (accent === 'yellow' ? 'border-yellow-400/20' : 'border-teal/10');
+  const glowClass = accent === 'coral' ? 'shadow-coral' : (accent === 'yellow' ? 'shadow-[0_0_0_1px_rgba(250,204,21,.25),0_18px_50px_-20px_rgba(250,204,21,.55)]' : 'shadow-glow');
+  const badgeHtml = model.badge ? `<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-${accent === 'yellow' ? 'yellow-400' : accent} to-${accent === 'yellow' ? 'yellow-500' : accent + '-600'} px-4 py-1 rounded-full text-[10px] font-black text-navy-900 uppercase tracking-widest whitespace-nowrap shadow-lg">&#11088; ${model.badge}</div>` : '';
 
   const container = document.getElementById('checkout-content');
-  container.innerHTML = `
-    <!-- Model Summary -->
-    <div class="glass rounded-3xl p-7 mb-6 relative ${borderClass}">
-      ${badgeHtml}
-      <div class="flex items-start justify-between mb-4 ${model.badge ? 'mt-3' : ''}">
-        <div>
-          <span class="tag tag-${accent} mb-2 inline-block text-xs">Model ${modelKey.toUpperCase()}</span>
-          <h2 class="text-xl font-black">${model.name}</h2>
-        </div>
-        <div class="text-right">
-          <div class="text-3xl font-black" style="color:${accentHex}">${model.priceLabel}</div>
-        </div>
-      </div>
-      <ul class="space-y-2 mb-4 text-sm text-ivory/70">
-        ${model.features.map(f => `<li class="flex items-start gap-2"><span style="color:${accentHex}">&#10003;</span>${f}</li>`).join('')}
-      </ul>
-      <p class="text-xs text-ivory/40">${model.note}</p>
-    </div>
-
+  const hideAddons = modelKey === 'vip' || modelKey === 'domain';
+  const addonsHtml = hideAddons ? '' : `
     <!-- Add-ons -->
     <div class="glass rounded-2xl p-6 mb-6">
       <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-ivory/50">Doplňkové služby</h3>
@@ -219,6 +244,28 @@ function renderCheckout() {
         </div>
       </label>
     </div>
+  `;
+
+  container.innerHTML = `
+    <!-- Model Summary -->
+    <div class="glass rounded-3xl p-7 mb-6 relative ${borderClass}">
+      ${badgeHtml}
+      <div class="flex items-start justify-between mb-4 ${model.badge ? 'mt-3' : ''}">
+        <div>
+          <span class="tag tag-${accent === 'yellow' ? 'teal' : accent} mb-2 inline-block text-xs" style="${accent === 'yellow' ? 'background:rgba(250,204,21,.15);color:#FACC15;border-color:rgba(250,204,21,.3)' : ''}">Produkt ${modelKey.toUpperCase()}</span>
+          <h2 class="text-xl font-black">${model.name}</h2>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-black" style="color:${accentHex}">${model.priceLabel}</div>
+        </div>
+      </div>
+      <ul class="space-y-2 mb-4 text-sm text-ivory/70">
+        ${model.features.map(f => `<li class="flex items-start gap-2"><span style="color:${accentHex}">&#10003;</span>${f}</li>`).join('')}
+      </ul>
+      <p class="text-xs text-ivory/40">${model.note}</p>
+    </div>
+
+    ${addonsHtml}
 
     <!-- Contact Form -->
     <div class="glass rounded-2xl p-6 mb-6 glow-t">
@@ -258,10 +305,10 @@ function renderCheckout() {
         <span class="text-3xl font-black" style="color:${accentHex}" id="total-price">${model.priceLabel}</span>
       </div>
       <p class="text-xs text-ivory/40 mb-4">Po zaplacení vám přijde potvrzení e-mailem a do 24 hodin začneme na vašem webu pracovat.</p>
-      <a id="pay-btn" href="${model.stripeUrl}" class="btn-${accent} w-full py-4 text-base font-black rounded-2xl text-center block" target="_blank" rel="noopener">
-        ${isElite ? 'Odeslat poptávku &rarr;' : 'Zaplatit a začít &rarr;'}
+      <a id="pay-btn" href="${model.stripeUrl}" class="btn-${accent === 'yellow' ? 'teal' : accent} w-full py-4 text-base font-black rounded-2xl text-center block" target="_blank" rel="noopener" style="${accent === 'yellow' ? 'background:linear-gradient(135deg,#FACC15,#EAB308);color:#051D2E' : ''}">
+        ${isContact ? 'Odeslat poptávku &rarr;' : 'Zaplatit a začít &rarr;'}
       </a>
-      ${isElite ? '<p class="text-xs text-ivory/30 mt-2 text-center">ELITE objednávka vyžaduje individuální konzultaci. Kontaktujeme vás do 30 minut.</p>' : ''}
+      ${isContact ? '<p class="text-xs text-ivory/30 mt-2 text-center">Kontaktujeme vás do 30 minut s potvrzením a dalšími kroky.</p>' : ''}
     </div>
 
     <!-- Trust -->
