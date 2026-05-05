@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | WebDo24.cz</title>
+  <meta name="description" content="Dokončete objednávku webu. Shrnutí, doplňkové služby a platba.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { DEFAULT:'#0B3954', 900:'#051D2E', 800:'#0B3954', 700:'#114B6E', 600:'#1A6892' },
+            teal: { DEFAULT:'#00C4B5', 600:'#00A89B', 400:'#3FE0D2' },
+            coral:{ DEFAULT:'#FF3366', 600:'#E51F52', 400:'#FF6688' },
+            ivory:{ DEFAULT:'#F4F8FB' }
+          },
+          fontFamily: { sans:['Outfit','system-ui','sans-serif'] },
+          boxShadow: {
+            glow:'0 0 0 1px rgba(0,196,181,.25), 0 18px 50px -20px rgba(0,196,181,.55)',
+            coral:'0 0 0 1px rgba(255,51,102,.30), 0 18px 50px -20px rgba(255,51,102,.55)',
+            card:'0 30px 60px -30px rgba(0,0,0,.55)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #F4F8FB;
+      font-size: 0.9375rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #00C4B5;
+      box-shadow: 0 0 0 3px rgba(0,196,181,0.15);
+    }
+    .form-input::placeholder { color: rgba(244,248,251,0.3); }
+    .btn-teal {
+      background: linear-gradient(135deg, #00C4B5, #00A89B);
+      color: #051D2E;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+    .btn-teal:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-coral {
+      background: linear-gradient(135deg, #FF3366, #E51F52);
+      color: white;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+    .btn-coral:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .glow-t { box-shadow: 0 0 0 1px rgba(0,196,181,.2), 0 18px 50px -20px rgba(0,196,181,.35); }
+  </style>
+</head>
+<body class="bg-navy-900 text-ivory antialiased">
+
+<div id="notif-wrap" aria-live="polite"></div>
+
+<header class="fixed top-0 w-full z-40 backdrop-blur-md bg-navy-900/80 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 group">
+      <span class="w-9 h-9 rounded-xl grid place-items-center bg-gradient-to-br from-teal to-coral text-navy-900 font-black text-lg shadow-glow">W</span>
+      <span class="font-extrabold tracking-tight text-lg">WebDo<span class="text-teal">24</span><span class="text-coral">.cz</span></span>
+    </a>
+    <a href="tel:735870711" class="text-sm font-bold text-teal hover:text-teal-400 transition flex items-center gap-1.5">
+      <span>&#128222;</span> 735 870 711
+    </a>
+  </div>
+</header>
+
+<!-- ========== CHECKOUT ========== -->
+<section class="pt-28 pb-20 sm:pt-32 sm:pb-28">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-10 rev">
+      <span class="tag tag-coral mb-4 inline-block">Dokončení objednávky</span>
+      <h1 class="text-3xl sm:text-4xl font-black mb-2">Shrnutí objednávky</h1>
+      <p class="text-ivory/60 text-sm">Zkontrolujte výběr, přidejte doplňkové služby a pokračujte k platbě.</p>
+    </div>
+
+    <div id="checkout-content">
+      <!-- Dynamic content loaded by JS -->
+    </div>
+  </div>
+</section>
+
+<footer class="bg-navy-900 border-t border-white/5 py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+    <div class="flex items-center justify-center gap-2 mb-4">
+      <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-teal to-coral flex items-center justify-center text-navy-900 font-black text-sm">W</span>
+      <span class="font-black text-xl">WebDo<span class="text-teal">24</span><span class="text-coral">.cz</span></span>
+    </div>
+    <p class="text-xs text-ivory/30">&copy; 2025 WebDo24.cz &bull; <a href="tel:735870711" class="text-teal hover:underline">735 870 711</a></p>
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+const MODELS = {
+  start: {
+    name: 'START — Web za cenu grafiky',
+    price: 1990,
+    priceLabel: '1 990 Kč/měsíc',
+    color: 'teal',
+    stripeUrl: 'https://buy.stripe.com/test_3cI7sK36O4rE9sQ1ba5gc00',
+    features: [
+      'Responzivní web (5 podstránek)',
+      'Dodání do 24 hodin',
+      'Hosting na 1 rok ZDARMA',
+      'Rent-to-Own: po 12 měsících web váš',
+      '1 komplexní kolo úprav zdarma',
+      'Garance: nedodáme do 24h = neplatíte nic',
+      'E-mail @vasedomena.cz (5 schránek)',
+      'Google Firmy propojení'
+    ],
+    note: 'Minimální vázanost 12 měsíců. Po 12 měsících přechází web do vašeho plného vlastnictví.'
+  },
+  pro: {
+    name: 'PRO — Vlastník',
+    price: 19900,
+    priceLabel: '19 900 Kč jednorázově',
+    color: 'teal',
+    stripeUrl: 'https://buy.stripe.com/test_aFacN49vc0boeNag645gc01',
+    features: [
+      'Responzivní web (5 podstránek)',
+      'Dodání do 24 hodin',
+      'Hosting na 1 rok ZDARMA',
+      'Okamžité plné vlastnictví kódu',
+      'Google Business Profil v ceně',
+      '1 komplexní kolo úprav zdarma',
+      'Garance: nedodáme do 24h = neplatíte nic',
+      'E-mail @vasedomena.cz (5 schránek)'
+    ],
+    badge: 'DOPORUČENO',
+    note: 'Záloha 50 % při podpisu, doplatek 50 % při předání. Okamžité vlastnictví.'
+  },
+  elite: {
+    name: 'ELITE — Marketingová raketa',
+    price: 49900,
+    priceLabel: '49 900 Kč jednorázově',
+    color: 'coral',
+    stripeUrl: '#',
+    features: [
+      'Vše z PRO PLUS:',
+      'Copywriting a prodejní texty',
+      'Nastavení PPC kampaní (Google Ads)',
+      'Hosting na 1 rok ZDARMA',
+      '1 komplexní kolo úprav zdarma',
+      'Prioritní podpora',
+      'Garance: nedodáme do 24h = neplatíte nic',
+      'Okamžité plné vlastnictví kódu'
+    ],
+    note: 'Záloha 50 % při podpisu, doplatek 50 % při předání. Marketingový balíček v ceně.'
+  }
+};
+
+function getParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name) || 'pro';
+}
+
+function renderCheckout() {
+  const modelKey = getParam('model');
+  const model = MODELS[modelKey] || MODELS.pro;
+  const isElite = modelKey === 'elite';
+  const accent = model.color === 'coral' ? 'coral' : 'teal';
+  const accentHex = accent === 'coral' ? '#FF3366' : '#00C4B5';
+  const borderClass = accent === 'coral' ? 'border-coral/20' : 'border-teal/10';
+  const glowClass = accent === 'coral' ? 'shadow-coral' : 'shadow-glow';
+  const badgeHtml = model.badge ? `<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-${accent} to-${accent}-600 px-4 py-1 rounded-full text-[10px] font-black text-navy-900 uppercase tracking-widest whitespace-nowrap shadow-lg">&#11088; ${model.badge}</div>` : '';
+
+  const container = document.getElementById('checkout-content');
+  container.innerHTML = `
+    <!-- Model Summary -->
+    <div class="glass rounded-3xl p-7 mb-6 relative ${borderClass}">
+      ${badgeHtml}
+      <div class="flex items-start justify-between mb-4 ${model.badge ? 'mt-3' : ''}">
+        <div>
+          <span class="tag tag-${accent} mb-2 inline-block text-xs">Model ${modelKey.toUpperCase()}</span>
+          <h2 class="text-xl font-black">${model.name}</h2>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-black" style="color:${accentHex}">${model.priceLabel}</div>
+        </div>
+      </div>
+      <ul class="space-y-2 mb-4 text-sm text-ivory/70">
+        ${model.features.map(f => `<li class="flex items-start gap-2"><span style="color:${accentHex}">&#10003;</span>${f}</li>`).join('')}
+      </ul>
+      <p class="text-xs text-ivory/40">${model.note}</p>
+    </div>
+
+    <!-- Add-ons -->
+    <div class="glass rounded-2xl p-6 mb-6">
+      <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-ivory/50">Doplňkové služby</h3>
+      <label class="flex items-start gap-3 cursor-pointer mb-3 p-3 rounded-xl border border-white/[0.04] hover:border-yellow-400/20 transition">
+        <input type="checkbox" id="addon-vip" class="w-5 h-5 mt-0.5 rounded border-white/20 bg-white/[0.06] text-teal focus:ring-teal cursor-pointer" onchange="updateTotal()">
+        <div class="text-sm">
+          <div class="font-bold text-yellow-400">&#11088; VIP Správa — 490 Kč/měsíc</div>
+          <div class="text-ivory/50 text-xs mt-0.5">Bezpečnostní monitoring + pravidelné aktualizace + priorita při úpravách.</div>
+        </div>
+      </label>
+      <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-white/[0.04] hover:border-teal/20 transition">
+        <input type="checkbox" id="addon-domain" class="w-5 h-5 mt-0.5 rounded border-white/20 bg-white/[0.06] text-teal focus:ring-teal cursor-pointer" onchange="updateTotal()">
+        <div class="text-sm">
+          <div class="font-bold text-teal">&#127760; Doména .cz — 290 Kč/rok</div>
+          <div class="text-ivory/50 text-xs mt-0.5">Pokud nemáte vlastní doménu, zajistíme ji za vás.</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="glass rounded-2xl p-6 mb-6 glow-t">
+      <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-ivory/50">Kontaktní údaje</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">Jméno a příjmení *</label>
+          <input id="c_name" type="text" class="form-input" placeholder="např. Jan Novák">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">E-mail *</label>
+          <input id="c_email" type="email" class="form-input" placeholder="jan@example.cz">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">Telefon *</label>
+          <input id="c_phone" type="tel" class="form-input" placeholder="např. 777 888 999">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">Název firmy / projektu *</label>
+          <input id="c_company" type="text" class="form-input" placeholder="např. Pekárna U Novotných">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">IČO</label>
+          <input id="c_ico" type="text" class="form-input" placeholder="Volitelné">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1.5 text-ivory/55">Poznámka</label>
+          <textarea id="c_note" rows="2" class="form-input" placeholder="Cokoliv, co bychom měli vědět..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total & CTA -->
+    <div class="glass rounded-2xl p-6 mb-6 sticky bottom-4 bg-navy-900/95 backdrop-blur-xl border border-${accent}/20">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-sm text-ivory/60">Celkem k platbě</span>
+        <span class="text-3xl font-black" style="color:${accentHex}" id="total-price">${model.priceLabel}</span>
+      </div>
+      <p class="text-xs text-ivory/40 mb-4">Po zaplacení vám přijde potvrzení e-mailem a do 24 hodin začneme na vašem webu pracovat.</p>
+      <a id="pay-btn" href="${model.stripeUrl}" class="btn-${accent} w-full py-4 text-base font-black rounded-2xl text-center block" target="_blank" rel="noopener">
+        ${isElite ? 'Odeslat poptávku &rarr;' : 'Zaplatit a začít &rarr;'}
+      </a>
+      ${isElite ? '<p class="text-xs text-ivory/30 mt-2 text-center">ELITE objednávka vyžaduje individuální konzultaci. Kontaktujeme vás do 30 minut.</p>' : ''}
+    </div>
+
+    <!-- Trust -->
+    <div class="text-center text-xs text-ivory/30 space-y-1">
+      <p>&#128274; Platba je zabezpečena přes Stripe. Vaše údaje jsou v bezpečí.</p>
+      <p>&#9889; Garance: nedodáme do 24 hodin = vracíme peníze.</p>
+    </div>
+  `;
+}
+
+function updateTotal() {
+  const modelKey = getParam('model');
+  const model = MODELS[modelKey] || MODELS.pro;
+  const vip = document.getElementById('addon-vip')?.checked;
+  const domain = document.getElementById('addon-domain')?.checked;
+  
+  let totalText = model.priceLabel;
+  let extras = [];
+  if (vip) extras.push('VIP Správa 490 Kč/měsíc');
+  if (domain) extras.push('Doména .cz 290 Kč/rok');
+  
+  if (extras.length > 0) {
+    totalText += ' + ' + extras.join(' + ');
+  }
+  
+  const priceEl = document.getElementById('total-price');
+  if (priceEl) priceEl.textContent = totalText;
+}
+
+function init() {
+  renderCheckout();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
