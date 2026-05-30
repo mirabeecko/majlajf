@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Můj Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['"SF Mono"', 'ui-monospace', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-tertiary: #1a1a24;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-hover: rgba(255, 255, 255, 0.12);
+            --text-primary: #f0f0f5;
+            --text-secondary: #9494a8;
+            --text-tertiary: #5a5a6e;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+        }
+
+        * { 
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #33334a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #44445c; }
+
+        .app-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.04), transparent 40%);
+        }
+
+        .app-card:hover::before { opacity: 1; }
+        .app-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+        .app-card:active { transform: scale(0.97); }
+
+        .accent-cyan { --cat-color: #22d3ee; }
+        .accent-indigo { --cat-color: #818cf8; }
+        .accent-rose { --cat-color: #fb7185; }
+        .accent-amber { --cat-color: #fbbf24; }
+        .accent-blue { --cat-color: #60a5fa; }
+        .accent-purple { --cat-color: #c084fc; }
+        .accent-green { --cat-color: #4ade80; }
+        .accent-red { --cat-color: #f87171; }
+        .accent-yellow { --cat-color: #facc15; }
+
+        .cat-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--cat-color, #444) 0%, transparent 100%);
+            margin-left: 0.75rem;
+            opacity: 0.3;
+        }
+
+        .glow-cyan { box-shadow: 0 0 20px -5px rgba(34, 211, 238, 0.15); }
+        .glow-indigo { box-shadow: 0 0 20px -5px rgba(129, 140, 248, 0.15); }
+        .glow-rose { box-shadow: 0 0 20px -5px rgba(251, 113, 133, 0.15); }
+        .glow-amber { box-shadow: 0 0 20px -5px rgba(251, 191, 36, 0.15); }
+        .glow-blue { box-shadow: 0 0 20px -5px rgba(96, 165, 250, 0.15); }
+        .glow-purple { box-shadow: 0 0 20px -5px rgba(192, 132, 252, 0.15); }
+        .glow-green { box-shadow: 0 0 20px -5px rgba(74, 222, 128, 0.15); }
+        .glow-yellow { box-shadow: 0 0 20px -5px rgba(250, 204, 21, 0.15); }
+
+        .search-field {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+        .search-field:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .bottom-nav {
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            color: var(--text-tertiary);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+        .nav-item.active { color: var(--text-primary); }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .video-wrap {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .video-wrap iframe {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        html { scroll-behavior: smooth; }
+        .section-anchor { scroll-margin-top: 100px; }
+    </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-0">
+
+    <header class="sticky top-0 z-40 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/[0.04]">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                <div class="flex items-center gap-4 shrink-0">
+                    <div class="bg-[#111118] border border-white/[0.06] rounded-2xl px-4 py-3 flex items-center gap-3">
+                        <div>
+                            <div id="clock" class="text-2xl font-bold tracking-tight tabular-nums">00:00</div>
+                            <div id="date" class="text-[11px] font-medium text-[#5a5a6e] uppercase tracking-wide">Načítám...</div>
+                        </div>
+                        <div class="w-px h-8 bg-white/[0.08]"></div>
+                        <div class="flex items-center gap-2">
+                            <div id="weather-icon" class="text-2xl">⏳</div>
+                            <div>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span id="weather-temp" class="text-lg font-bold">--</span>
+                                    <span class="text-xs text-[#5a5a6e]">°C</span>
+                                </div>
+                                <div class="text-[10px] text-[#5a5a6e] font-medium">Horní Krupka</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <form action="https://www.google.com/search" method="GET" target="_blank" class="relative">
+                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-[#5a5a6e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" name="q" placeholder="Hledat na Google..." 
+                            class="search-field w-full pl-10 pr-4 py-3 rounded-xl text-sm text-[#f0f0f5] placeholder-[#5a5a6e]">
+                    </form>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-[#5a5a6e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                        </div>
+                        <input type="text" placeholder="Ověřit .cz doménu..." 
+                            onkeydown="if(event.key==='Enter') window.open('https://www.nic.cz/whois/domain/'+this.value, '_blank')"
+                            class="search-field w-full pl-10 pr-4 py-3 rounded-xl text-sm text-[#f0f0f5] placeholder-[#5a5a6e]">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+        <!-- MOJE SLUŽBY -->
+        <section id="sec-services" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-cyan">
+                <div class="w-1.5 h-5 bg-cyan-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-cyan-400 flex items-center">Moje Služby</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://webdo24.cz" target="_blank" class="app-card glow-cyan rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-cyan-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=webdo24.cz" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Webdo24</span>
+                </a>
+                <a href="https://tjkrupka.cz" target="_blank" class="app-card glow-amber rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-amber-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=tjkrupka.cz" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">TJKrupka</span>
+                </a>
+                <a href="https://morefun.cz" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-rose-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=morefun.cz" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Morefun</span>
+                </a>
+                <a href="https://cloud.webdo24.cz/apps/dashboard/" target="_blank" class="app-card glow-cyan rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-cyan-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Nextcloud</span>
+                </a>
+                <a href="https://grafana.webdo24.cz" target="_blank" class="app-card glow-indigo rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-indigo-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=grafana.com" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Grafana</span>
+                </a>
+                <a href="https://web.webdo24.cz" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-green-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Gen_weby</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- KAUZA TJK -->
+        <section id="sec-tjk" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-rose">
+                <div class="w-1.5 h-5 bg-rose-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-rose-400 flex items-center">Kauza TJK</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://kauza-edit.vercel.app/" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-rose-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=vercel.com" class="w-10 h-10 rounded-lg relative z-10 invert" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Kauza Edit</span>
+                </a>
+                <a href="https://tjkrupka-g4sbuq89.manus.space/" target="_blank" class="app-card glow-yellow rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-yellow-400/20 rounded-xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="https://www.google.com/s2/favicons?sz=128&domain=manus.space" class="w-10 h-10 rounded-lg relative z-10" alt="">
+                    </div>
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Manus TJK</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- API SCHEMA & BILLINGS -->
+        <section id="sec-api" class="section-anchor">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-4 accent-indigo">
+                        <div class="w-1.5 h-5 bg-indigo-400 rounded-full"></div>
+                        <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-indigo-400 flex items-center">API Schema</h2>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <a href="https://tests.webdo24.cz/pipeline-schema.html" target="_blank" class="app-card glow-indigo rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <div class="w-10 h-10 flex items-center justify-center bg-indigo-500/10 rounded-xl text-indigo-400 font-bold text-sm border border-indigo-500/20">API</div>
+                            <span class="text-xs font-semibold text-[#c4c4d4]">Pipeline</span>
+                        </a>
+                        <a href="https://web.webdo24.cz" target="_blank" class="app-card rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-10 h-10 rounded-xl" alt="">
+                            <span class="text-xs font-semibold text-[#c4c4d4]">Web.webdo</span>
+                        </a>
+                        <a href="https://cloud.webdo24.cz" target="_blank" class="app-card rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-10 h-10 rounded-xl" alt="">
+                            <span class="text-xs font-semibold text-[#c4c4d4]">Cloud.webdo</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-3 mb-4 accent-rose">
+                        <div class="w-1.5 h-5 bg-rose-400 rounded-full"></div>
+                        <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-rose-400 flex items-center">API Billings</h2>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <a href="https://platform.openai.com/settings/organization/billing/overview" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=openai.com" class="w-10 h-10 rounded-xl invert" alt="">
+                            <span class="text-xs font-semibold text-[#c4c4d4]">OpenAI</span>
+                        </a>
+                        <a href="https://platform.claude.com/settings/billing" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.ai" class="w-10 h-10 rounded-xl" alt="">
+                            <span class="text-xs font-semibold text-[#c4c4d4]">Claude</span>
+                        </a>
+                        <a href="https://platform.deepseek.com/usage" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                            <img src="https://www.google.com/s2/favicons?sz=128&domain=deepseek.com" class="w-10 h-10 rounded-xl" alt="">
+                            <span class="text-xs font-semibold text-[#c4c4d4]">DeepSeek</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI MODELY -->
+        <section id="sec-ai" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-amber">
+                <div class="w-1.5 h-5 bg-amber-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-amber-400 flex items-center">LLM Aplikace</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://gemini.google.com" target="_blank" class="app-card glow-amber rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/lamda/images/favicon_v1_150160d13ff2730ca7da.svg" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Gemini</span>
+                </a>
+                <a href="https://chatgpt.com" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=chatgpt.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">ChatGPT</span>
+                </a>
+                <a href="https://claude.ai" target="_blank" class="app-card glow-rose rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=claude.ai" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Claude</span>
+                </a>
+                <a href="https://chat.deepseek.com" target="_blank" class="app-card glow-blue rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=deepseek.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">DeepSeek</span>
+                </a>
+                <a href="https://notebooklm.google.com" target="_blank" class="app-card glow-amber rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/classroom/ic_notebooklm.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">NotebookLM</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- GOOGLE WORKSPACE -->
+        <section id="sec-workspace" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-blue">
+                <div class="w-1.5 h-5 bg-blue-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-blue-400 flex items-center">Google Workspace</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://mail.google.com" target="_blank" class="app-card glow-red rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/gmail_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Gmail</span>
+                </a>
+                <a href="https://drive.google.com" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Disk</span>
+                </a>
+                <a href="https://docs.google.com" target="_blank" class="app-card glow-blue rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/docs_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Dokumenty</span>
+                </a>
+                <a href="https://sheets.google.com" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/sheets_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Tabulky</span>
+                </a>
+                <a href="https://slides.google.com" target="_blank" class="app-card glow-amber rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/slides_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Prezentace</span>
+                </a>
+                <a href="https://calendar.google.com" target="_blank" class="app-card glow-blue rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/calendar_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Kalendář</span>
+                </a>
+                <a href="https://maps.google.com" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.gstatic.com/images/branding/product/2x/maps_2020q4_48dp.png" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Mapy</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- VÝVOJ & CLOUD -->
+        <section id="sec-dev" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-purple">
+                <div class="w-1.5 h-5 bg-purple-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-purple-400 flex items-center">Vývoj & Cloud</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://github.com" target="_blank" class="app-card glow-purple rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=github.com" class="w-10 h-10 rounded-xl invert" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">GitHub</span>
+                </a>
+                <a href="https://vercel.com" target="_blank" class="app-card glow-purple rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=vercel.com" class="w-10 h-10 rounded-xl invert" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Vercel</span>
+                </a>
+                <a href="https://www.hetzner.com" target="_blank" class="app-card glow-red rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=hetzner.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Hetzner</span>
+                </a>
+                <a href="https://developer.android.com/studio" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=developer.android.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-center text-[#c4c4d4]">Android Studio</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- NÁSTROJE & KOMUNITA -->
+        <section id="sec-tools" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-green">
+                <div class="w-1.5 h-5 bg-green-400 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-green-400 flex items-center">Nástroje & Komunita</h2>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <a href="https://facebook.com" target="_blank" class="app-card glow-blue rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=facebook.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Facebook</span>
+                </a>
+                <a href="https://spotify.com" target="_blank" class="app-card glow-green rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=spotify.com" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Spotify</span>
+                </a>
+                <a href="https://start.me" target="_blank" class="app-card glow-indigo rounded-2xl p-4 flex flex-col items-center gap-2.5 group">
+                    <img src="https://www.google.com/s2/favicons?sz=128&domain=start.me" class="w-10 h-10 rounded-xl" alt="">
+                    <span class="text-xs font-semibold text-[#c4c4d4]">Start.me</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- YOUTUBE -->
+        <section id="sec-youtube" class="section-anchor">
+            <div class="flex items-center gap-3 mb-4 accent-red">
+                <div class="w-1.5 h-5 bg-red-500 rounded-full"></div>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] text-red-400 flex items-center">YouTube Stream</h2>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <div class="lg:col-span-3">
+                    <div class="video-wrap bg-[#111118] border border-white/[0.06]">
+                        <iframe src="https://www.youtube.com/embed/videoseries?list=PLirAqAtl_h2r5g8xGajEwdXd3x1sZh8hC" title="YouTube player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <a href="https://youtube.com" target="_blank" class="app-card glow-red rounded-2xl p-4 flex items-center gap-3 group flex-1">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=youtube.com" class="w-8 h-8 rounded" alt="">
+                        <span class="text-sm font-semibold">YouTube</span>
+                    </a>
+                    <a href="https://studio.youtube.com" target="_blank" class="app-card glow-red rounded-2xl p-4 flex items-center gap-3 group flex-1">
+                        <img src="https://www.google.com/s2/favicons?sz=64&domain=youtube.com" class="w-8 h-8 rounded" alt="">
+                        <span class="text-sm font-semibold text-red-400">Studio</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM NAV (mobile only) -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 md:hidden pb-safe">
+        <div class="max-w-md mx-auto flex justify-around items-center py-2 px-2">
+            <a href="./index.html" class="nav-item flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span class="text-[10px] font-medium">Domů</span>
+            </a>
+            <a href="#sec-ai" class="nav-item flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg" onclick="setActiveNav(this)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span class="text-[10px] font-medium">AI</span>
+            </a>
+            <a href="#sec-workspace" class="nav-item flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg" onclick="setActiveNav(this)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <span class="text-[10px] font-medium">Práce</span>
+            </a>
+            <a href="#sec-tools" class="nav-item flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg" onclick="setActiveNav(this)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span class="text-[10px] font-medium">Nástroje</span>
+            </a>
+            <a href="#sec-tjk" class="nav-item active flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg" onclick="setActiveNav(this)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span class="text-[10px] font-medium">Majlajf</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', hour12: false });
+            document.getElementById('date').textContent = now.toLocaleDateString('cs-CZ', { weekday: 'short', day: 'numeric', month: 'short' });
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const WMO_ICONS = {
+            0: ['☀️', 'Jasno'], 1: ['🌤️', 'Převážně jasno'], 2: ['⛅', 'Polojasno'], 3: ['☁️', 'Zataženo'],
+            45: ['🌫️', 'Mlha'], 48: ['🌫️', 'Námraza'], 51: ['🌦️', 'Slabé mrholení'], 53: ['🌦️', 'Mrholení'],
+            55: ['🌧️', 'Silné mrholení'], 61: ['🌧️', 'Slabý déšť'], 63: ['🌧️', 'Déšť'], 65: ['🌧️', 'Silný déšť'],
+            71: ['🌨️', 'Slabé sněžení'], 73: ['❄️', 'Sněžení'], 75: ['❄️', 'Silné sněžení'], 77: ['🌨️', 'Sněhové vločky'],
+            80: ['🌦️', 'Přeháňky'], 81: ['🌧️', 'Přeháňky'], 82: ['⛈️', 'Silné přeháňky'],
+            85: ['🌨️', 'Sněhové přeháňky'], 86: ['❄️', 'Silné sněhové přeháňky'],
+            95: ['⛈️', 'Bouřka'], 96: ['⛈️', 'Bouřka s krupobitím'], 99: ['⛈️', 'Silná bouřka'],
+        };
+
+        async function loadWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.6833&longitude=13.8667&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FPrague&forecast_days=1');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                const code = data.current.weathercode;
+                const [icon] = WMO_ICONS[code] ?? ['🌡️', 'Neznámo'];
+                document.getElementById('weather-icon').textContent = icon;
+                document.getElementById('weather-temp').textContent = Math.round(data.current.temperature_2m);
+            } catch (e) {
+                document.getElementById('weather-icon').textContent = '⚠️';
+            }
+        }
+        loadWeather();
+        setInterval(loadWeather, 10 * 60 * 1000);
+
+        function setActiveNav(el) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        document.querySelectorAll('.app-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+            });
+        });
+
+        const sections = document.querySelectorAll('.section-anchor');
+        const navItems = document.querySelectorAll('.bottom-nav .nav-item[href^="#"]');
+        const sectionMap = Array.from(navItems).map(item => item.getAttribute('href').slice(1));
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const idx = sectionMap.indexOf(entry.target.id);
+                    if (idx !== -1) {
+                        navItems.forEach(n => n.classList.remove('active'));
+                        navItems[idx].classList.add('active');
+                    }
+                }
+            });
+        }, { rootMargin: '-40% 0px -55% 0px' });
+
+        sections.forEach(s => observer.observe(s));
+    </script>
+</body>
+</html>
