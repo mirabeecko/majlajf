@@ -239,12 +239,15 @@
                                     <span id="weather-temp" class="text-lg font-bold">--</span>
                                     <span class="text-xs text-[#5a5a6e]">°C</span>
                                 </div>
-                                <div class="text-[10px] text-[#5a5a6e] font-medium">Horní Krupka</div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-[#5a5a6e] font-medium">Horní Krupka</span>
+                                    <span class="text-[10px] text-[#5a5a6e]" id="weather-wind">-- m/s</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <form action="https://www.google.com/search" method="GET" target="_blank" class="relative">
                         <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-[#5a5a6e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -260,6 +263,9 @@
                             onkeydown="if(event.key==='Enter') window.open('https://www.nic.cz/whois/domain/'+this.value, '_blank')"
                             class="search-field w-full pl-10 pr-4 py-3 rounded-xl text-sm text-[#f0f0f5] placeholder-[#5a5a6e]">
                     </div>
+                    <div class="rounded-xl overflow-hidden" style="border:1px solid rgba(29,185,84,0.25); background:rgba(29,185,84,0.05);">
+                        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" width="100%" height="50" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
@@ -267,6 +273,58 @@
 
     <!-- ═══════════════ MAIN ═══════════════ -->
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+        <!-- ━━━━━━━━━━━━━━━ AI PŘEHLED — Email + Kalendář ━━━━━━━━━━━━━━━ -->
+        <section id="sec-ai-overview" class="section-anchor">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- 🧠 AI Email -->
+                <div class="app-card neon-cyan rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--neon-cyan); animation: breathe 2s ease-in-out infinite;"></div>
+                            <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--neon-cyan);">🧠 AI Shrnutí — Nové emaily</span>
+                            <span class="text-[9px] text-[#5a5a6e]" id="email-ai-time"></span>
+                        </div>
+                        <button onclick="refreshAIEmailSummary()" class="text-[10px] px-3 py-1.5 rounded-lg font-semibold transition-all hover:scale-105" style="background:rgba(0,229,255,0.1); color:var(--neon-cyan); border:1px solid rgba(0,229,255,0.2);">
+                            🧠 AI shrnout
+                        </button>
+                    </div>
+                    <div id="email-ai-summary" class="text-xs text-[#9494a8] leading-relaxed">
+                        <span class="text-[#5a5a6e] italic">Načítám AI shrnutí...</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-white/[0.04] flex justify-between items-center">
+                        <a href="https://mail.google.com" target="_blank" class="text-[10px] font-semibold hover:underline" style="color:var(--neon-cyan);">Otevřít Gmail →</a>
+                        <span class="text-[9px] text-[#5a5a6e]">Každých 5 min</span>
+                    </div>
+                </div>
+                <!-- 📅 AI Kalendář -->
+                <div class="app-card neon-lime rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full" style="background:var(--neon-lime); animation: breathe 2s ease-in-out infinite;"></div>
+                            <span class="text-xs font-semibold uppercase tracking-wider" style="color:var(--neon-lime);">📅 Kalendář — Dnes</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style="background:var(--neon-lime); color:#000;" id="cal-today-count">0</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] text-[#5a5a6e]" id="cal-last-check"></span>
+                            <button onclick="loadAICalendarSummary()" class="text-[10px] px-3 py-1.5 rounded-lg font-semibold transition-all hover:scale-105" style="background:rgba(57,255,20,0.1); color:var(--neon-lime); border:1px solid rgba(57,255,20,0.2);">
+                                🔄
+                            </button>
+                        </div>
+                    </div>
+                    <ul id="cal-today-list" class="space-y-1.5 text-xs text-[#9494a8] mb-3">
+                        <li class="text-[#5a5a6e] italic">Načítám...</li>
+                    </ul>
+                    <div id="cal-ai-summary" class="text-xs text-[#9494a8] leading-relaxed pt-3 border-t border-white/[0.04]">
+                        <span class="text-[#5a5a6e] italic">Načítám AI shrnutí...</span>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-white/[0.04] flex justify-between items-center">
+                        <a href="https://calendar.google.com" target="_blank" class="text-[10px] font-semibold hover:underline" style="color:var(--neon-lime);">Otevřít Kalendář →</a>
+                        <span class="text-[9px] text-[#5a5a6e]">Každých 15 min</span>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- ━━━━━━━━━━━━━━━ MOJE SLUŽBY ━━━━━━━━━━━━━━━ -->
         <section id="sec-services" class="section-anchor">
@@ -482,7 +540,7 @@
                     <img src="https://www.google.com/s2/favicons?sz=128&domain=vercel.com" class="w-5 h-5 rounded relative z-10 invert" alt="">
                     <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Kauza Edit</span>
                 </a>
-                <a href="https://tjkrupka-g4sbuq89.manus.space/" target="_blank" class="app-card neon-amber rounded-2xl p-3 flex flex-col items-center gap-2 group">
+                <a href="https://tjk.manus.space/" target="_blank" class="app-card neon-amber rounded-2xl p-3 flex flex-col items-center gap-2 group">
                     <img src="https://www.google.com/s2/favicons?sz=128&domain=manus.space" class="w-5 h-5 rounded relative z-10" alt="">
                     <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Manus TJK</span>
                 </a>
@@ -498,13 +556,13 @@
                         <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-cyan); --cat-color:var(--neon-cyan)">API Schema</h2>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <a href="https://tests.webdo24.cz/pipeline-schema.html" target="_blank" class="app-card neon-cyan rounded-2xl p-3 flex flex-col items-center gap-2 group">
+                        <a href="https://localhost:3100" target="_blank" class="app-card neon-cyan rounded-2xl p-3 flex flex-col items-center gap-2 group">
                             <div class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm" style="background:rgba(0,229,255,0.1); color:var(--neon-cyan);">API</div>
-                            <span class="text-[10px] font-semibold text-[#c4c4d4]">Pipeline</span>
+                            <span class="text-[10px] font-semibold text-[#c4c4d4]">🖇️ PAPERCLIP</span>
                         </a>
-                        <a href="https://web.webdo24.cz" target="_blank" class="app-card rounded-2xl p-3 flex flex-col items-center gap-2 group">
+                        <a href="http://localhost:5173/" target="_blank" class="app-card rounded-2xl p-3 flex flex-col items-center gap-2 group">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-5 h-5 rounded" alt="">
-                            <span class="text-[10px] font-semibold text-[#c4c4d4]">Web.webdo</span>
+                            <span class="text-[10px] font-semibold text-[#c4c4d4]">🕹️ MiLO CC</span>
                         </a>
                         <a href="https://cloud.webdo24.cz" target="_blank" class="app-card rounded-2xl p-3 flex flex-col items-center gap-2 group">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-5 h-5 rounded" alt="">
@@ -735,6 +793,7 @@
             const [icon] = WMO_ICONS[code] ?? ['🌡️', 'Neznámo'];
             document.getElementById('weather-icon').textContent = icon;
             document.getElementById('weather-temp').textContent = Math.round(data.current.temperature_2m);
+            document.getElementById('weather-wind').textContent = (data.current.windspeed_10m ?? '--') + ' m/s';
         } catch (e) {
             document.getElementById('weather-icon').textContent = '⚠️';
         }
@@ -1005,6 +1064,151 @@
 
     loadGA4();
     setInterval(loadGA4, 60 * 1000);
+
+    // ═══════════════ AI EMAIL SUMMARY ═══════════════
+    async function refreshAIEmailSummary() {
+        const btn = document.querySelector('#sec-ai-overview .app-card.neon-cyan button');
+        const summaryEl = document.getElementById('email-ai-summary');
+        const timeEl = document.getElementById('email-ai-time');
+        
+        btn.textContent = '⏳ Spouštím...';
+        btn.disabled = true;
+        summaryEl.innerHTML = '<span class="text-[#5a5a6e] italic">⏳ Spouštím hermes email-summarize...</span>';
+        
+        try {
+            const res = await fetch('http://localhost:3111/api/ai-email-summary/refresh', { method: 'POST' });
+            const data = await res.json();
+            if (data.ok) {
+                // Po úspěšném spuštění načti výsledek
+                setTimeout(() => loadAIEmailSummary(), 2000);
+                summaryEl.innerHTML = '<span class="text-[#5a5a6e] italic">✅ Příkaz spuštěn, načítám výsledek...</span>';
+            } else {
+                summaryEl.innerHTML = `<span style="color:var(--neon-pink);">❌ Chyba: ${escapeHtml(data.error || 'neznámá')}</span>`;
+                btn.textContent = '🧠 AI shrnout';
+                btn.disabled = false;
+            }
+        } catch (e) {
+            summaryEl.innerHTML = `<span style="color:var(--neon-pink);">❌ API nedostupné: ${escapeHtml(e.message)}</span>`;
+            btn.textContent = '🧠 AI shrnout';
+            btn.disabled = false;
+        }
+    }
+
+    async function loadAIEmailSummary() {
+        const summaryEl = document.getElementById('email-ai-summary');
+        const timeEl = document.getElementById('email-ai-time');
+        
+        try {
+            const res = await fetch('/api/ai-email-summary');
+            if (!res.ok) throw new Error('API nedostupné');
+            const data = await res.json();
+            renderAIEmailSummary(data);
+            timeEl.textContent = '• ' + new Date().toLocaleTimeString('cs-CZ');
+        } catch (e) {
+            try {
+                const localRes = await fetch('http://localhost:3111/ai-email-summary');
+                if (localRes.ok) {
+                    const data = await localRes.json();
+                    renderAIEmailSummary(data);
+                    timeEl.textContent = '• ' + new Date().toLocaleTimeString('cs-CZ');
+                } else {
+                    showAIEmailPlaceholder();
+                }
+            } catch (e2) {
+                showAIEmailPlaceholder();
+            }
+        }
+    }
+
+    function renderAIEmailSummary(data) {
+        const el = document.getElementById('email-ai-summary');
+        if (data.summary) {
+            el.innerHTML = `<p class="text-[#c4c4d4]">${escapeHtml(data.summary)}</p>` +
+                (data.count ? `<p class="text-[10px] text-[#5a5a6e] mt-2">📊 ${data.count} nových zpráv k přečtení</p>` : '');
+        } else {
+            el.innerHTML = '<span class="text-[#5a5a6e] italic">Žádné nové emaily k shrnutí</span>';
+        }
+    }
+
+    function showAIEmailPlaceholder() {
+        document.getElementById('email-ai-time').textContent = '';
+        document.getElementById('email-ai-summary').innerHTML = 
+            '<span class="text-[#5a5a6e] italic">AI shrnutí není dostupné — spusť <code style="background:#1a1a24;padding:1px 4px;border-radius:3px;">hermes email-summarize</code></span>';
+    }
+
+    // ═══════════════ AI CALENDAR SUMMARY ═══════════════
+    async function loadAICalendarSummary() {
+        const todayList = document.getElementById('cal-today-list');
+        const summaryEl = document.getElementById('cal-ai-summary');
+        const countEl = document.getElementById('cal-today-count');
+        const timeEl = document.getElementById('cal-last-check');
+        
+        try {
+            const res = await fetch('/api/ai-calendar-summary');
+            if (!res.ok) throw new Error('API nedostupné');
+            const data = await res.json();
+            renderCalendarData(data);
+            timeEl.textContent = 'Naposledy: ' + new Date().toLocaleTimeString('cs-CZ');
+        } catch (e) {
+            try {
+                const localRes = await fetch('http://localhost:3111/ai-calendar-summary');
+                if (localRes.ok) {
+                    const data = await localRes.json();
+                    renderCalendarData(data);
+                    timeEl.textContent = 'Naposledy: ' + new Date().toLocaleTimeString('cs-CZ');
+                } else {
+                    showCalendarPlaceholder();
+                }
+            } catch (e2) {
+                showCalendarPlaceholder();
+            }
+        }
+    }
+
+    function renderCalendarData(data) {
+        // Today's events
+        const todayList = document.getElementById('cal-today-list');
+        const countEl = document.getElementById('cal-today-count');
+        const events = data.today_events || [];
+        countEl.textContent = events.length;
+        
+        if (events.length === 0) {
+            todayList.innerHTML = '<li class="text-[#5a5a6e] italic">Dnes žádné události</li>';
+        } else {
+            todayList.innerHTML = events.slice(0, 8).map(ev => 
+                `<li class="py-1.5 border-b border-white/[0.03] last:border-0 flex items-start gap-2">
+                    <span class="text-[10px] font-mono shrink-0" style="color:var(--neon-lime);">${escapeHtml(ev.time || '--:--')}</span>
+                    <div>
+                        <div class="font-medium text-[#c4c4d4]">${escapeHtml(ev.summary || '—')}</div>
+                        ${ev.location ? `<div class="text-[10px] text-[#5a5a6e]">📍 ${escapeHtml(ev.location)}</div>` : ''}
+                    </div>
+                </li>`
+            ).join('');
+        }
+        
+        // AI Summary
+        const summaryEl = document.getElementById('cal-ai-summary');
+        if (data.ai_summary) {
+            summaryEl.innerHTML = `<p class="text-[#c4c4d4]">${escapeHtml(data.ai_summary)}</p>`;
+        } else {
+            summaryEl.innerHTML = '<span class="text-[#5a5a6e] italic">AI shrnutí zatím není k dispozici</span>';
+        }
+    }
+
+    function showCalendarPlaceholder() {
+        document.getElementById('cal-today-count').textContent = '—';
+        document.getElementById('cal-today-list').innerHTML = 
+            '<li class="text-[#5a5a6e] italic">Kalendář API není dostupné</li>';
+        document.getElementById('cal-ai-summary').innerHTML = 
+            '<span class="text-[#5a5a6e] italic">AI shrnutí není dostupné — spusť <code style="background:#1a1a24;padding:1px 4px;border-radius:3px;">hermes calendar-summarize</code></span>';
+        document.getElementById('cal-last-check').textContent = 'Naposledy: --';
+    }
+
+    // Inicializace AI bloků
+    loadAIEmailSummary();
+    loadAICalendarSummary();
+    setInterval(loadAIEmailSummary, 5 * 60 * 1000);
+    setInterval(loadAICalendarSummary, 15 * 60 * 1000);
     </script>
 </body>
 </html>
