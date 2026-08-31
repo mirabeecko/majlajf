@@ -378,60 +378,22 @@
             </div>
         </section>
 
-        <!-- ━━━━━━━━━━━━━━━ LOKÁLNÍ SLUŽBY — Porty ━━━━━━━━━━━━━━━ -->
+        <!-- ━━━━━━━━━━━━━━━ MISSION CONTROL ━━━━━━━━━━━━━━━ -->
         <section id="sec-local" class="section-anchor">
             <div class="flex items-center gap-3 mb-4">
                 <div class="w-1.5 h-5 bg-[var(--neon-magenta)] rounded-full" style="box-shadow: 0 0 10px var(--neon-magenta);"></div>
-                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-magenta); --cat-color:var(--neon-magenta)">Lokální Služby</h2>
+                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-magenta); --cat-color:var(--neon-magenta)">Mission Control</h2>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                <!-- HCI Dashboard :5173 -->
-                <a href="http://localhost:5173" target="_blank" class="app-card neon-cyan rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(0,229,255,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-cyan);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            <div class="grid grid-cols-1 gap-3">
+                <a href="/mission-control" target="_blank" class="app-card neon-magenta rounded-2xl p-5 flex items-center gap-4 group">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-xl relative z-10 shrink-0" style="background:rgba(255,0,255,0.12);">
+                        <svg class="w-6 h-6" style="color:var(--neon-magenta);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">HCI Dashboard</span>
-                    <span class="text-[9px] text-[var(--neon-cyan)]/50 font-mono">:5173</span>
-                </a>
-                <!-- HCI API :3111 -->
-                <a href="http://localhost:3111" target="_blank" class="app-card neon-pink rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(255,20,147,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-pink);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-sm font-bold block text-[#f0f0f5] group-hover:text-white transition-colors">Otevřít Mission Control</span>
+                        <span class="text-[11px] text-[#5a5a6e] block mt-0.5">Přehled úkolů, agentů, pošty a aktivit — majlajf.vercel.app/mission-control</span>
                     </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">HCI API</span>
-                    <span class="text-[9px] text-[var(--neon-pink)]/50 font-mono">:3111</span>
-                </a>
-                <!-- Paperless :9119 -->
-                <a href="http://127.0.0.1:9119/chat" target="_blank" class="app-card neon-lime rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(57,255,20,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-lime);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Paperless Chat</span>
-                    <span class="text-[9px] text-[var(--neon-lime)]/50 font-mono">:9119</span>
-                </a>
-                <!-- MiLO Outputs :3100 -->
-                <a href="http://localhost:3100" target="_blank" class="app-card neon-amber rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(255,180,40,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">MiLO Outputs</span>
-                    <span class="text-[9px] text-[var(--neon-amber)]/50 font-mono">:3100</span>
-                </a>
-                <!-- Paperless-ngx :8000 -->
-                <a href="http://localhost:8000/dashboard" target="_blank" class="app-card neon-lime rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(57,255,20,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-lime);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">Paperless-ngx</span>
-                    <span class="text-[9px] text-[var(--neon-lime)]/50 font-mono">:8000</span>
-                </a>
-                <!-- MiL Dashboard :3100 -->
-                <a href="http://127.0.0.1:3100/MIL/dashboard" target="_blank" class="app-card neon-magenta rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                    <div class="w-10 h-10 flex items-center justify-center rounded-xl relative z-10" style="background:rgba(255,0,255,0.12);">
-                        <svg class="w-5 h-5" style="color:var(--neon-magenta);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <span class="text-[10px] font-semibold text-center text-[#c4c4d4] group-hover:text-white transition-colors">MiL Dashboard</span>
-                    <span class="text-[9px] text-[var(--neon-magenta)]/50 font-mono">:3100/MIL</span>
+                    <span class="text-xs font-bold shrink-0" style="color:var(--neon-magenta);">Otevřít →</span>
                 </a>
             </div>
         </section>
@@ -556,14 +518,6 @@
                         <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-cyan); --cat-color:var(--neon-cyan)">API Schema</h2>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <a href="https://localhost:3100" target="_blank" class="app-card neon-cyan rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                            <div class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm" style="background:rgba(0,229,255,0.1); color:var(--neon-cyan);">API</div>
-                            <span class="text-[10px] font-semibold text-[#c4c4d4]">🖇️ PAPERCLIP</span>
-                        </a>
-                        <a href="http://localhost:5173/" target="_blank" class="app-card rounded-2xl p-3 flex flex-col items-center gap-2 group">
-                            <img src="https://www.google.com/s2/favicons?sz=128&domain=web.webdo24.cz" class="w-5 h-5 rounded" alt="">
-                            <span class="text-[10px] font-semibold text-[#c4c4d4]">🕹️ MiLO CC</span>
-                        </a>
                         <a href="https://cloud.webdo24.cz" target="_blank" class="app-card rounded-2xl p-3 flex flex-col items-center gap-2 group">
                             <img src="https://www.google.com/s2/favicons?sz=128&domain=cloud.webdo24.cz" class="w-5 h-5 rounded" alt="">
                             <span class="text-[10px] font-semibold text-[#c4c4d4]">Cloud.webdo</span>

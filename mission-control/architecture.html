@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MISSION CONTROL · Architektura</title>
+<link rel="stylesheet" href="assets/mc.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="doc-body">
+
+<nav class="doc-nav">
+  <span class="dn-brand">MISSION CONTROL</span>
+  <div class="dn-links">
+    <a class="dn-link" href="index.html">PROTOKOLYP</a>
+    <a class="dn-link active" href="architecture.html">ARCHITEKTURA</a>
+    <a class="dn-link" href="design-system.html">DESIGN SYSTEM</a>
+  </div>
+</nav>
+<div class="doc-topnav-pad"></div>
+
+<div class="doc-wrap">
+
+  <!-- ============ 1. HERO ============ -->
+  <section class="doc-hero">
+    <div class="doc-kicker">MISSION CONTROL · Informační architektura</div>
+    <h1 class="doc-title">Jeden pohled na všechno, co právě běží</h1>
+    <p class="doc-sub">Mission Control je <b>attention &amp; decision dashboard</b> pro jednoho operátora — Míru. Není to nástroj na procházení dat, ale na to, aby pozornost dopadla přesně tam, kde je potřeba rozhodnutí. Vše podstatné je na dosah ruky: <b>DON'T MAKE ME FIND IT</b>.</p>
+    <div class="arrow-chain" style="margin-top:26px">
+      <span class="ac-node">OBSERVE</span><span class="ac-arrow">→</span>
+      <span class="ac-node ai">UNDERSTAND</span><span class="ac-arrow">→</span>
+      <span class="ac-node">DECIDE</span><span class="ac-arrow">→</span>
+      <span class="ac-node hot">ACT</span>
+    </div>
+  </section>
+
+  <!-- ============ OBSAH ============ -->
+  <div class="doc-toc">
+    <a class="toc-item" href="#oblasti"><span class="toc-num">01</span>Pět oblastí</a>
+    <a class="toc-item" href="#architektura"><span class="toc-num">02</span>Informační architektura</a>
+    <a class="toc-item" href="#navigace"><span class="toc-num">03</span>Navigační mapa</a>
+    <a class="toc-item" href="#home"><span class="toc-num">04</span>Home layout</a>
+    <a class="toc-item" href="#data"><span class="toc-num">05</span>Data architecture</a>
+    <a class="toc-item" href="#eventy"><span class="toc-num">06</span>Event model</a>
+    <a class="toc-item" href="#integrace"><span class="toc-num">07</span>Integrace</a>
+    <a class="toc-item" href="#safety"><span class="toc-num">08</span>Action safety</a>
+    <a class="toc-item" href="#sync"><span class="toc-num">09</span>Sync &amp; health</a>
+    <a class="toc-item" href="#stavy"><span class="toc-num">10</span>Stavy</a>
+    <a class="toc-item" href="#paperclip"><span class="toc-num">11</span>Paperclip kritéria</a>
+    <a class="toc-item" href="#mantra"><span class="toc-num">12</span>UX mantra</a>
+  </div>
+
+  <!-- ============ 2. PĚT OBLASTÍ ============ -->
+  <h2 class="doc-h2" id="oblasti"><span class="doc-num">01</span>Pět oblastí</h2>
+  <p class="doc-p">Celý systém se skládá do pěti oblastí, seřazených podle toho, kolik pozornosti vyžadují. První z nich — <b>NEEDS YOU</b> — je vždy nahoře. Zbytek nikdy nesmí překřičet to, co čeká na rozhodnutí.</p>
+
+  <div class="doc-grid c3">
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">NEEDS YOU</h3>
+        <span class="tag red">urgent</span>
+      </div>
+      <p class="doc-p">Věci, které bez tebe nepočkají. Approvaly, blokovaní agenti, hot leady a citlivé zprávy — seřazené podle dopadu, ne podle času příchodu.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">NOW</h3>
+        <span class="tag orange">attention</span>
+      </div>
+      <p class="doc-p">Co právě běží a co se dělá teď. Živí agenti, aktivní tasky a aktuální kontext dne — abys viděl, na čem se pracuje.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">NEXT</h3>
+        <span class="tag blue">info</span>
+      </div>
+      <p class="doc-p">Co přijde dál. Nejbližší události, termíny a připravené kroky, abys nikdy nezačínal den od nuly.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">PERFORMANCE</h3>
+        <span class="tag green">positive</span>
+      </div>
+      <p class="doc-p">Jak si vedeme. Čísla z reklam, webů, agentů a pipeline — vždy jako trend, ne jen osamocené číslo.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">OPPORTUNITY</h3>
+        <span class="tag purple">ai</span>
+      </div>
+      <p class="doc-p">Co se vyplatí chytit. AI insighty a vzorce, které doporučují, kam nasměrovat pozornost, až bude NEEDS YOU prázdné.</p>
+    </div>
+  </div>
+
+  <!-- ============ 3. INFORMAČNÍ ARCHITEKTURA ============ -->
+  <h2 class="doc-h2" id="architektura"><span class="doc-num">02</span>Informační architektura</h2>
+  <p class="doc-p">Sitemap je plochá záměrně — maximálně tři úrovně. Hluboké stromy nutí hledat; tady je každá sekce jeden klik a každý detail se otevírá z kontextu, ne z menu.</p>
+
+  <div class="doc-card">
+    <div class="tree">
+      <div class="tn">MISSION CONTROL</div>
+      <div class="tn indent">├─ HOME <span class="tcm">/today</span></div>
+      <div class="tn indent">├─ AI</div>
+      <div class="tc indent2">Paperclip</div>
+      <div class="tc indent2">Agents</div>
+      <div class="tc indent2">Tasks</div>
+      <div class="tc indent2">Decisions <span class="badge purple">③</span></div>
+      <div class="tn indent">├─ TURBOW</div>
+      <div class="tc indent2">Leads</div>
+      <div class="tc indent2">Pipeline</div>
+      <div class="tc indent2">Companies</div>
+      <div class="tc indent2">Sales Intelligence</div>
+      <div class="tn indent">├─ COMMUNICATION</div>
+      <div class="tc indent2">Gmail</div>
+      <div class="tc indent2">Datová schránka</div>
+      <div class="tn indent">├─ CALENDAR</div>
+      <div class="tn indent">├─ GROWTH</div>
+      <div class="tc indent2">Google Ads</div>
+      <div class="tc indent2">Websites</div>
+      <div class="tc indent2">Analytics</div>
+      <div class="tc indent2">Search Console</div>
+      <div class="tn indent">├─ WORK</div>
+      <div class="tc indent2">Projects</div>
+      <div class="tc indent2">Tasks</div>
+      <div class="tc indent2">Documents</div>
+      <div class="tc indent2">Notes</div>
+      <div class="tn indent">├─ PERSONAL <span class="tcm">/personal</span></div>
+      <div class="tn indent">└─ SYSTEM</div>
+      <div class="tc indent2">Integrations</div>
+      <div class="tc indent2">Automations</div>
+      <div class="tc indent2">Activity</div>
+      <div class="tc indent2">Settings</div>
+      <div class="tc indent" style="padding-top:14px">detailní routy (otevírají se z kontextu)</div>
+      <div class="tcm indent2">/decision/:id — Decision screen</div>
+      <div class="tcm indent2">/task/:id — Task detail</div>
+      <div class="tcm indent2">/report/:id — Report viewer</div>
+      <div class="tcm indent2">/lead/:id — Lead detail</div>
+      <div class="tcm indent2">/mobile — Mobile command view</div>
+    </div>
+  </div>
+
+  <div class="doc-note">Detailní pohledy (approval, task detail, report) nejsou v sidebaru — otevírají se z kontextu a vždy nabízejí cestu zpět na místo, odkud přišly.</div>
+
+  <!-- ============ 4. NAVIGAČNÍ MAPA ============ -->
+  <h2 class="doc-h2" id="navigace"><span class="doc-num">03</span>Navigační mapa</h2>
+  <p class="doc-p">Rozhraní stojí na třech stálých plochách a jedné vrstvě detailů. Pravidlo badge: číslo u <b>Decisions ③</b> se zobrazuje jen když existuje otevřený approval — nula se nevykresluje a badge se schová, aby nevyráběl falešný šum.</p>
+
+  <div class="doc-grid c2">
+    <div class="doc-card">
+      <h3 class="h-sub">Sidebar</h3>
+      <p class="doc-p">Levá navigace sbalitelná na ikony. Skupiny kopírují sitemap; aktivní sekce nese purpurový akcent a badge ukazuje čekající zásahy (např. <span class="badge purple">③</span>).</p>
+    </div>
+    <div class="doc-card">
+      <h3 class="h-sub">Topbar</h3>
+      <p class="doc-p"><span class="kbd">⌘K</span> globální vyhledávání a akce, status synchronizace, notifikace, quick add a profil. Jedno místo pro „najdi cokoliv a udělej to“.</p>
+    </div>
+    <div class="doc-card">
+      <h3 class="h-sub">Pravý context panel</h3>
+      <p class="doc-p">NEXT, AI INSIGHT, NOTIFICATIONS, QUICK ACTIONS a live ticker. Kontext, který doplňuje hlavní plochu, ale nikdy ji nezahlcuje.</p>
+    </div>
+    <div class="doc-card">
+      <h3 class="h-sub">Detailní routy</h3>
+      <p class="doc-p">Approval, task detail, report a lead se otevírají z kontextu — nejsou v sidebaru. Každá obrazovka má jednoznačný cíl a zpětnou cestu.</p>
+    </div>
+  </div>
+
+  <!-- ============ 5. HOME LAYOUT SPEC ============ -->
+  <h2 class="doc-h2" id="home"><span class="doc-num">04</span>Home layout spec</h2>
+  <p class="doc-p">Asymetrická hierarchie, ne mřížka osmi stejných karet. Hlavní plocha má tři pásma s rozdílnou váhou — briefing nahoře, NEEDS YOU pod ním, zbytek níže. Pravý rail je úzký a živý.</p>
+
+  <div class="doc-code"><pre style="margin:0">┌───────────────┬─────────────────────────────────────────────┬───────────────┐
+│ SIDEBAR       │ MAIN                                        │ RIGHT RAIL    │
+│               │                                             │               │
+│ HOME ▸        │ HERO BRIEFING · „Dnes, 09:00“               │ NEXT          │
+│ AI            │                                             │ • 10:00 Call  │
+│  Decisions ③  │ NEEDS YOU — attention stack                 │ AI INSIGHT    │
+│ TURBOW        │  • approval_required · agent Paperclip      │ NOTIFIKACE    │
+│ COMMS         │  • lead.hot · nová zakázka TURBOW           │ QUICK ACTS    │
+│ CALENDAR      │ WORKING NOW — živí agenti a tasky           │ TICKER ▸      │
+│ GROWTH        │ TURBOW LIVE — pipeline, hot leads           │               │
+│ WORK          │ PERFORMANCE — ads · weby · agenti           │               │
+│ PERSONAL      │                                             │               │
+│ SYSTEM        │                                             │               │
+└───────────────┴─────────────────────────────────────────────┴───────────────┘</pre></div>
+
+  <!-- ============ 6. DATA ARCHITECTURE ============ -->
+  <h2 class="doc-h2" id="data"><span class="doc-num">05</span>Data architecture</h2>
+  <p class="doc-p">Sedm vrstev od externích služeb po UI. Každá vrstva je izolovaná a nahraditelná — žádná z nich nesmí být jediným bodem selhání.</p>
+
+  <div class="layer-stack" style="margin-top:16px">
+    <div class="layer"><span class="ly-idx">01</span><span class="ly-name">EXTERNAL SERVICES</span><span class="ly-desc">Gmail, Calendar, Ads, ISDS, GA4, Search Console, TURBOW…</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><span class="ly-idx">02</span><span class="ly-name">CONNECTORS</span><span class="ly-desc">OAuth, poll, webhook, TLS — každá služba izolovaná</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><span class="ly-idx">03</span><span class="ly-name">NORMALIZED DATA LAYER</span><span class="ly-desc">jedno kanonické schéma, bez závislosti na dodavateli</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><span class="ly-idx">04</span><span class="ly-name">EVENT STREAM</span><span class="ly-desc">lead.created, agent.finished, … — jediný zdroj pravdy o změnách</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer ai"><span class="ly-idx">05</span><span class="ly-name">AI INTELLIGENCE</span><span class="ly-desc">scoring, prioritizace, insighty, detekce anomálií (Paperclip)</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer"><span class="ly-idx">06</span><span class="ly-name">DASHBOARD API</span><span class="ly-desc">agregované pohledy, permissions, akce s bezpečnostní bránou</span></div>
+    <div class="layer-arrow">↓</div>
+    <div class="layer hot"><span class="ly-idx">07</span><span class="ly-name">UI</span><span class="ly-desc">Mission Control — sidebar, topbar, main, right rail</span></div>
+  </div>
+
+  <div class="doc-note">Výpadek jedné služby nesmí shodit dashboard. Connector selže, data zůstávají poslední známá a UI dál funguje. Event stream je idempotentní — zprávy se po obnově dají znovu přehrát, aniž by se cokoliv zdvojilo.</div>
+
+  <!-- ============ 7. EVENT MODEL ============ -->
+  <h2 class="doc-h2" id="eventy"><span class="doc-num">06</span>Event model</h2>
+  <p class="doc-p">Vše, co se v systému děje, je event s jasným zdrojem. UI nic nepočítá z nuly — reaguje na proud událostí a z něj staví NEEDS YOU, NOW i PERFORMANCE.</p>
+
+  <table class="doc-table">
+    <thead>
+      <tr><th>EVENT</th><th>SOURCE</th><th>MEANING</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>lead.created</code></td><td>TURBOW · web</td><td>Nový lead vstoupil do systému; založí záznam a spustí scoring.</td></tr>
+      <tr><td><code>lead.updated</code></td><td>TURBOW</td><td>Lead změnil stav nebo doplnil data; aktualizace pipeline.</td></tr>
+      <tr><td><code>lead.hot</code></td><td>TURBOW · scoring</td><td>Lead překročil práh skóre; okamžitá pozornost operátora.</td></tr>
+      <tr><td><code>agent.started</code></td><td>Paperclip</td><td>Agent začal běh tasku; objeví se ve WORKING NOW.</td></tr>
+      <tr><td><code>agent.finished</code></td><td>Paperclip</td><td>Agent dokončil úkol; čeká se na Primary Output.</td></tr>
+      <tr><td><code>agent.blocked</code></td><td>Paperclip</td><td>Agent narazil na překážku; vyžaduje lidský zásah.</td></tr>
+      <tr><td><code>agent.approval_required</code></td><td>Paperclip</td><td>Agent čeká na schválení; zvyšuje badge Decisions.</td></tr>
+      <tr><td><code>task.created</code></td><td>Paperclip · Work</td><td>Nový task; zařazení do fronty.</td></tr>
+      <tr><td><code>task.completed</code></td><td>Paperclip · Work</td><td>Task hotov; povinný odkaz na výsledek.</td></tr>
+      <tr><td><code>email.important</code></td><td>Gmail</td><td>Důležitá zpráva; NEEDS YOU, nikdy bez potvrzení.</td></tr>
+      <tr><td><code>calendar.upcoming</code></td><td>Calendar</td><td>Blížící se událost; NEXT a topbar.</td></tr>
+      <tr><td><code>isds.received</code></td><td>ISDS</td><td>Nová datová zpráva; citlivá, jde do NEEDS YOU.</td></tr>
+      <tr><td><code>ads.anomaly</code></td><td>Google Ads</td><td>Anomálie ve výdajích či výkonu; PERFORMANCE alert.</td></tr>
+      <tr><td><code>website.down</code></td><td>web analytics</td><td>Web neodpovídá; urgentní, NEEDS YOU.</td></tr>
+      <tr><td><code>task.overdue</code></td><td>Paperclip · Work</td><td>Task po termínu; eskaluje do NEEDS YOU.</td></tr>
+      <tr><td><code>decision.created</code></td><td>Mission Control</td><td>Nové rozhodnutí čeká; approval fronta.</td></tr>
+      <tr><td><code>decision.completed</code></td><td>Mission Control</td><td>Rozhodnuto; záznam do historie.</td></tr>
+      <tr><td><code>output.created</code></td><td>Paperclip</td><td>Nový výstup (HTML / report); VIEW RESULT.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ 8. INTEGRACE ============ -->
+  <h2 class="doc-h2" id="integrace"><span class="doc-num">07</span>Integrace</h2>
+  <p class="doc-p">Všechny externí závislosti běží přes konektory. UI nikdy nemluví s cizí službou napřímo a nikdy nedrží žádný secret.</p>
+
+  <table class="doc-table">
+    <thead>
+      <tr><th>INTEGRACE</th><th>PROTOKOL</th><th>DATA</th><th>POZNÁMKA</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Paperclip API</td><td>HTTP / JSON</td><td>agents, tasks, decisions, outputs</td><td>interní AI vrstva; zdroj většiny eventů.</td></tr>
+      <tr><td>Google Calendar API</td><td>OAuth 2.0 · REST</td><td>události, schůzky</td><td>read + write pro quick add.</td></tr>
+      <tr><td>Gmail API</td><td>OAuth 2.0</td><td>e-maily, důležité zprávy</td><td>read-only; odeslání jen s potvrzením.</td></tr>
+      <tr><td>ISDS / Datová schránka</td><td>SOAP · TLS</td><td>datové zprávy</td><td>citlivé; default read-only.</td></tr>
+      <tr><td>Google Ads API</td><td>OAuth 2.0 · gRPC</td><td>kampaně, výdaje, konverze</td><td>read + write s potvrzením.</td></tr>
+      <tr><td>Google Analytics</td><td>OAuth 2.0 · Data API</td><td>návštěvnost, konverze (GA4)</td><td>read-only.</td></tr>
+      <tr><td>Search Console</td><td>OAuth 2.0 · REST</td><td>dotazy, pozice, indexace</td><td>read-only.</td></tr>
+      <tr><td>TURBOW API</td><td>HTTP / JSON</td><td>leads, pipeline, companies</td><td>interní lead systém.</td></tr>
+      <tr><td>web analytics</td><td>HTTP beacon</td><td>uptime, anomálie</td><td>read-only stream.</td></tr>
+      <tr><td>notifications</td><td>WebSocket · push</td><td>notifikace</td><td>outbound kanál do UI.</td></tr>
+      <tr><td>AI provider</td><td>HTTPS · SDK</td><td>LLM inference</td><td>přes Paperclip; klíče server-side.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="doc-note">Autentizace přes OAuth 2.0, tokeny šifrované v klidu a veškerá výměna secretů server-side. Browser nikdy nevidí přístupový token ani klíč třetí strany.</div>
+
+  <!-- ============ 9. ACTION SAFETY ============ -->
+  <h2 class="doc-h2" id="safety"><span class="doc-num">08</span>Action safety</h2>
+  <p class="doc-p">Každá akce má jasnou třídu rizika. Čím nevratnější, tím vyšší práh potvrzení — ale nikdy žádné potvrzování akcí, které nic nemění.</p>
+
+  <div class="doc-grid c3">
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">READ</h3>
+        <span class="tag green">passive</span>
+      </div>
+      <p class="doc-p">Pasivní zobrazení dat, žádný vedlejší efekt. Vždy bez bariéry.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">PREPARE</h3>
+        <span class="tag orange">review</span>
+      </div>
+      <p class="doc-p">Návrh akce — draft e-mailu, konfigurace kampaně. Vyžaduje explicitní review, ale zatím žádný commit.</p>
+    </div>
+    <div class="doc-card">
+      <div class="flex items-start justify-between gap-10">
+        <h3 class="h-sub">EXECUTE</h3>
+        <span class="tag red">confirm</span>
+      </div>
+      <p class="doc-p">Nevratná nebo citlivá akce. Vždy vyžaduje potvrzení, v nejcitlivějších případech i druhý krok.</p>
+    </div>
+  </div>
+
+  <div class="doc-note warn">Vysoce citlivé akce — <b>nikdy bez potvrzení</b>: Datová schránka (odeslání), důležité Gmail zprávy, Google Ads změny (rozpočty, pauzy), nasazení (deploy), mazání dat, finance, agent deployment. Každá má jasný confirm krok s rozpisem dopadu před spuštěním.</div>
+
+  <!-- ============ 10. SYNC & HEALTH ============ -->
+  <h2 class="doc-h2" id="sync"><span class="doc-num">09</span>Sync &amp; health</h2>
+  <p class="doc-p">Každá integrace hlásí svůj stav zvlášť. Stav je viditelný v instrument stripu i u zdroje dat — operátor vždy ví, jestli čte živé číslo, nebo poslední známou hodnotu.</p>
+
+  <div class="flex wrap gap-10" style="margin:14px 0">
+    <span class="tag green">Connected</span>
+    <span class="tag red">Disconnected</span>
+    <span class="tag blue">Syncing</span>
+    <span class="tag red">Error</span>
+    <span class="tag orange">Retry</span>
+    <span class="tag orange">Permission missing</span>
+  </div>
+
+  <div class="doc-note">Stará data zůstávají viditelná — nikdy se nezahazují. Nesynchronizovaný zdroj nese označení poslední úspěšné synchronizace, takže kontext nezmizí ani při výpadku.</div>
+
+  <!-- ============ 11. STAVY ============ -->
+  <h2 class="doc-h2" id="stavy"><span class="doc-num">10</span>Stavy</h2>
+  <p class="doc-p">Každá oblast, panel i položka umí komunikovat svůj stav. Žádný prázdný obdélník bez vysvětlení.</p>
+
+  <div class="flex wrap gap-10" style="margin:14px 0">
+    <span class="chip"><span class="dot"></span>loading</span>
+    <span class="chip"><span class="dot"></span>no data</span>
+    <span class="chip"><span class="dot red"></span>disconnected</span>
+    <span class="chip"><span class="dot red"></span>error</span>
+    <span class="chip"><span class="dot orange"></span>permission missing</span>
+    <span class="chip"><span class="dot"></span>offline</span>
+    <span class="chip"><span class="dot orange"></span>partial sync</span>
+    <span class="chip"><span class="dot"></span>stale data</span>
+  </div>
+
+  <!-- ============ 12. PAPERCLIP ACCEPTANCE CRITERIA ============ -->
+  <h2 class="doc-h2" id="paperclip"><span class="doc-num">11</span>Paperclip acceptance criteria</h2>
+  <p class="doc-p">Výstup od agenta Paperclip je hotový teprve tehdy, když splňuje všechna kritéria dohledatelnosti a rozhodovatelnosti. Nic nesmí končit slepou uličkou.</p>
+
+  <div class="checklist" style="margin-top:16px">
+    <div class="cl-item done"><span class="cl-box">✓</span>Každý zmíněný task má odkaz.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Každý approval má kompletní kontext.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Každý review obsahuje kontrolovaný obsah.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Každý completed task má Primary Output + VIEW RESULT.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Více HTML výstupů → jeden index.html.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>index.html odkazuje na všechny výstupy.</div>
+    <div class="cl-item"><span class="cl-box"></span>Všechny odkazy jsou ověřené — žádný broken link.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>HOME ukazuje čekající decisions.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Badge „Decisions ③“ zůstává přesný.</div>
+    <div class="cl-item"><span class="cl-box"></span>Approval je možný přímo z review obrazovky.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>COMPLETE není bez dostupného výsledku.</div>
+    <div class="cl-item"><span class="cl-box"></span>Každý lidsky čitelný výstup má HTML.</div>
+    <div class="cl-item"><span class="cl-box"></span>HTML má navigaci zpět (na task i na index).</div>
+    <div class="cl-item"><span class="cl-box"></span>Visual outputs jsou viditelné v HTML, ne jen jako soubor.</div>
+    <div class="cl-item done"><span class="cl-box">✓</span>Filesystem path není primární přístup k výsledku.</div>
+    <div class="cl-item"><span class="cl-box"></span>Uživatel nemusí hledat task / soubor / parent task / staré zprávy.</div>
+    <div class="cl-item"><span class="cl-box"></span>Výsledek je viditelný z HOME bez klikání do hlubin.</div>
+    <div class="cl-item"><span class="cl-box"></span>Staré výstupy se nepletou do aktuálních.</div>
+    <div class="cl-item"><span class="cl-box"></span>Každý event má jednoznačný zdroj a čas.</div>
+    <div class="cl-item"><span class="cl-box"></span>Žádný dead-end — každá obrazovka vede dál, nebo zpět.</div>
+  </div>
+
+  <!-- ============ 13. UX MANTRA ============ -->
+  <h2 class="doc-h2" id="mantra"><span class="doc-num">12</span>UX mantra</h2>
+  <div class="doc-note" style="font-size:14px">
+    <div style="margin-bottom:10px;font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple)">Mantra</div>
+    <div><b>Ukaž proč.</b></div>
+    <div><b>Ukaž všechny informace.</b></div>
+    <div><b>Ukaž kontrolovaný obsah.</b></div>
+    <div><b>Dej odkaz na task.</b></div>
+    <div><b>Dej VIEW RESULT.</b></div>
+    <div><b>Vytvoř jeden hlavní HTML rozcestník.</b></div>
+    <div><b>Umožni rozhodnout přímo na místě.</b></div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="divider" style="margin-top:60px"></div>
+  <p class="micro" style="color:var(--text3)">MISSION CONTROL · Design &amp; Architecture v1.0 · 2026</p>
+
+</div>
+</body>
+</html>

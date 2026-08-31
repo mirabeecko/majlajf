@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURBOW-42 — Variant Comparison · Paperclip Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1014;--card:#13161B;--card2:#181C22;
+    --hairline:rgba(255,255,255,.07);
+    --text:#E9EBEF;--muted:#9BA3AF;--dim:#616A75;
+    --purple:#8B5CF6;--cyan:#22D3EE;--green:#34D399;--orange:#FB923C;--red:#F87171;
+    --hot1:#FB923C;--hot2:#F43F5E;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --tight:'Inter Tight','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased;}
+  a{color:var(--cyan);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 104px;}
+
+  .nav{position:sticky;top:0;z-index:10;border-bottom:1px solid var(--hairline);background:rgba(14,16,20,.92);backdrop-filter:blur(8px);}
+  .nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px;}
+  .nav-back{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+  .nav-back:hover{color:var(--text);text-decoration:none;}
+  .nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+  .nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 10px;border-radius:8px;}
+  .nav-links a:hover{color:var(--text);background:var(--card2);text-decoration:none;}
+
+  section{padding-top:52px;}
+  .title-block{padding-top:40px;}
+  .crumb{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 16px;}
+  h1{font-family:var(--tight);font-weight:800;font-size:30px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;}
+  h1 .accent{color:var(--purple);}
+  .sub{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0;}
+
+  .label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 18px;display:flex;align-items:center;gap:12px;}
+  .label::before{content:"";width:18px;height:1px;background:var(--purple);display:inline-block;}
+  .label .idx{color:var(--dim);}
+
+  .card{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:24px 26px;overflow-x:auto;}
+
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;min-width:520px;}
+  thead th{text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:500;padding:0 14px 12px;border-bottom:1px solid var(--hairline);}
+  tbody td{padding:14px;border-bottom:1px solid var(--hairline);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.criterion{color:var(--text);font-weight:500;white-space:nowrap;}
+  td.val-a{color:var(--muted);}
+  td.val-b{color:var(--text);}
+  td.winner{text-align:center;}
+  .win{
+    display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    padding:3px 10px;border-radius:6px;color:var(--purple);border:1px solid rgba(139,92,246,.3);background:rgba(139,92,246,.08);
+  }
+  .win.tie{color:var(--muted);border-color:var(--hairline);background:var(--card2);}
+  .win.a{color:var(--orange);border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.08);}
+
+  .verdict{
+    margin-top:16px;border:1px solid rgba(139,92,246,.35);border-radius:12px;
+    background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(34,211,238,.05));
+    padding:24px 26px;
+  }
+  .verdict .v-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple);margin:0 0 10px;}
+  .verdict h3{font-family:var(--tight);font-weight:700;font-size:20px;margin:0 0 8px;}
+  .verdict p{margin:0 0 14px;color:var(--muted);font-size:14.5px;}
+  .verdict p strong{color:var(--text);}
+  .verdict .score-line{font-family:var(--mono);font-size:13px;color:var(--text);}
+  .verdict .score-line b{color:var(--green);}
+
+  .footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--hairline);font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.06em;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .footer .f-agent{color:var(--muted);}
+  .footer .f-agent b{color:var(--cyan);font-weight:500;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-back" href="index.html"><span aria-hidden="true">←</span> Back to report</a>
+    <div class="nav-links">
+      <a href="index.html#task">Task</a>
+      <a href="index.html#outputs">Outputs</a>
+      <a href="index.html#files">Files</a>
+      <a href="index.html#tests">Tests</a>
+      <a href="index.html#reports">Reports</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="title-block">
+    <p class="crumb">TURBOW-42 · sub-report</p>
+    <h1>Variant comparison <span class="accent">A vs B</span></h1>
+    <p class="sub">Scoring rules implementation · criterion-by-criterion breakdown</p>
+  </section>
+
+  <section>
+    <h2 class="label"><span class="idx">01</span> Comparison matrix</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Criterion</th>
+            <th>Version A</th>
+            <th>Version B</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="criterion">Latency</td>
+            <td class="val-a">240 ms p95</td>
+            <td class="val-b">210 ms p95</td>
+            <td class="winner"><span class="win">B</span></td>
+          </tr>
+          <tr>
+            <td class="criterion">Complexity</td>
+            <td class="val-a">High — 3 nested rule blocks</td>
+            <td class="val-b">Medium — declarative JSON rules</td>
+            <td class="winner"><span class="win">B</span></td>
+          </tr>
+          <tr>
+            <td class="criterion">Future extensibility</td>
+            <td class="val-a">Add rule = code change + deploy</td>
+            <td class="val-b">Add rule = config edit, hot reload</td>
+            <td class="winner"><span class="win">B</span></td>
+          </tr>
+          <tr>
+            <td class="criterion">Risk</td>
+            <td class="val-a">Low — no new dependency</td>
+            <td class="val-b">Medium — adds rule-engine lib</td>
+            <td class="winner"><span class="win a">A</span></td>
+          </tr>
+          <tr>
+            <td class="criterion">Maintenance</td>
+            <td class="val-a">Harder — logic scattered in code</td>
+            <td class="val-b">Easier — single rules file</td>
+            <td class="winner"><span class="win">B</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="label"><span class="idx">02</span> Verdict</h2>
+    <div class="verdict">
+      <p class="v-label">Agent recommendation</p>
+      <h3>Choose Version B</h3>
+      <p>
+        <strong>B vyhrává 4 z 5 kritérií.</strong> Vyšší výkon (210 ms vs 240 ms), nižší udržovací náklady
+        a runtime konfigurace pravidel bez nutnosti deploye převažují nad jediným rizikem — novou knihovnou
+        rule-engine, kterou lze považovat za stabilní (verze 3.x, aktivní maintenance).
+      </p>
+      <p class="score-line">Composite score: A <b>86</b>/100 · B <b>94</b>/100</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="f-agent">Generated by <b>Paperclip</b> · <b>Founding Engineer</b></span>
+    <span>TURBOW-42 · output/comparison.html</span>
+  </footer>
+
+</div>
+</body>
+</html>

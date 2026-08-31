@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURBOW-42 — Lead Scoring · Paperclip Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0E1014;--card:#13161B;--card2:#181C22;--hairline:rgba(255,255,255,.07);--text:#E9EBEF;--muted:#9BA3AF;--dim:#616A75;--purple:#8B5CF6;--cyan:#22D3EE;--green:#34D399;--orange:#FB923C;--red:#F87171;--hot1:#FB923C;--hot2:#F43F5E;--mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;--tight:'Inter Tight','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;}
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  a{color:var(--cyan);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 104px;}
+
+  .nav{position:sticky;top:0;z-index:10;border-bottom:1px solid var(--hairline);background:rgba(14,16,20,.92);backdrop-filter:blur(8px);}
+  .nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px;}
+  .nav-back{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+  .nav-back:hover{color:var(--text);text-decoration:none;}
+  .nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+  .nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 10px;border-radius:8px;}
+  .nav-links a:hover{color:var(--text);background:var(--card2);text-decoration:none;}
+  .nav-back-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;}
+
+  section{padding-top:56px;margin-top:8px;}
+  .label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 18px;display:flex;align-items:center;gap:12px;}
+  .label::before{content:"";width:18px;height:1px;background:var(--purple);display:inline-block;}
+  .label .idx{color:var(--dim);}
+  .card{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:24px 26px;}
+  .card + .card{margin-top:16px;}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;}
+  .card-head h3{margin:0;font-family:var(--tight);font-weight:600;font-size:15px;}
+
+  .title-block{padding-top:44px;margin-top:0;}
+  .crumb{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 20px;}
+  .title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  h1{font-family:var(--tight);font-weight:800;font-size:32px;line-height:1.15;margin:0 0 10px;letter-spacing:-.01em;}
+  h1 .task-id{color:var(--purple);}
+  .agent-line{font-family:var(--mono);font-size:13px;color:var(--muted);margin:0 0 18px;}
+  .agent-line .agent-name{color:var(--cyan);}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border-radius:999px;border:1px solid;white-space:nowrap;}
+  .badge.green{color:var(--green);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08);}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(52,211,153,.15);}
+  .stamp{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.06em;display:flex;align-items:center;gap:8px;margin-top:16px;}
+  .stamp .sep{color:var(--hairline);}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px;}
+  .stat{background:var(--card2);border:1px solid var(--hairline);border-radius:12px;padding:18px 18px 16px;}
+  .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 10px;}
+  .stat .v{font-family:var(--tight);font-weight:800;font-size:28px;line-height:1;letter-spacing:-.01em;margin:0;color:var(--text);}
+  .stat .u{color:var(--muted);font-weight:500;font-size:15px;}
+  .stat.acc .v{color:var(--purple);}
+  .stat.acc2 .v{color:var(--cyan);}
+
+  .summary{font-size:16px;}
+  .summary p{margin:0 0 14px;}
+  .summary p:last-child{margin-bottom:0;}
+  .summary strong{color:var(--text);font-weight:600;}
+  .summary .hl{color:var(--cyan);}
+  .summary .hl-green{color:var(--green);}
+
+  .change{display:flex;gap:16px;padding:13px 0;border-bottom:1px solid var(--hairline);align-items:flex-start;}
+  .change:last-child{border-bottom:none;padding-bottom:0;}
+  .change:first-child{padding-top:0;}
+  .change .num{font-family:var(--mono);font-size:12px;color:var(--dim);min-width:22px;padding-top:2px;}
+  .change .body{flex:1;min-width:0;}
+  .change .t{font-weight:600;color:var(--text);font-size:14.5px;}
+  .change .d{color:var(--muted);font-size:13.5px;margin-top:3px;}
+  .tag{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:6px;border:1px solid var(--hairline);color:var(--muted);background:var(--card2);margin-left:8px;white-space:nowrap;}
+  .tag.purple{color:var(--purple);border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.08);}
+  .tag.cyan{color:var(--cyan);border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08);}
+  .tag.green{color:var(--green);border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.08);}
+
+  .decision{border:1px solid rgba(251,146,60,.4);border-radius:12px;background:linear-gradient(180deg,rgba(251,146,60,.06),rgba(251,146,60,.02));padding:26px;}
+  .decision .d-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin:0 0 12px;}
+  .decision .d-q{font-family:var(--tight);font-weight:700;font-size:19px;margin:0 0 6px;}
+  .decision .d-rec{margin:0 0 20px;color:var(--muted);font-size:14.5px;}
+  .decision .d-rec strong{color:var(--text);}
+  .d-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.05em;padding:10px 18px;border-radius:8px;border:1px solid var(--hairline);background:var(--card2);color:var(--text);cursor:pointer;text-transform:uppercase;}
+  .btn:hover{background:#1E242C;text-decoration:none;}
+  .btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;}
+  .btn.primary:hover{background:#7C4FE8;}
+  .btn.hot{border:1px solid transparent;color:#fff;background:linear-gradient(90deg,var(--hot1),var(--hot2));}
+  .btn.hot:hover{filter:brightness(1.08);}
+  .demo-note{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.06em;margin-top:14px;}
+
+  .variants{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .variant{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:22px;}
+  .variant.b{border-color:rgba(139,92,246,.4);box-shadow:0 0 0 1px rgba(139,92,246,.15);}
+  .variant .v-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .variant .v-name{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+  .variant.b .v-name{color:var(--purple);}
+  .score{font-family:var(--tight);font-weight:800;font-size:24px;color:var(--muted);letter-spacing:-.01em;}
+  .score .max{font-size:13px;color:var(--dim);font-weight:500;}
+  .variant.b .score{color:var(--purple);}
+  .meta-list{margin:0;padding:0;list-style:none;}
+  .meta-list li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--hairline);font-size:13.5px;}
+  .meta-list li:last-child{border-bottom:none;}
+  .meta-list .mk{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+  .meta-list .mv{font-family:var(--mono);font-size:13px;color:var(--text);}
+  .meta-list .mv.good{color:var(--green);}
+  .meta-list .mv.warn{color:var(--orange);}
+  .callout{margin-top:16px;border:1px solid rgba(139,92,246,.35);border-radius:12px;background:linear-gradient(90deg,rgba(139,92,246,.1),rgba(34,211,238,.06));padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .callout .c-text{font-family:var(--tight);font-weight:700;font-size:16px;}
+  .callout .c-text .arrow{color:var(--purple);}
+  .link-btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);border:1px solid rgba(34,211,238,.35);border-radius:8px;padding:8px 14px;background:rgba(34,211,238,.06);}
+  .link-btn:hover{background:rgba(34,211,238,.12);text-decoration:none;}
+
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;}
+  thead th{text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:500;padding:0 12px 12px;border-bottom:1px solid var(--hairline);}
+  tbody td{padding:13px 12px;border-bottom:1px solid var(--hairline);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.path{color:var(--text);}
+  td.role{color:var(--muted);}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:6px;color:var(--purple);background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);}
+  .open-link{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.05em;}
+
+  .tests-summary{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .tests-pct{font-family:var(--tight);font-weight:800;font-size:32px;color:var(--green);letter-spacing:-.01em;}
+  .tests-meta{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .risk{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--hairline);align-items:flex-start;}
+  .risk:last-child{border-bottom:none;padding-bottom:0;}
+  .risk:first-child{padding-top:0;}
+  .risk .r-tag{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--orange);border:1px solid rgba(251,146,60,.35);background:rgba(251,146,60,.08);padding:3px 9px;border-radius:6px;white-space:nowrap;}
+  .risk .r-body{flex:1;}
+  .risk .r-t{font-weight:600;font-size:14px;color:var(--text);}
+  .risk .r-d{font-size:13.5px;color:var(--muted);margin-top:3px;}
+
+  .chip{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;font-weight:500;padding:12px 18px;border-radius:10px;cursor:pointer;border:1px solid rgba(34,211,238,.35);background:rgba(34,211,238,.06);color:var(--cyan);}
+  .chip:hover{background:rgba(34,211,238,.12);}
+  .chip .arrow{color:var(--cyan);}
+
+  .footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--hairline);font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.06em;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .footer .f-agent{color:var(--muted);}
+  .footer .f-agent b{color:var(--cyan);font-weight:500;}
+
+  @media (max-width:720px){.stats{grid-template-columns:1fr 1fr;}.variants{grid-template-columns:1fr;}h1{font-size:26px;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-back" href="../../index.html">
+      <span aria-hidden="true">←</span> Back to overview
+      <span class="nav-back-label">(prototype → dashboard)</span>
+    </a>
+    <div class="nav-links">
+      <a href="#task">Task</a>
+      <a href="#outputs">Outputs</a>
+      <a href="#files">Files</a>
+      <a href="#tests">Tests</a>
+      <a href="#reports">Reports</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- TITLE BLOCK -->
+  <section class="title-block" id="task">
+    <p class="crumb">Mission control · output report</p>
+    <div class="title-row">
+      <div>
+        <h1><span class="task-id">TASK: TURBOW-42</span> — Implement lead scoring</h1>
+        <p class="agent-line">AGENT: <span class="agent-name">Founding Engineer</span> · paperclip-01 · run #4</p>
+      </div>
+      <span class="badge green"><span class="dot"></span>Completed — approval pending</span>
+    </div>
+    <p class="stamp"><span>2026-08-22</span><span class="sep">·</span><span>10:42:07 CET</span><span class="sep">·</span><span>duration 14m 38s</span><span class="sep">·</span><span>4 commits · 6 files touched</span></p>
+  </section>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <section id="summary">
+    <h2 class="label"><span class="idx">01</span> Executive summary</h2>
+    <div class="card summary">
+      <p>
+        Implementoval jsem <strong>lead scoring</strong> jako nový endpoint <code class="hl">POST /api/leads/score</code> vracející skóre 0–100 s váhami firmographic (0.40), engagement (0.35) a intent (0.25). Model byl natrénován na posledních 90 dnech historie a otestován na <strong>342 leadů</strong> s <span class="hl-green">precision 0.87</span> na hranici hot-lead ≥ 70.
+      </p>
+      <p>
+        <strong>Co je hotové:</strong> scoring API, pravidla, migrace schématu (<code class="hl">lead_score DECIMAL(5,2)</code> + index), nový sloupec v UI a sada 36 testů. <strong>Co chybí:</strong> tvoje rozhodnutí mezi variantou A (vestavěná pravidla) a B (rule-engine s konfigurací) — doporučuji <span class="hl">verzi B</span>.
+      </p>
+      <p>
+        Nasazení je připravené jako <span class="hl">staged diff</span>; dokud neschválíš variantu, nic se nedeployuje. Rizika jsou nízká — viz sekce RISKS dole.
+      </p>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <p class="k">Leads scored</p>
+        <p class="v">342</p>
+      </div>
+      <div class="stat acc">
+        <p class="k">Precision</p>
+        <p class="v">0.87</p>
+      </div>
+      <div class="stat acc2">
+        <p class="k">Coverage</p>
+        <p class="v">94<span class="u">%</span></p>
+      </div>
+      <div class="stat">
+        <p class="k">Latency</p>
+        <p class="v">210<span class="u">ms</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT CHANGED -->
+  <section id="changes">
+    <h2 class="label"><span class="idx">02</span> What changed</h2>
+    <div class="card">
+      <div class="change">
+        <span class="num">01</span>
+        <div class="body">
+          <span class="t">Scoring API<span class="tag cyan">api</span></span>
+          <div class="d">Nový endpoint <code>POST /api/leads/score</code> + <code>GET /api/leads/:id/score</code> s validací vstupu a rate-limit 60 req/min.</div>
+        </div>
+      </div>
+      <div class="change">
+        <span class="num">02</span>
+        <div class="body">
+          <span class="t">Scoring rules<span class="tag purple">rules</span></span>
+          <div class="d">Váhy firmographic 0.40 / engagement 0.35 / intent 0.25. Hranice hot-lead ≥ 70, nurture 40–69, cold &lt; 40.</div>
+        </div>
+      </div>
+      <div class="change">
+        <span class="num">03</span>
+        <div class="body">
+          <span class="t">Database schema<span class="tag green">db</span></span>
+          <div class="d">Migrace <code>202608221032_add_lead_score.sql</code> — sloupec <code>lead_score</code> + composite index na <code>(status, lead_score)</code>.</div>
+        </div>
+      </div>
+      <div class="change">
+        <span class="num">04</span>
+        <div class="body">
+          <span class="t">UI<span class="tag cyan">ui</span></span>
+          <div class="d">Score sloupec v lead table + barevný chip (hot/nurture/cold) a tooltip s rozkladem vah.</div>
+        </div>
+      </div>
+      <div class="change">
+        <span class="num">05</span>
+        <div class="body">
+          <span class="t">Tests<span class="tag green">test</span></span>
+          <div class="d">36 testů: API kontrakt, pravidla, migrace, UI render a e2e happy-path. Coverage 94 %.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISIONS REQUIRED -->
+  <section id="decisions">
+    <h2 class="label"><span class="idx">03</span> Decisions required</h2>
+    <div class="decision">
+      <p class="d-label">Awaiting your input · 1 open decision</p>
+      <p class="d-q">Vyber variantu A nebo B pro implementaci scoring pravidel.</p>
+      <p class="d-rec">
+        <strong>Rekomendace: Choose B</strong> — nižší implementační riziko a jednodušší budoucí rozšíření.
+      </p>
+      <div class="d-actions">
+        <button class="btn primary" type="button">Choose A</button>
+        <button class="btn primary" type="button">Choose B</button>
+        <button class="btn" type="button">Request changes</button>
+        <button class="btn" type="button">Discuss</button>
+      </div>
+      <p class="demo-note">demo — buttons are static in this static export; wire them to the approval API in the live dashboard</p>
+    </div>
+  </section>
+
+  <!-- VARIANT COMPARISON -->
+  <section id="reports">
+    <h2 class="label"><span class="idx">04</span> Variant comparison</h2>
+    <div class="variants">
+      <div class="variant">
+        <div class="v-head">
+          <span class="v-name">Version A</span>
+          <span class="score">86<span class="max">/100</span></span>
+        </div>
+        <ul class="meta-list">
+          <li><span class="mk">Latency</span><span class="mv warn">240 ms</span></li>
+          <li><span class="mk">Complexity</span><span class="mv">High</span></li>
+          <li><span class="mk">Approach</span><span class="mv">built-in rules</span></li>
+          <li><span class="mk">Config</span><span class="mv">code only</span></li>
+        </ul>
+      </div>
+      <div class="variant b">
+        <div class="v-head">
+          <span class="v-name">Version B</span>
+          <span class="score">94<span class="max">/100</span></span>
+        </div>
+        <ul class="meta-list">
+          <li><span class="mk">Latency</span><span class="mv good">210 ms</span></li>
+          <li><span class="mk">Complexity</span><span class="mv">Medium</span></li>
+          <li><span class="mk">Approach</span><span class="mv">rule engine</span></li>
+          <li><span class="mk">Config</span><span class="mv good">runtime JSON</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="c-text">AGENT RECOMMENDATION <span class="arrow">→</span> Version B</span>
+      <a class="link-btn" href="comparison.html">View full comparison →</a>
+    </div>
+  </section>
+
+  <!-- OUTPUTS & FILES -->
+  <section id="outputs">
+    <h2 class="label"><span class="idx">05</span> Outputs &amp; files</h2>
+    <div class="card">
+      <table id="files">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Path</th>
+            <th>Role</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="pill">primary</span></td>
+            <td class="path">output/index.html</td>
+            <td class="role">Master report</td>
+            <td><a class="open-link" href="index.html">OPEN →</a></td>
+          </tr>
+          <tr>
+            <td><span class="pill">additional</span></td>
+            <td class="path">output/comparison.html</td>
+            <td class="role">Variant A vs B</td>
+            <td><a class="open-link" href="comparison.html">OPEN →</a></td>
+          </tr>
+          <tr>
+            <td><span class="pill">additional</span></td>
+            <td class="path">output/tests.html</td>
+            <td class="role">Test results</td>
+            <td><a class="open-link" href="tests.html">OPEN →</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TESTS -->
+  <section id="tests">
+    <h2 class="label"><span class="idx">06</span> Tests</h2>
+    <div class="card">
+      <div class="tests-summary">
+        <span class="tests-pct">94%</span>
+        <span class="tests-meta">34 passed · 2 warnings · 0 failed · 36 total · 1.9s</span>
+        <a class="link-btn" href="tests.html">View test report →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RISKS -->
+  <section id="risks">
+    <h2 class="label"><span class="idx">07</span> Risks</h2>
+    <div class="card">
+      <div class="risk">
+        <span class="r-tag">Low</span>
+        <div class="r-body">
+          <div class="r-t">Cold-start skew na nových leadů</div>
+          <div class="r-d">Leady bez historie engagementu dostávají plnou firmographic váhu — skóre může být o 8–12 bodů vyšší, než je reálné. Řeší seed score v další iteraci.</div>
+        </div>
+      </div>
+      <div class="risk">
+        <span class="r-tag">Low</span>
+        <div class="r-body">
+          <div class="r-t">Retro fill běží na replice</div>
+          <div class="r-d">Backfill 342 leadů běží na read-replica, ne na primáru — při výpadku repliky se skóre nedopočítá do release. Mitigace: retry job s 3 pokusy.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT STEP -->
+  <section id="next">
+    <h2 class="label"><span class="idx">08</span> Recommended next step</h2>
+    <a class="chip" href="#task"><span>TURBOW-43</span><span>—</span><span>Company enrichment</span><span class="arrow">→</span></a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <span class="f-agent">Generated by <b>Paperclip</b> · <b>Founding Engineer</b></span>
+    <span>TURBOW-42 · output/index.html · v1.0</span>
+  </footer>
+
+</div>
+</body>
+</html>

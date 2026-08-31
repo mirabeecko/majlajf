@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/mission-control/mc-api/:path*",
+      "destination": "/api/mc-api/:path*"
+    },
+    {
+      "source": "/mission-control/:path*",
+      "destination": "/mission-control/index.html"
+    }
+  ]
+}

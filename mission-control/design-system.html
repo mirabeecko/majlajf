@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MISSION CONTROL — Design System</title>
+<link rel="stylesheet" href="assets/mc.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============ DOC NAV ============ -->
+<nav class="doc-nav">
+  <span class="dn-brand">MISSION CONTROL</span>
+  <div class="dn-links">
+    <a class="dn-link" href="index.html">PROTOKOLYP</a>
+    <a class="dn-link" href="architecture.html">ARCHITEKTURA</a>
+    <a class="dn-link active" href="design-system.html">DESIGN SYSTEM</a>
+  </div>
+</nav>
+<div class="doc-topnav-pad"></div>
+
+<div class="doc-body">
+<div class="doc-wrap">
+
+  <!-- ============ 1. HERO ============ -->
+  <header class="doc-hero">
+    <div class="doc-kicker">MISSION CONTROL · Design System v1.0</div>
+    <h1 class="doc-title">Premium futuristic business cockpit</h1>
+    <p class="doc-sub">Design language postavený na tmavém grafitu a neutrálním UI, kde barvy nejsou dekorace, ale signál. Accenty se používají výhradně pro význam — AI, informace, pozitivní stav, pozornost a urgentnost. Perfektní typografie nese hierarchii a čísla mluví dřív než slova. Cílem je kokpit, ve kterém data dýchají a rozhraní neruší.</p>
+    <p class="doc-lead" style="margin-top:22px">Minimum vizuálního hluku. Perfektní spacing. Jasná hierarchie.</p>
+  </header>
+
+  <!-- ============ 2. BARVY ============ -->
+  <h2 class="doc-h2"><span class="doc-num">01</span>Barvy</h2>
+  <p class="doc-p">Základ je <b>velmi tmavý grafit</b>, nikdy čistá černá. Povrchy se zvedají po jemných krocích a odděluje je hairline border. Accenty jsou syté, ale řídké — používají se jen tam, kde nesou informaci.</p>
+
+  <div class="doc-grid c3" style="margin-top:20px">
+    <div><div class="swatch" style="background:#0A0B0E"></div><div class="swatch-label"><b>--bg0</b>#0A0B0E · Background</div></div>
+    <div><div class="swatch" style="background:#0E1014"></div><div class="swatch-label"><b>--bg1</b>#0E1014 · Panely</div></div>
+    <div><div class="swatch" style="background:#13161B"></div><div class="swatch-label"><b>--surface</b>#13161B · Karty</div></div>
+    <div><div class="swatch" style="background:#181C22"></div><div class="swatch-label"><b>--surface2</b>#181C22 · Hover</div></div>
+    <div><div class="swatch" style="background:#1F242C"></div><div class="swatch-label"><b>--surface3</b>#1F242C · Vyšší vrstva</div></div>
+    <div><div class="swatch" style="background:rgba(255,255,255,.065)"></div><div class="swatch-label"><b>--line</b>rgba(255,255,255,.065)</div></div>
+    <div><div class="swatch" style="background:#E9EBEF"></div><div class="swatch-label"><b>--text</b>#E9EBEF · Primární</div></div>
+    <div><div class="swatch" style="background:#9BA3AF"></div><div class="swatch-label"><b>--text2</b>#9BA3AF · Sekundární</div></div>
+    <div><div class="swatch" style="background:#616A75"></div><div class="swatch-label"><b>--text3</b>#616A75 · Muted</div></div>
+    <div><div class="swatch" style="background:#8B5CF6"></div><div class="swatch-label"><b>--purple</b>#8B5CF6 · AI</div></div>
+    <div><div class="swatch" style="background:#22D3EE"></div><div class="swatch-label"><b>--cyan</b>#22D3EE · Informace</div></div>
+    <div><div class="swatch" style="background:#34D399"></div><div class="swatch-label"><b>--green</b>#34D399 · Pozitivní</div></div>
+    <div><div class="swatch" style="background:#FB923C"></div><div class="swatch-label"><b>--orange</b>#FB923C · Pozornost</div></div>
+    <div><div class="swatch" style="background:#F87171"></div><div class="swatch-label"><b>--red</b>#F87171 · Urgentní</div></div>
+    <div><div class="swatch" style="background:linear-gradient(135deg,#FB923C,#F43F5E)"></div><div class="swatch-label"><b>--hot</b>#FB923C → #F43F5E · HOT lead</div></div>
+  </div>
+
+  <h3 class="doc-h3">Role barev</h3>
+  <table class="doc-table">
+    <thead><tr><th>Accent</th><th>Kdy se používá</th></tr></thead>
+    <tbody>
+      <tr><td><code>--purple</code></td><td>AI vrstva — doporučení, rozhodnutí, návrhy, aktivní stavy agentů.</td></tr>
+      <tr><td><code>--cyan</code></td><td>Informace — neutrální novinky, syncy, rozcestníky, doplňující kontext.</td></tr>
+      <tr><td><code>--green</code></td><td>Kompletní / pozitivní — schváleno, odesláno, splněno, nárůst metriky.</td></tr>
+      <tr><td><code>--orange</code></td><td>Pozornost — čeká na akci, blížící se termín, něco vyžaduje tebe.</td></tr>
+      <tr><td><code>--red</code></td><td>Urgentní — chyba, propad, kritický stav, nutnost okamžité akce.</td></tr>
+      <tr><td><code>--hot</code></td><td>HOT lead — gradient vyhrazený výhradně pro nejžhavější příležitosti.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ============ 3. TYPOGRAFIE ============ -->
+  <h2 class="doc-h2"><span class="doc-num">02</span>Typografie</h2>
+  <p class="doc-p">Inter Tight pro nadpisy (úzký, sebevědomý), Inter pro běžný text, JetBrains Mono pro labely, čísla a časové údaje. <b>Velká čísla, malé muted labely</b> — hierarchie vzniká kontrastem velikosti a barvy, ne dekorací.</p>
+
+  <div style="margin-top:20px">
+    <div class="type-sample">
+      <span class="ts-meta">Inter Tight 700 · 30px</span>
+      <span style="font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-.025em;line-height:1.12">GOOD MORNING, MÍRO</span>
+    </div>
+    <div class="type-sample">
+      <span class="ts-meta">Inter Tight 650 · 19px</span>
+      <span style="font-family:var(--font-display);font-weight:650;font-size:19px;letter-spacing:-.015em">NEEDS YOU</span>
+    </div>
+    <div class="type-sample">
+      <span class="ts-meta">Inter 600 · 13px</span>
+      <span style="font-weight:600;font-size:13px">Čtyři leady čekají na tvé rozhodnutí. TURBOW fronta se plní rychleji než včera.</span>
+    </div>
+    <div class="type-sample">
+      <span class="ts-meta">Inter 400 · 13.5px</span>
+      <span style="font-weight:400;font-size:13.5px;color:var(--text2);max-width:560px">Běžný text kokpitu je klidný a neutrální. Věty jsou krátké, informace řazené podle důležitosti a žádné slovo není navíc.</span>
+    </div>
+    <div class="type-sample">
+      <span class="ts-meta">JetBrains Mono 10px</span>
+      <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3)">LEADS</span>
+    </div>
+    <div class="type-sample">
+      <span class="ts-meta">JetBrains Mono · tabular</span>
+      <span style="font-family:var(--font-mono);font-variant-numeric:tabular-nums;font-size:15px;color:var(--text)">24 318 Kč · 92/100</span>
+    </div>
+  </div>
+
+  <!-- ============ 4. SPACING & RADIUS & SHADOW ============ -->
+  <h2 class="doc-h2"><span class="doc-num">03</span>Spacing · Radius · Shadow</h2>
+  <p class="doc-p">Rytmus 4px drží vše pohromadě. Radius je měkký, ale ne bublinový. Shadowy jsou <b>minimální</b> — hloubku tvoří spíš jemné borderry a rozdíl povrchů než těžké stíny.</p>
+
+  <div class="doc-grid c3" style="margin-top:20px">
+    <div class="doc-card">
+      <div class="micro" style="margin-bottom:10px">SPACING</div>
+      <div class="token-row"><span class="token-name">--s1</span><span class="token-val">4px</span></div>
+      <div class="token-row"><span class="token-name">--s2</span><span class="token-val">8px</span></div>
+      <div class="token-row"><span class="token-name">--s3</span><span class="token-val">12px</span></div>
+      <div class="token-row"><span class="token-name">--s4</span><span class="token-val">16px</span></div>
+      <div class="token-row"><span class="token-name">--s5</span><span class="token-val">24px</span></div>
+    </div>
+    <div class="doc-card">
+      <div class="micro" style="margin-bottom:10px">RADIUS</div>
+      <div class="token-row"><span class="token-name">--radius-sm</span><span class="token-val">7px</span></div>
+      <div class="token-row"><span class="token-name">--radius</span><span class="token-val">10px</span></div>
+      <div class="token-row"><span class="token-name">--radius-lg</span><span class="token-val">14px</span></div>
+      <div class="token-row"><span class="token-name">--radius-full</span><span class="token-val">999px</span></div>
+    </div>
+    <div class="doc-card">
+      <div class="micro" style="margin-bottom:10px">SHADOW</div>
+      <div class="token-row"><span class="token-name">--shadow-1</span><span class="token-val">0 1px 2px</span></div>
+      <div class="token-row"><span class="token-name">--shadow-2</span><span class="token-val">0 10px 30px</span></div>
+      <div class="token-row"><span class="token-name">--shadow-glow</span><span class="token-val">purple ring</span></div>
+    </div>
+  </div>
+
+  <!-- ============ 5. KOMPONENTY ============ -->
+  <h2 class="doc-h2"><span class="doc-num">04</span>Komponenty</h2>
+  <p class="doc-p">Vše níže je <b>živé</b> — reálné komponenty renderované z <code>mc.css</code>, ne screenshoty.</p>
+
+  <!-- Buttons -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Tlačítka</h3>
+    <div class="btn-row">
+      <button class="btn btn-primary">Nový lead</button>
+      <button class="btn btn-ghost">Zobrazit</button>
+      <button class="btn btn-soft">Nastavení</button>
+      <button class="btn btn-danger">Zamítnout</button>
+      <button class="btn btn-success">Schválit</button>
+      <button class="btn btn-warn">Pozdržet</button>
+      <button class="btn btn-cyan">Info</button>
+      <button class="btn btn-hot">HOT</button>
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-primary btn-lg">Velké tlačítko</button>
+      <button class="btn btn-primary">Výchozí</button>
+      <button class="btn btn-primary btn-sm">Malé</button>
+    </div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-ghost btn-icon-only" aria-label="Přidat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="btn btn-soft btn-icon-only" aria-label="Upozornění"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg></button>
+      <button class="btn btn-primary btn-icon-only" aria-label="Hledat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></button>
+      <button class="btn btn-ghost" disabled>Nedostupné</button>
+    </div>
+  </div>
+
+  <!-- Badges & chips & dots -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Badges · Chips · Dots · Kbd</h3>
+    <div class="flex gap-8 wrap" style="margin-bottom:14px">
+      <span class="badge red">Urgentní</span>
+      <span class="badge orange">Pozor</span>
+      <span class="badge green">Kompletní</span>
+      <span class="badge blue">Info</span>
+      <span class="badge purple">AI</span>
+      <span class="badge gray">Neutrální</span>
+      <span class="badge hot">HOT</span>
+    </div>
+    <div class="flex gap-8 wrap" style="margin-bottom:14px">
+      <span class="chip"><span class="dot green"></span>Online</span>
+      <span class="chip"><span class="dot purple"></span>AI aktivní</span>
+      <span class="chip"><span class="dot orange"></span>Čeká</span>
+      <span class="chip"><span class="dot red"></span>Výpadek</span>
+    </div>
+    <div class="flex items-center gap-12 wrap">
+      <span class="dot live green" title="Pulsující — probíhající proces"></span>
+      <span class="dot green"></span>
+      <span class="dot orange"></span>
+      <span class="dot cyan"></span>
+      <span class="dot purple"></span>
+      <span class="dot red"></span>
+      <span style="width:20px"></span>
+      <span class="flex items-center gap-6" style="font-size:12px;color:var(--text2)">Command palette <span class="kbd">⌘</span><span class="kbd">K</span></span>
+      <span class="flex items-center gap-6" style="font-size:12px;color:var(--text2)">Esc <span class="kbd">esc</span></span>
+    </div>
+  </div>
+
+  <!-- Cards & severity rails -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Karty a severity rails</h3>
+    <div class="doc-grid c3">
+      <div class="card pad rail-red" style="border-left-width:3px"><div class="h-sub" style="margin-bottom:4px">Urgentní lead</div><div class="small muted2">Klient čeká na odpověď přes 4 hodiny.</div></div>
+      <div class="card pad rail-orange" style="border-left-width:3px"><div class="h-sub" style="margin-bottom:4px">Pozornost</div><div class="small muted2">Termín schůzky se blíží.</div></div>
+      <div class="card pad rail-blue" style="border-left-width:3px"><div class="h-sub" style="margin-bottom:4px">Informace</div><div class="small muted2">Reklamy synchronizovány.</div></div>
+      <div class="card pad rail-purple" style="border-left-width:3px"><div class="h-sub" style="margin-bottom:4px">AI doporučení</div><div class="small muted2">Follow-up do 2 hodin.</div></div>
+      <div class="card pad rail-hot" style="border-left-width:3px;position:relative"><div class="h-sub" style="margin-bottom:4px">HOT lead</div><div class="small muted2">Skóre 92/100 · připraven ke kontaktu.</div></div>
+      <div class="card pad" style="border-left-width:3px"><div class="h-sub" style="margin-bottom:4px">Neutrální</div><div class="small muted2">Běžná karta bez severity.</div></div>
+    </div>
+  </div>
+
+  <!-- Attention item -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Attention item</h3>
+    <div class="card" style="overflow:hidden">
+      <div class="attention-item">
+        <div class="attention-icon" style="background:var(--purple-soft);color:var(--purple)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.4 11.05-9.18 9.18a6 6 0 0 1-8.49-8.49l9.18-9.18a4 4 0 0 1 5.66 5.66l-9.19 9.18a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
+        <div class="attention-body">
+          <div class="attention-meta">
+            <span class="badge purple">AI</span>
+            <span class="micro">před 2 min</span>
+          </div>
+          <div class="attention-title">Paperclip approval</div>
+          <div class="attention-desc">AI agent čeká na schválení dokumentu, než ho odešle klientovi.</div>
+          <div class="attention-actions">
+            <button class="btn btn-primary btn-sm">Schválit</button>
+            <button class="btn btn-ghost btn-sm">Otevřít</button>
+            <button class="btn btn-danger btn-sm">Zamítnout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat blocks -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Stat blocks</h3>
+    <div class="stat-row">
+      <div class="card stat">
+        <div class="stat-label">Leads</div>
+        <div class="stat-value">24 <span class="delta up">+18%</span></div>
+        <div class="stat-sub">za posledních 7 dní</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">CPA</div>
+        <div class="stat-value">241 Kč <span class="delta down">−24%</span></div>
+        <div class="stat-sub">průměrná cena leadu</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">Pipeline</div>
+        <div class="stat-value">224 000 Kč</div>
+        <div class="stat-sub">otevřené obchody</div>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">Agents</div>
+        <div class="stat-value">3</div>
+        <div class="stat-sub"><span class="dot green" style="display:inline-block;margin-right:6px"></span>Working</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Progress</h3>
+    <div class="flex-col" style="gap:14px;max-width:520px">
+      <div>
+        <div class="flex items-center justify-between" style="margin-bottom:7px"><span class="micro">Kampaň A</span><span class="num">72%</span></div>
+        <div class="progress"><i style="width:72%"></i></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between" style="margin-bottom:7px"><span class="micro">Schvalování</span><span class="num" style="color:var(--green)">100%</span></div>
+        <div class="progress green"><i style="width:100%"></i></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between" style="margin-bottom:7px"><span class="micro">Rozpočet</span><span class="num" style="color:var(--orange)">41%</span></div>
+        <div class="progress orange"><i style="width:41%"></i></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between" style="margin-bottom:7px"><span class="micro">Synchronizace (large)</span><span class="num">64%</span></div>
+        <div class="progress lg"><i style="width:64%"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Tabs</h3>
+    <div class="tabs" style="margin-bottom:0">
+      <span class="tab active">Přehled <span class="cnt">24</span></span>
+      <span class="tab">Leads <span class="cnt">18</span></span>
+      <span class="tab">Agenti <span class="cnt">3</span></span>
+      <span class="tab">Nastavení</span>
+    </div>
+  </div>
+
+  <!-- Avatars -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Avatary</h3>
+    <div class="flex items-center gap-14 wrap">
+      <span class="avatar-wrap"><span class="avatar">M</span><span class="online-dot" style="background:var(--green)"></span></span>
+      <span class="avatar-wrap"><span class="avatar lg">JP</span><span class="online-dot" style="background:var(--green)"></span></span>
+      <span class="avatar-wrap"><span class="avatar sm">A</span><span class="online-dot" style="background:var(--text4)"></span></span>
+      <span class="avatar" style="background:linear-gradient(135deg,var(--purple),#6D3FD1)">AI</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Tabulka</h3>
+    <div class="card" style="overflow:hidden">
+      <table class="tbl">
+        <thead><tr><th>Lead</th><th>Zdroj</th><th>Hodnota</th><th>Skóre</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><div class="row-title"><span class="avatar sm" style="background:linear-gradient(135deg,#2A2F38,#1A1E25)">PN</span><span class="t">Petr Novák</span></div></td>
+            <td class="muted2">PPC</td>
+            <td class="num">24 318 Kč</td>
+            <td><span class="num">92</span><span class="muted2">/100</span></td>
+            <td><span class="badge hot">HOT</span></td>
+          </tr>
+          <tr>
+            <td><div class="row-title"><span class="avatar sm" style="background:linear-gradient(135deg,#2A2F38,#1A1E25)">JK</span><span class="t">Jana Králová</span></div></td>
+            <td class="muted2">Organika</td>
+            <td class="num">18 900 Kč</td>
+            <td><span class="num">74</span><span class="muted2">/100</span></td>
+            <td><span class="badge purple">AI</span></td>
+          </tr>
+          <tr>
+            <td><div class="row-title"><span class="avatar sm" style="background:linear-gradient(135deg,#2A2F38,#1A1E25)">TD</span><span class="t">Tomáš Dvořák</span></div></td>
+            <td class="muted2">Doporučení</td>
+            <td class="num">12 400 Kč</td>
+            <td><span class="num">58</span><span class="muted2">/100</span></td>
+            <td><span class="badge green">Kompletní</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Kanban -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Kanban</h3>
+    <div class="kanban">
+      <div class="kcol">
+        <div class="kcol-head"><span class="dot orange"></span>Nové <span class="cnt">2</span></div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge blue">PPC</span><span class="micro">dnes 09:42</span></div>
+          <div class="kc-title">Petr Novák — rekonstrukce bytu</div>
+          <div class="kc-meta"><span class="dot green"></span>92/100 · 24 318 Kč</div>
+          <div class="kc-foot"><span class="avatar sm">PN</span><span class="num">3 min</span></div>
+        </div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge gray">Organika</span><span class="micro">dnes 08:15</span></div>
+          <div class="kc-title">Jana Králová — koupě pozemku</div>
+          <div class="kc-meta"><span class="dot cyan"></span>74/100 · 18 900 Kč</div>
+          <div class="kc-foot"><span class="avatar sm">JK</span><span class="num">1 h</span></div>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="kcol-head"><span class="dot purple"></span>V kontaktu <span class="cnt">2</span></div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge purple">AI</span><span class="micro">před 32 min</span></div>
+          <div class="kc-title">Follow-up připraven</div>
+          <div class="kc-meta"><span class="dot purple"></span>návrh zprávy</div>
+          <div class="kc-foot"><span class="avatar sm">AI</span><span class="num">nyní</span></div>
+        </div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge blue">PPC</span><span class="micro">včera</span></div>
+          <div class="kc-title">Tomáš Dvořák — insolvence</div>
+          <div class="kc-meta"><span class="dot orange"></span>58/100 · 12 400 Kč</div>
+          <div class="kc-foot"><span class="avatar sm">TD</span><span class="num">1 den</span></div>
+        </div>
+      </div>
+      <div class="kcol">
+        <div class="kcol-head"><span class="dot green"></span>Vyřízené <span class="cnt">2</span></div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge green">Kompletní</span><span class="micro">dnes</span></div>
+          <div class="kc-title">Smlouva podepsána</div>
+          <div class="kc-meta"><span class="dot green"></span>odesláno klientovi</div>
+          <div class="kc-foot"><span class="avatar sm">M</span><span class="num">hotovo</span></div>
+        </div>
+        <div class="kcard">
+          <div class="kc-top"><span class="badge green">Kompletní</span><span class="micro">včera</span></div>
+          <div class="kc-title">Schůzka potvrzena</div>
+          <div class="kc-meta"><span class="dot green"></span>čtvrtek 14:00</div>
+          <div class="kc-foot"><span class="avatar sm">M</span><span class="num">hotovo</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forms -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Formuláře</h3>
+    <div class="doc-grid c2">
+      <div>
+        <div class="field">
+          <label>Jméno leadu</label>
+          <input class="input" type="text" placeholder="Např. Petr Novák">
+        </div>
+        <div class="field">
+          <label>Kanál</label>
+          <select class="input">
+            <option>Všechny kanály</option>
+            <option>PPC</option>
+            <option>Organika</option>
+            <option>Doporučení</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" checked> Posílat notifikace o nových leadech</label>
+      </div>
+      <div class="field">
+        <label>Poznámka</label>
+        <textarea class="input" placeholder="Kontext k leadu — co klient řeší, na čem mu záleží…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Timeline</h3>
+    <div class="timeline">
+      <div class="tl-item green">
+        <div class="tl-time">09:42</div>
+        <div class="tl-title">Lead přijat do TURBOW</div>
+        <div class="tl-desc">Petr Novák · PPC · skóre 92</div>
+      </div>
+      <div class="tl-item orange">
+        <div class="tl-time">09:36</div>
+        <div class="tl-title">Agent čeká na schválení</div>
+        <div class="tl-desc">Paperclip — odeslání dokumentu klientovi</div>
+      </div>
+      <div class="tl-item purple">
+        <div class="tl-time">09:28</div>
+        <div class="tl-title">Nová decision</div>
+        <div class="tl-desc">AI doporučuje follow-up do 2 hodin</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score ring -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Score ring</h3>
+    <div class="flex items-center gap-16 wrap">
+      <div class="score-ring hot" style="--p:92;position:relative"><span class="score-val">92</span></div>
+      <div class="score-ring green" style="--p:74;position:relative"><span class="score-val">74</span></div>
+      <div class="score-ring" style="--p:58;position:relative"><span class="score-val">58</span></div>
+      <div class="score-break">
+        <div class="score-line"><span class="sl-label">Hot ready</span><span class="sl-val text-orange">92</span><span class="score-bar"><i style="width:92%;background:linear-gradient(90deg,var(--hot-a),var(--hot-b))"></i></span></div>
+        <div class="score-line"><span class="sl-label">Kontakt</span><span class="sl-val" style="color:var(--green)">74</span><span class="score-bar"><i style="width:74%;background:var(--green)"></i></span></div>
+        <div class="score-line"><span class="sl-label">Zájem</span><span class="sl-val" style="color:var(--purple)">58</span><span class="score-bar"><i style="width:58%;background:var(--purple)"></i></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Toasty</h3>
+    <div class="flex-col" style="gap:9px;max-width:420px">
+      <div class="toast">
+        <span class="dot purple" style="margin-top:4px"></span>
+        <div><div class="t-title">AI dokončilo analýzu</div><div class="t-desc">Doporučení je připraveno v NEEDS YOU.</div></div>
+      </div>
+      <div class="toast green">
+        <span class="dot green" style="margin-top:4px"></span>
+        <div><div class="t-title">Dokument odeslán</div><div class="t-desc">Klient obdržel smlouvu k podpisu.</div></div>
+      </div>
+      <div class="toast red">
+        <span class="dot red" style="margin-top:4px"></span>
+        <div><div class="t-title">Synchronizace selhala</div><div class="t-desc">Reklamy se nepodařilo obnovit. Zkus to znovu.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- States -->
+  <div class="doc-card">
+    <h3 class="doc-h3">Stavy</h3>
+    <div class="doc-grid c3">
+      <div class="card">
+        <div class="state">
+          <div class="st-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg></div>
+          <div class="st-title">Zatím žádné leady</div>
+          <div class="st-desc">Jakmile dorazí první lead, objeví se tady.</div>
+        </div>
+      </div>
+      <div class="card pad">
+        <div class="micro" style="margin-bottom:10px">SHIMMER · NAČÍTÁNÍ</div>
+        <div class="shimmer" style="height:14px;border-radius:6px;margin-bottom:8px"></div>
+        <div class="shimmer" style="height:14px;border-radius:6px;margin-bottom:8px;width:72%"></div>
+        <div class="shimmer" style="height:14px;border-radius:6px;width:88%"></div>
+      </div>
+      <div class="card pad" style="border-left:3px solid var(--red)">
+        <div class="micro" style="color:var(--red);margin-bottom:6px">CHYBA</div>
+        <div class="small" style="font-weight:600;color:var(--text);margin-bottom:4px">Spojení přerušeno</div>
+        <div class="small muted2">Data se nezobrazila. Zkontroluj připojení a obnov stránku.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 6. MIKROINTERAKCE & MOTION ============ -->
+  <h2 class="doc-h2"><span class="doc-num">05</span>Mikrointerakce & Motion</h2>
+  <p class="doc-p">Pohyb je v kokpitu funkční, ne okrasný. Každá animace dává zpětnou vazbu k reálné události.</p>
+
+  <div class="doc-grid c2" style="margin-top:20px">
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">NOVÝ LEAD</div><div class="small muted2">Karta najede shora s fialovým obrysem — pozornost na novou položku.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">ZMĚNA STATUSU AGENTA</div><div class="small muted2">Dot se rozsvítí a pulse proběhne jen po dobu skutečného přepnutí.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">NOVÁ DECISION</div><div class="small muted2">AI item vjede zleva a zvýrazní se, dokud není přečten.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">UPDATE ČÍSEL</div><div class="small muted2">Hodnota krátce blikne zeleně, když se mění směrem nahoru.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">CARD EXPANSION</div><div class="small muted2">Karta se plynule rozevře na celou šířku, bez skoků.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">COMMAND MENU</div><div class="small muted2">⌘K otevírá paletu s jemným scale-in, Esc ji zavírá.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">APPROVAL COMPLETION</div><div class="small muted2">Po schválení item zmizí a nahradí ho zelený toast.</div></div>
+    <div class="card pad"><div class="micro" style="margin-bottom:6px">NOTIFIKACE</div><div class="small muted2">Nové upozornění přistane zprava dole a po chvíli samo zmizí.</div></div>
+  </div>
+
+  <div class="doc-note warn" style="margin-top:20px"><b>Pravidla:</b> Animace nejsou samoúčelné — každá nese informaci. Pulse používáme výhradně pro skutečně probíhající proces (agent pracuje, sync běží), nikdy jako dekoraci. Vše respektuje <b>prefers-reduced-motion</b>: při omezení pohybu se animace zredukují na minimum.</div>
+
+  <!-- ============ 7. LIVE SYSTEM FEEL ============ -->
+  <h2 class="doc-h2"><span class="doc-num">06</span>Live System Feel</h2>
+  <p class="doc-p">Kokpit působí jako živý organismus. Časové údaje se zobrazují relativně v mono, pulzující doty označují běžící procesy a vše dává najevo, že se systém hýbe — aniž by blikal chaos.</p>
+
+  <div class="doc-card" style="margin-top:20px">
+    <div class="flex-col" style="gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--text2)">
+      <div class="flex items-center gap-10"><span class="dot live green"></span><span>Working <span style="color:var(--text3)">· updated 4 sec ago</span></span></div>
+      <div class="flex items-center gap-10"><span class="dot green"></span><span>Lead received <span style="color:var(--text3)">· 42 sec ago</span></span></div>
+      <div class="flex items-center gap-10"><span class="dot cyan"></span><span>Ads synced <span style="color:var(--text3)">· 3 min ago</span></span></div>
+      <div class="flex items-center gap-10"><span class="dot live green"></span><span>Calendar synced <span style="color:var(--text3)">· now</span></span></div>
+    </div>
+  </div>
+
+  <!-- ============ 8. RESPONSIVE ============ -->
+  <h2 class="doc-h2"><span class="doc-num">07</span>Responsive</h2>
+  <p class="doc-p">Desktop je primární prostředí — kokpit s plnou šířkou, sidebar a pravý rail. Na tabletu se rail schová a sidebar se sbalí na ikony. Mobilní view je <b>command view</b>: prioritizace akcí před analýzou.</p>
+  <div class="doc-note">Pořadí na mobilu: <b>NEEDS YOU</b> → TURBOW leads → Calendar → Paperclip → notifikace → quick actions. Bez analytických grafů — ty patří na desktop, kde je prostor pro kontext.</div>
+
+  <!-- ============ 9. TŘI ÚROVNĚ HIERARCHIE ============ -->
+  <h2 class="doc-h2"><span class="doc-num">08</span>Tři úrovně hierarchie</h2>
+  <p class="doc-p">Každá obrazovka rozlišuje tři vrstvy důležitosti. Pozornost jde nejdřív k akcím, teprve potom ke stavu a historii.</p>
+
+  <div class="doc-grid c3" style="margin-top:20px">
+    <div class="doc-card" style="border-top:2px solid var(--purple)">
+      <div class="micro" style="color:var(--purple);margin-bottom:8px">PRIMARY</div>
+      <div class="h-sub" style="margin-bottom:6px">Rozhodnutí a akce</div>
+      <div class="small muted2">NEEDS YOU, approvaly, HOT leady a vše, co čeká na tebe. Nejvyšší kontrast a accent.</div>
+    </div>
+    <div class="doc-card" style="border-top:2px solid var(--cyan)">
+      <div class="micro" style="color:var(--cyan);margin-bottom:8px">SECONDARY</div>
+      <div class="h-sub" style="margin-bottom:6px">Aktuální stav</div>
+      <div class="small muted2">Živé metriky, statusy agentů, probíhající procesy. Čitelné, ale klidnější.</div>
+    </div>
+    <div class="doc-card">
+      <div class="micro" style="color:var(--text3);margin-bottom:8px">BACKGROUND</div>
+      <div class="h-sub" style="margin-bottom:6px">Historie a analytika</div>
+      <div class="small muted2">Grafy, exporty, starší data. Muted, dostupné na vyžádání — nikdy ne na úkor akce.</div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <div class="divider" style="margin-top:60px"></div>
+  <div class="micro" style="text-align:center;padding:8px 0 0">MISSION CONTROL · Design System v1.0 · 2026</div>
+
+</div>
+</div>
+
+</body>
+</html>

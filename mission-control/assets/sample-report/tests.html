@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TURBOW-42 — Test Results · Paperclip Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1014;--card:#13161B;--card2:#181C22;
+    --hairline:rgba(255,255,255,.07);
+    --text:#E9EBEF;--muted:#9BA3AF;--dim:#616A75;
+    --purple:#8B5CF6;--cyan:#22D3EE;--green:#34D399;--orange:#FB923C;--red:#F87171;
+    --hot1:#FB923C;--hot2:#F43F5E;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --tight:'Inter Tight','Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased;}
+  a{color:var(--cyan);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px 104px;}
+
+  .nav{position:sticky;top:0;z-index:10;border-bottom:1px solid var(--hairline);background:rgba(14,16,20,.92);backdrop-filter:blur(8px);}
+  .nav-inner{max-width:960px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px;}
+  .nav-back{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;}
+  .nav-back:hover{color:var(--text);text-decoration:none;}
+  .nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+  .nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:6px 10px;border-radius:8px;}
+  .nav-links a:hover{color:var(--text);background:var(--card2);text-decoration:none;}
+
+  section{padding-top:52px;}
+  .title-block{padding-top:40px;}
+  .crumb{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 16px;}
+  h1{font-family:var(--tight);font-weight:800;font-size:30px;line-height:1.15;margin:0 0 8px;letter-spacing:-.01em;}
+  h1 .accent{color:var(--green);}
+  .sub{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:0;}
+
+  .label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 18px;display:flex;align-items:center;gap:12px;}
+  .label::before{content:"";width:18px;height:1px;background:var(--green);display:inline-block;}
+  .label .idx{color:var(--dim);}
+
+  .card{background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:24px 26px;overflow-x:auto;}
+
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .tile{background:var(--card2);border:1px solid var(--hairline);border-radius:12px;padding:18px;text-align:center;}
+  .tile .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 8px;}
+  .tile .v{font-family:var(--tight);font-weight:800;font-size:30px;line-height:1;margin:0;}
+  .tile.pass .v{color:var(--green);}
+  .tile.warn .v{color:var(--orange);}
+  .tile.fail .v{color:var(--red);}
+  .tile .meta{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.04em;margin-top:6px;}
+
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;min-width:520px;}
+  thead th{text-align:left;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:500;padding:0 14px 12px;border-bottom:1px solid var(--hairline);}
+  tbody td{padding:14px;border-bottom:1px solid var(--hairline);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.area{color:var(--text);font-weight:500;}
+  td.count{color:var(--muted);}
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;padding:4px 11px;border-radius:6px;border:1px solid;
+  }
+  .badge.pass{color:var(--green);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08);}
+  .badge.warn{color:var(--orange);border-color:rgba(251,146,60,.35);background:rgba(251,146,60,.08);}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  .note{margin-top:16px;background:var(--card);border:1px solid var(--hairline);border-radius:12px;padding:18px 22px;}
+  .note .n-label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);margin:0 0 8px;}
+  .note p{margin:0;color:var(--muted);font-size:13.5px;}
+
+  .footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--hairline);font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.06em;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  .footer .f-agent{color:var(--muted);}
+  .footer .f-agent b{color:var(--cyan);font-weight:500;}
+
+  @media (max-width:720px){.tiles{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-back" href="index.html"><span aria-hidden="true">←</span> Back to report</a>
+    <div class="nav-links">
+      <a href="index.html#task">Task</a>
+      <a href="index.html#outputs">Outputs</a>
+      <a href="index.html#files">Files</a>
+      <a href="index.html#tests">Tests</a>
+      <a href="index.html#reports">Reports</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="title-block">
+    <p class="crumb">TURBOW-42 · sub-report</p>
+    <h1>Test results <span class="accent">94%</span></h1>
+    <p class="sub">Vitest · run #4 · 1.9s total · coverage: lines 94.2% · branches 89.6%</p>
+  </section>
+
+  <section>
+    <h2 class="label"><span class="idx">01</span> Summary</h2>
+    <div class="tiles">
+      <div class="tile pass">
+        <p class="k">Passed</p>
+        <p class="v">34</p>
+        <p class="meta">94.4%</p>
+      </div>
+      <div class="tile warn">
+        <p class="k">Warnings</p>
+        <p class="v">2</p>
+        <p class="meta">non-blocking</p>
+      </div>
+      <div class="tile fail">
+        <p class="k">Failed</p>
+        <p class="v">0</p>
+        <p class="meta">all clear</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="label"><span class="idx">02</span> By area</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Cases</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="area">API</td>
+            <td class="count">8 / 8</td>
+            <td><span class="badge pass"><span class="dot"></span>Pass</span></td>
+          </tr>
+          <tr>
+            <td class="area">Scoring rules</td>
+            <td class="count">12 / 12</td>
+            <td><span class="badge pass"><span class="dot"></span>Pass</span></td>
+          </tr>
+          <tr>
+            <td class="area">Schema migration</td>
+            <td class="count">6 / 6</td>
+            <td><span class="badge pass"><span class="dot"></span>Pass</span></td>
+          </tr>
+          <tr>
+            <td class="area">UI</td>
+            <td class="count">6 / 6</td>
+            <td><span class="badge warn"><span class="dot"></span>Low warning</span></td>
+          </tr>
+          <tr>
+            <td class="area">E2E</td>
+            <td class="count">2 / 2</td>
+            <td><span class="badge warn"><span class="dot"></span>Low warning</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note">
+      <p class="n-label">2 low-priority warnings</p>
+      <p>
+        UI — score chip lacks a snapshot test for the "nurture" (amber) state; E2E — flaky wait on the
+        debounced re-score input (retry passes on 2nd attempt). Neither blocks release.
+      </p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span class="f-agent">Generated by <b>Paperclip</b> · <b>Founding Engineer</b></span>
+    <span>TURBOW-42 · output/tests.html</span>
+  </footer>
+
+</div>
+</body>
+</html>
