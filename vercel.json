@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/mission-control",
+      "destination": "/mission-control/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/mission-control/mc-api/:path*",
