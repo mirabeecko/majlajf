@@ -226,8 +226,9 @@ details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
         <span class="sum-chip" id="sum-total">0 webů</span>
         <span class="sum-chip ok" id="sum-ok" style="display:none"><b>0</b> <span class="t">dostupných</span></span>
         <span class="sum-chip bad" id="sum-bad" style="display:none"><b>0</b> <span class="t">nedostupných</span></span>
-        <span class="sum-chip info" id="sum-vercel" style="display:none">hosting: <b>0</b> Vercel</span>
-        <span class="sum-chip amber" id="sum-other" style="display:none"><b>0</b> <span class="t">jiný hosting</span></span>
+        <span class="sum-chip info" id="sum-vercel" style="display:none">Vercel: <b>0</b></span>
+        <span class="sum-chip" id="sum-cf" style="display:none">Cloudflare: <b>0</b></span>
+        <span class="sum-chip amber" id="sum-other" style="display:none">VPS/jiný: <b>0</b></span>
       </div>
       <span id="audit-time" style="font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
     </div>
@@ -602,16 +603,17 @@ async function runAudit(){
   const vercel = (hostCount['Vercel']||0)+(hostCount['Cloudflare']||0);
   const other  = results.length - up - vercel;
   $('#sum-total').textContent = results.length + (viaApi?' webů':' webů (lokální režim)');
-  const sOk=$('#sum-ok'),sBad=$('#sum-bad'),sV=$('#sum-vercel'),sO=$('#sum-other');
+  const sOk=$('#sum-ok'),sBad=$('#sum-bad'),sV=$('#sum-vercel'),sC=$('#sum-cf'),sO=$('#sum-other');
   sOk.querySelector('b').textContent=up; sOk.style.display= up?'inline-block':'none';
   sBad.querySelector('b').textContent=down; sBad.style.display= down?'inline-block':'none';
   if(viaApi){
-    sV.querySelector('b').textContent = results.filter(r=>/Vercel|Cloudflare/.test(r.st.hosting)).length;
+    sV.querySelector('b').textContent = results.filter(r=>r.st.hosting==='Vercel').length;
     sV.style.display='inline-block';
+    sC.querySelector('b').textContent = results.filter(r=>r.st.hosting==='Cloudflare').length;
+    sC.style.display='inline-block';
     sO.querySelector('b').textContent = results.filter(r=>/VPS/.test(r.st.hosting)).length;
     sO.style.display='inline-block';
-    sO.querySelector('.t').textContent='VPS/jiný';
-  } else { sV.style.display='none'; sO.style.display='none'; }
+  } else { sV.style.display='none'; sC.style.display='none'; sO.style.display='none'; }
   $('#audit-time').textContent = (viaApi?'hosting z API':'dostupnost lokálně') + ' · ' + new Date().toLocaleTimeString('cs-CZ');
   $('#audit-ico').innerHTML='&#10003;';
   $('#audit-label').textContent='Audit hotov — spustit znovu';
