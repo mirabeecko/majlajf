@@ -371,6 +371,42 @@
 </ul>
 </div>
 
+<!-- ══════════════ 4 · E-MAILY — JAK POSÍLAT A PŘIJÍMAT ══════════════ -->
+<h2><span class="bar" style="background:var(--pink)"></span>4 · E-maily ze všech domén — jak odesílat a přijímat</h2>
+
+<div class="box" style="margin-bottom:12px">
+<h3>Příjem (MX) — dnešní stav</h3>
+<table>
+<thead><tr><th>Doména</th><th>MX → služba</th><th>Funguje?</th><th>Poznámka</th></tr></thead>
+<tbody>
+<tr><td class="mono">veterina-live.cz</td><td>Google Workspace (smtp.google.com)</td><td><span class="tag t-ok">ANO — plná schránka</span></td><td>live@veterina-live.cz</td></tr>
+<tr><td class="mono">mirabee.cz · webdo24.cz · sheskates.cz · ninja-tyden.cz · dousa-elektro.cz · brozek24.cz</td><td>Cloudflare Email Routing</td><td><span class="tag t-warn">částečně</span></td><td>příjem jen pokud je v CF dashboardu nastaven cíl (destinace); CF routing e-maily nepřeposílá dál bez cílové schránky</td></tr>
+<tr><td class="mono">tjkrupka.cz</td><td>AWS SES (inbound-smtp.eu-west-1)</td><td><span class="tag t-warn">závisí na SES pravidle</span></td><td>vyžaduje aktivní SES inbound rule + ověření</td></tr>
+<tr><td class="mono">mckoloseum.cz · zahradni-atelier.cz</td><td>Forpsi mailbox</td><td><span class="tag t-ok">ANO (hosting)</span></td><td>schránky u Forpsi</td></tr>
+<tr><td class="mono">webyprobyznys.cz · webybudoucnosti.cz · kauzatjkrupka.cz · live-vet.cz · paddleboardy-milada.cz · morefun.cz · app.tjkrupka.cz</td><td><b>žádný MX</b></td><td><span class="tag t-bad">NE</span></td><td>e-maily na @doménu se nikam nedoručují — kontakty na webech (info@…) jsou jen zobrazené</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box" style="margin-bottom:12px">
+<h3>Odesílání — dnešní stav a doporučené schéma</h3>
+<p><b>Dnes z žádné značkové domény nic neodesílá:</b> formuláře webů e-maily neposílají (žádný SMTP v kódu), leady jdou do TURBOW intake API. SPF má jen mirabee.cz (Cloudflare Email Routing = pouze příjem).</p>
+<ul class="li">
+  <li><b>Doporučené schéma „všechny domény jedním tahem":</b> (1) příjem — Cloudflare Email Routing na každé doméně v CF DNS → přeposílání na jednu hlavní schránku (např. Gmail) per značka; u domén bez MX (webyprobyznys.cz, webybudoucnosti.cz, kauzatjkrupka.cz, live-vet.cz, paddleboardy) stačí v CF dashboardu zapnout Email Routing (DNS už je na Cloudflare). (2) odesílání — jeden transakční SMTP provider (doporučeno Brevo/Resend/SendGrid free tier) s odesílatelem <span class="mono">info@&lt;doména&gt;</span> + SPF/DKIM záznamy do DNS. (3) tjkrupka.cz — odesílat přes AWS SES (SPF include amazonses.com).</li>
+  <li><b>Formuláře → e-mail notifikace:</b> v kódu webů (Next.js) chybí jakékoli odeslání e-mailu — pokud chceš notifikace z poptávek, doplnit do <span class="mono">app/api/lead/route.ts</span> volání SMTP provideru (připraveno k doplnění).</li>
+</ul>
+</div>
+
+<div class="box" style="margin-bottom:12px">
+<h3>Opraveno dnes (2026-09-06) — revize webyprobyznys.cz / webybudoucnosti.cz / mirabee.cz</h3>
+<ul class="li">
+  <li><b>webybudoucnosti.cz</b> — měl prohozený GTM (kontejner webyprobyznys → data do cizí GA4 property). Opraveno v repu fable-full (commit 43c3a5a): live nyní nese <span class="mono">GTM-MCZZF2F2</span> → vlastní GA4 <span class="mono">552512090</span>. <span class="ok-txt">Ověřeno na produkci.</span></li>
+  <li><b>webybudoucnosti.cz formuláře</b> — padaly 500 (SQLite zápis do read-only FS na Vercel). Opraveno (commit 857be6c): zápis do /tmp fallback, TURBOW fetch bez vyjímky. <span class="ok-txt">Ověřeno: /api/lead → 200</span>. ⚠ leady dorazí do TURBOW teprve až bude nastaveno <span class="mono">TURBOW_INTAKE_URL</span> na veřejnou adresu (TURBOW dnes běží jen lokálně na Macu, z Vercelu nedosažitelný).</li>
+  <li><b>mirabee.cz</b> — neměl žádné měření. Přidán GA4 tag <span class="mono">G-RC5RY7F10L</span> (property mirabee služba 222057102) do repa baseline-studio. <span class="ok-txt">Ověřeno na produkci.</span> Search Console pro mirabee.cz zatím chybí (žádný TXT token).</li>
+  <li><b>webyprobyznys.cz</b> — oprava GTM (commit cca9606 → vlastní GTM-WWJRD4MX) je připravena v kódu, ale <b>live nasazení čeká na obnovení Vercel přihlášení</b> (token vypršel 5.9.): <span class="mono">vercel login && cd ~/dev/web/webyprobyznys.cz && vercel --prod</span>. Live build navíc nemá nové API routy formulářů (starší verze).</li>
+</ul>
+</div>
+
 <div class="foot">
   Vygenerováno automatickým auditem 2026-09-06 · zdroje: DNS (dns.google) · HTTP probe · SSH VPS · GA4 Admin/Data API · repozitáře ~/dev · soubor: <span class="mono">web/majlajf/prehled-webu-a-vps.html</span> (repo majlajf)
 </div>
