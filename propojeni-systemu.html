@@ -253,6 +253,7 @@ details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
         <span class="sum-chip info" id="sum-vercel" style="display:none">Vercel: <b>0</b></span>
         <span class="sum-chip" id="sum-cf" style="display:none">Cloudflare: <b>0</b></span>
         <span class="sum-chip amber" id="sum-other" style="display:none">VPS/jiný: <b>0</b></span>
+        <span class="sum-chip" id="sum-planned" style="display:none">plán: <b>0</b></span>
         <span class="sum-chip" id="sum-auto" title="Po otevření stránky se audit spustí sám">auto-audit při otevření</span>
       </div>
       <span id="audit-time" style="font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
@@ -709,7 +710,7 @@ async function runAudit(){
     }
     let ok, viaNote='';
     const srv = viaApi && hostInfo[s.url] ? hostInfo[s.url] : null;
-    if(srv){ ok = !srv.error && srv.status>=200 && srv.status<400; viaNote=' (server)'; }
+    if(srv){ ok = !srv.error && (srv.status>=200&&srv.status<400 || srv.status===401 || srv.status===403); viaNote=' (server)'; }
     else { ok = await probeOnce(s.url, 18000); viaNote=' (browser)'; }
     svcRes.push({key:s.key,ok});
     const c=document.getElementById('infra-'+s.key);
@@ -722,9 +723,12 @@ async function runAudit(){
   const up = results.filter(r=>r.st.ok).length;
   const down = results.filter(r=>!r.st.ok && r.expect!=='planned').length;
   $('#sum-total').textContent = results.length + (viaApi?' webů':' webů (lokální režim)');
-  const sOk=$('#sum-ok'),sBad=$('#sum-bad'),sV=$('#sum-vercel'),sC=$('#sum-cf'),sO=$('#sum-other');
+  const sOk=$('#sum-ok'),sBad=$('#sum-bad'),sV=$('#sum-vercel'),sC=$('#sum-cf'),sO=$('#sum-other'),sP=$('#sum-planned');
   sOk.querySelector('b').textContent=up; sOk.style.display= up?'inline-block':'none';
   sBad.querySelector('b').textContent=down; sBad.style.display= down?'inline-block':'none';
+  const plannedN = results.filter(r=>r.expect==='planned').length;
+  sP.querySelector('b').textContent=plannedN;
+  sP.style.display = plannedN?'inline-block':'none';
   if(viaApi){
     sV.querySelector('b').textContent = results.filter(r=>r.st.hosting==='Vercel').length;
     sV.style.display='inline-block';
