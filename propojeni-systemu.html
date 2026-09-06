@@ -161,6 +161,30 @@ h2,h3{margin:0}
 .roles-note b{color:var(--txt)}
 .roles-note code{font-size:10px;color:var(--lime)}
 
+/* ── varovný panel ── */
+.warn-panel{display:none;margin-top:12px;border:1px solid rgba(255,180,40,.4);border-radius:16px;background:linear-gradient(180deg,rgba(30,26,14,.55),rgba(18,18,26,.5));overflow:hidden}
+.warn-panel.open{display:block}
+.warn-head{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.warn-head .wtitle{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.14em;display:flex;align-items:center;gap:8px}
+.warn-head .wtitle .wm{width:16px;height:16px;border-radius:5px;background:var(--amber);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#1a1204;flex:none}
+.warn-sum{margin-left:auto;display:flex;gap:6px}
+.warn-list{padding:4px 6px}
+.warn-row{display:flex;gap:10px;align-items:flex-start;padding:8px 9px;border-bottom:1px dashed rgba(255,255,255,.05);font-size:12px;line-height:1.5}
+.warn-row:last-child{border-bottom:none}
+.warn-row .wd{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:none}
+.warn-row.crit .wd{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+.warn-row.warn .wd{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.warn-row.info .wd{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+.warn-row .wtxt{color:var(--txt2)}
+.warn-row .wtxt b{color:var(--txt)}
+.warn-row .wsev{margin-left:auto;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;padding-top:2px}
+.warn-row.crit .wsev{color:var(--bad)}
+.warn-row.warn .wsev{color:var(--amber)}
+.warn-row.info .wsev{color:var(--cyan)}
+.grp-label{display:flex;align-items:center;gap:8px;margin:14px 0 7px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:var(--txt2)}
+.grp-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.grp-label .n{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt3);border-radius:99px;padding:1px 7px;font-size:9px}
+
 /* úpravy */
 .upd-list{display:flex;flex-direction:column;gap:9px}
 details.upd{border:1px solid var(--line);border-radius:15px;background:var(--bg2);overflow:hidden}
@@ -223,12 +247,13 @@ details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
         <span class="ico" id="audit-ico">&#9654;</span><span id="audit-label">Spustit audit systému</span>
       </button>
       <div class="sum-row" id="sum-row">
-        <span class="sum-chip" id="sum-total">0 webů</span>
+        <span class="sum-chip" id="sum-total">— webů</span>
         <span class="sum-chip ok" id="sum-ok" style="display:none"><b>0</b> <span class="t">dostupných</span></span>
         <span class="sum-chip bad" id="sum-bad" style="display:none"><b>0</b> <span class="t">nedostupných</span></span>
         <span class="sum-chip info" id="sum-vercel" style="display:none">Vercel: <b>0</b></span>
         <span class="sum-chip" id="sum-cf" style="display:none">Cloudflare: <b>0</b></span>
         <span class="sum-chip amber" id="sum-other" style="display:none">VPS/jiný: <b>0</b></span>
+        <span class="sum-chip" id="sum-auto" title="Po otevření stránky se audit spustí sám">auto-audit při otevření</span>
       </div>
       <span id="audit-time" style="font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
     </div>
@@ -243,15 +268,27 @@ details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
     <div class="log-body" id="log-body"></div>
   </div>
 
+  <!-- ═══ VAROVNÝ PANEL — problémy z auditu ═══ -->
+  <div class="warn-panel" id="warn-panel">
+    <div class="warn-head">
+      <span class="wtitle"><span class="wm">!</span>Problémy a upozornění z auditu</span>
+      <span class="warn-sum" id="warn-sum"></span>
+      <span id="warn-time" style="font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
+    </div>
+    <div class="warn-list" id="warn-list"></div>
+  </div>
+
   <!-- ══════════════════ 1 · ZDROJE ══════════════════ -->
   <div class="band" style="--c:var(--cyan)">
     <div class="band-head">
       <div class="band-num" style="background:var(--cyan);color:#06131a">1</div>
-      <h2 class="band-title">TVOJE WEBY — zdroje poptávek</h2>
-      <span class="kind-chip kind-feat" style="margin-left:auto">všechny z rozcestníku</span>
+      <h2 class="band-title">WEBY V SYSTÉMU — zdroje · portály · zákaznické weby</h2>
+      <span class="kind-chip kind-feat" style="margin-left:auto">registr: system-sites.js</span>
     </div>
-    <div class="band-sub">Každý web má poptávkový formulář. <b>Odeslání formuláře = lead do TURBOW</b> (intake). Audit doplní badge: hosting + e-maily.</div>
-    <div style="margin-top:14px" class="site-grid" id="site-grid"><!-- weby vykreslí JS (SITES) --></div>
+    <div class="band-sub">Všechny weby v systému — seznam řídí <b>registr system-sites.js</b>. Vlastní weby sbírají poptávkové formuláře do TURBOW, portály login.* obsluhují zákazníky po WIN, zákaznické weby jsou připojené k CP. Audit doplní badge: hosting + e-maily.</div>
+    <div id="site-groups"><!-- skupiny vykreslí JS (registry) --></div>
+    <div class="roles-note" style="margin-top:12px"><b>Registr webů:</b> nový web, portál nebo zákaznický web = přidat jeden záznam do <code>system-sites.js</code> (group: web | portal | customer) →
+    automaticky se objeví v tomto schématu i v auditu. Žádná další změna kódu.</div>
   </div>
   <div class="flow-arrow" style="--c:var(--cyan)"><span class="chev">&#9660;</span><span class="lab">formulář / poptávka</span></div>
 
@@ -341,28 +378,39 @@ details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
   </div>
 </main>
 
+<script src="system-sites.js"></script>
 <script>
-/* ══════════ WEBY (všechny tvoje — zdroje poptávek) ══════════
-   hosting/e-mail badge doplní audit; ikona = favicon webu, fallback monogram */
-const SITES = [
-  { key:'wbp',   name:'WebyProByznys',     www:'webyprobyznys.cz',   acc:'#3B82F6', mono:'P',
+/* ══════════ REGISTR WEBŮ — z system-sites.js (fallback při otevření bez souboru) ══════════
+   group: web (vlastní, zdroj poptávek) | portal (login.*) | customer (připojený k CP) */
+const FALLBACK_SITES = [
+  { id:'wbp',  group:'web', mx:true,  expect:'live', name:'WebyProByznys',   www:'webyprobyznys.cz',   acc:'#3B82F6', mono:'P',
     icon:['https://webyprobyznys.cz/favicon.ico?favicon.3fpu2ql9ns1a0.ico','https://www.google.com/s2/favicons?sz=64&domain=webyprobyznys.cz'] },
-  { key:'wbn',   name:'WebyBudoucnosti',   www:'webybudoucnosti.cz', acc:'#14B8A6', mono:'W',
+  { id:'wbn',  group:'web', mx:true,  expect:'live', name:'WebyBudoucnosti', www:'webybudoucnosti.cz', acc:'#14B8A6', mono:'W',
     icon:['https://webybudoucnosti.cz/favicon.ico?favicon.3fpu2ql9ns1a0.ico','https://www.google.com/s2/favicons?sz=64&domain=webybudoucnosti.cz'] },
-  { key:'mrb',   name:'Mirabee.cz',        www:'mirabee.cz',         acc:'#FF4A00', mono:'M',
+  { id:'mrb',  group:'web', mx:true,  expect:'live', name:'Mirabee.cz',      www:'mirabee.cz',         acc:'#FF4A00', mono:'M',
     icon:["data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 fill=%27%2317140D%27/%3E%3Crect x=%2710%27 y=%2742%27 width=%2744%27 height=%278%27 fill=%27%23FF4A00%27/%3E%3Crect x=%2710%27 y=%2714%27 width=%2730%27 height=%278%27 fill=%27%23F3F0E8%27/%3E%3C/svg%3E",'https://www.google.com/s2/favicons?sz=64&domain=mirabee.cz'] },
-  { key:'wd24',  name:'WebDo24.cz',        www:'webdo24.cz',         acc:'#00e5ff', mono:'W',
+  { id:'wd24', group:'web', mx:true,  expect:'live', name:'WebDo24.cz',      www:'webdo24.cz',         acc:'#00e5ff', mono:'W',
     icon:['https://www.google.com/s2/favicons?sz=64&domain=webdo24.cz'] },
-  { key:'shs',   name:'SheSkates',         www:'sheskates.cz',       acc:'#0f172a', mono:'S',
+  { id:'shs',  group:'web', mx:true,  expect:'live', name:'SheSkates',       www:'sheskates.cz',       acc:'#0f172a', mono:'S',
     icon:['https://www.google.com/s2/favicons?sz=64&domain=sheskates.cz','https://sheskates.cz/assets/favicon.png'] },
-  { key:'njd',   name:'Ninja Týden',       www:'ninja-tyden.cz',     acc:'#f59e0b', mono:'N',
+  { id:'njd',  group:'web', mx:true,  expect:'live', name:'Ninja Týden',     www:'ninja-tyden.cz',     acc:'#f59e0b', mono:'N',
     icon:['https://ninja-tyden.cz/favicon/apple-touch-icon.png','https://www.google.com/s2/favicons?sz=64&domain=ninja-tyden.cz'] },
-  { key:'tjk',   name:'TJ Krupka',         www:'tjkrupka.cz',        acc:'#16a34a', mono:'T',
+  { id:'tjk',  group:'web', mx:true,  expect:'live', name:'TJ Krupka',       www:'tjkrupka.cz',        acc:'#16a34a', mono:'T',
     icon:['https://www.google.com/s2/favicons?sz=64&domain=tjkrupka.cz'] },
-  { key:'tjka',  name:'TJ Krupka App',     www:'app.tjkrupka.cz',    acc:'#16a34a', mono:'A',
+  { id:'tjka', group:'web', mx:true,  expect:'live', name:'TJ Krupka App',   www:'app.tjkrupka.cz',    acc:'#16a34a', mono:'A',
     icon:['https://app.tjkrupka.cz/apple-touch-icon.png','https://www.google.com/s2/favicons?sz=64&domain=app.tjkrupka.cz'] },
-  { key:'b24',   name:'Brožek24',          www:'brozek24.cz',        acc:'#060606', mono:'B',
+  { id:'b24',  group:'web', mx:true,  expect:'live', name:'Brožek24',        www:'brozek24.cz',        acc:'#060606', mono:'B',
     icon:[] },
+];
+const REGISTRY = (window.SYSTEM_SITES && window.SYSTEM_SITES.length) ? window.SYSTEM_SITES : FALLBACK_SITES;
+const SITES    = REGISTRY.filter(e=>e.group==='web');
+const PORTALS  = REGISTRY.filter(e=>e.group==='portal');
+const CUSTOMERS= REGISTRY.filter(e=>e.group==='customer');
+const ALLSITES = REGISTRY.filter(e=>e.group); // co se audit projíždí
+const GROUPS = [
+  { key:'web',      title:'Vlastní weby — zdroje poptávek → TURBOW' },
+  { key:'portal',   title:'Portály login.* — přístup zákazníka po WIN' },
+  { key:'customer', title:'Zákaznické weby — CONNECTED k Customer Platform' },
 ];
 
 /* služby platformy (audit jako samostatné uzly) */
@@ -430,26 +478,42 @@ let auditing = false;
 
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
-/* ── vykreslení webů ── */
+/* ── vykreslení webů (skupiny z registru) ── */
 function renderSites(){
-  const g = $('#site-grid');
-  g.innerHTML = '';
-  SITES.forEach(s=>{
-    const card = document.createElement('div');
-    card.className = 'site-card';
-    card.id = 'site-'+s.key;
-    card.innerHTML = `
-      <div class="site-top">
-        <img class="site-logo" alt="" data-acc="${s.acc}" data-mono="${s.mono}" data-cands='${JSON.stringify(s.icon)}'>
-        <span class="site-name">${esc(s.name)}</span>
-        <span class="sdot"></span>
-      </div>
-      <span class="site-www">${s.www}</span>
-      <div class="site-badges">
-        <span class="badge h">hosting: —</span>
-        <span class="badge m">e-mail: —</span>
-      </div>`;
-    g.appendChild(card);
+  const wrap = $('#site-groups');
+  wrap.innerHTML = '';
+  GROUPS.forEach(g=>{
+    const list = REGISTRY.filter(e=>e.group===g.key);
+    if(!list.length) return;
+    const sec = document.createElement('div');
+    const lab = document.createElement('div');
+    lab.className = 'grp-label';
+    lab.innerHTML = esc(g.title) + ' <span class="n">' + list.length + '</span>';
+    const grid = document.createElement('div');
+    grid.className = 'site-grid';
+    grid.id = 'grid-' + g.key;
+    list.forEach(s=>{
+      const card = document.createElement('div');
+      card.className = 'site-card';
+      card.id = 'site-' + s.id;
+      const badge2 = s.mx!==false
+        ? '<span class="badge m">e-mail: —</span>'
+        : '<span class="badge gray">' + (s.expect==='planned'?'plán':s.expect==='wip'?'rozpracováno':(s.group==='portal'?'portál':'zákazník')) + '</span>';
+      card.innerHTML = `
+        <div class="site-top">
+          <img class="site-logo" alt="" data-acc="${s.acc}" data-mono="${s.mono}" data-cands='${JSON.stringify(s.icon||[])}'>
+          <span class="site-name">${esc(s.name)}</span>
+          <span class="sdot"></span>
+        </div>
+        <span class="site-www">${s.www}</span>
+        <div class="site-badges">
+          <span class="badge h">hosting: —</span>
+          ${badge2}
+        </div>`;
+      grid.appendChild(card);
+    });
+    sec.appendChild(lab); sec.appendChild(grid);
+    wrap.appendChild(sec);
   });
   // fallback loga
   document.querySelectorAll('img.site-logo[data-cands]').forEach(img=>{
@@ -532,6 +596,34 @@ function setSiteState(key, ok){
   c.classList.add(ok?'ok':'down');
 }
 
+/* ── varovný panel ── */
+function renderWarnings(warns, tsLabel){
+  const panel=$('#warn-panel'), list=$('#warn-list');
+  list.innerHTML='';
+  const sum=$('#warn-sum'); sum.innerHTML='';
+  const cnt={crit:0,warn:0,info:0};
+  warns.forEach(w=>{ if(cnt[w.sev]!==undefined) cnt[w.sev]++; });
+  if(cnt.crit) sum.innerHTML+='<span class="sum-chip bad"><b>'+cnt.crit+'</b> kritické</span>';
+  if(cnt.warn) sum.innerHTML+='<span class="sum-chip amber"><b>'+cnt.warn+'</b> varování</span>';
+  if(cnt.info) sum.innerHTML+='<span class="sum-chip info"><b>'+cnt.info+'</b> info</span>';
+  if(!warns.length){
+    const row=document.createElement('div'); row.className='warn-row';
+    row.innerHTML='<span class="wd" style="background:var(--ok);box-shadow:0 0 8px var(--ok)"></span>'+
+      '<span class="wtxt"><b>Žádné problémy</b> — vše dostupné, hosting i e-maily v pořádku.</span>'+
+      '<span class="wsev" style="color:var(--ok)">ok</span>';
+    list.appendChild(row);
+  } else {
+    const sevTxt={crit:'kritické',warn:'varování',info:'info'};
+    warns.forEach(w=>{
+      const row=document.createElement('div'); row.className='warn-row '+w.sev;
+      row.innerHTML='<span class="wd"></span><span class="wtxt">'+w.txt+'</span><span class="wsev">'+sevTxt[w.sev]+'</span>';
+      list.appendChild(row);
+    });
+  }
+  $('#warn-time').textContent = tsLabel?('poslední audit '+tsLabel):'';
+  panel.classList.add('open');
+}
+
 async function runAudit(){
   if(auditing) return; auditing=true;
   const btn=$('#btn-audit'); btn.disabled=true;
@@ -539,12 +631,13 @@ async function runAudit(){
   $('#audit-label').textContent='Probíhá audit…';
   $('#log-box').classList.add('open'); $('#log-body').innerHTML=''; $('#log-count').textContent='';
   const ts=new Date().toLocaleTimeString('cs-CZ');
+  const tsNum=Date.now();
 
-  const siteUrls = SITES.map(s=>'https://'+s.www+'/');
+  const siteUrls = ALLSITES.map(s=>s.url || ('https://'+s.www+'/'));
   const svcUrls  = SERVICES.filter(s=>!s.local || isLocalPage).map(s=>s.url);
 
   /* hosting+dostupnost: serverless /api/audit na produkci; lokálně fallback no-cors */
-  let hostInfo = {}; // url -> {status,hosting,server}
+  let hostInfo = {};
   let viaApi = false;
   try{
     const batches = [];
@@ -560,48 +653,71 @@ async function runAudit(){
   }catch(e){ viaApi=false; }
 
   const results = [];
-  for(const s of SITES){
-    const url = 'https://'+s.www+'/';
-    let st={ok:false,hosting:'?',mail:'?'}, reason='NEDOSTUPNÉ';
+  const warns = [];
+  for(const s of ALLSITES){
+    const url = s.url || ('https://'+s.www+'/');
+    let st={ok:false,hosting:'?',mx:null}, reason='NEDOSTUPNÉ', httpNote='';
     if(viaApi && hostInfo[url]){
       const p=hostInfo[url];
       st.ok = !p.error && p.status>=200 && p.status<400;
       st.hosting = p.error ? '—' : (p.hosting||'?');
-      reason = st.ok ? ('DOSTUPNÉ · '+st.hosting) : (p.error||'HTTP '+(p.status||'?'));
+      httpNote = p.error || ('HTTP '+(p.status||'?'));
+      reason = st.ok ? ('DOSTUPNÉ · '+st.hosting) : httpNote;
     } else {
       st.ok = await probeOnce(url);
       reason = st.ok ? 'DOSTUPNÉ' : 'NEDOSTUPNÉ';
       if(!viaApi) st.hosting='?';
     }
-    st.mx = await mxLookup(s.www);
-    results.push({key:s.key,name:s.www,url,st});
-    setSiteState(s.key, st.ok);
-    setSiteBadge(s.key, st.ok?'':'bad', 'hosting: '+(st.ok?st.hosting:'✕'), 'h');
-    const mxOk = st.mx.provider==='Google'||st.mx.provider==='Seznam'||st.mx.provider==='Cloudflare'||st.mx.provider==='AWS SES'||st.mx.provider==='Vercel';
-    setSiteBadge(s.key, st.mx.provider==='žádný MX'||st.mx.provider==='?'?'bad':(mxOk?'':'gray'), 'e-mail: '+st.mx.provider, 'm');
-    logRow(ts, s.www, st.ok?'ok':'bad', reason + ' · mail ' + st.mx.provider);
+    if(s.mx!==false) st.mx = await mxLookup(s.www);
+    results.push({id:s.id,name:s.name,www:s.www,group:s.group,expect:s.expect,url,st});
+    const isPlannedDown = (s.expect==='planned' && !st.ok);
+    if(!isPlannedDown) setSiteState(s.id, st.ok);
+    setSiteBadge(s.id, (isPlannedDown||st.ok)?'':'bad', 'hosting: '+(isPlannedDown?'—':(st.ok?st.hosting:'✕')), 'h');
+    if(st.mx){
+      const mxOk = ['Google','Seznam','Cloudflare','AWS SES','Vercel'].includes(st.mx.provider);
+      setSiteBadge(s.id, st.mx.provider==='žádný MX'||st.mx.provider==='?'?'bad':(mxOk?'':'gray'), 'e-mail: '+st.mx.provider, 'm');
+    }
+    logRow(ts, s.www, st.ok?'ok':'bad', reason + (st.mx?(' · mail '+st.mx.provider):''));
+
+    /* pravidla varování */
+    const kindTxt = s.group==='portal'?'portál':(s.group==='customer'?'zákaznický web':'web');
+    if(!st.ok){
+      const note = httpNote?(' ('+httpNote+')'):'';
+      if(s.expect==='planned') warns.push({sev:'info',txt:'<b>'+esc(s.www)+'</b> — plánovaný '+kindTxt+' zatím neběží (očekávané, DNS zatím není).'});
+      else if(s.expect==='wip') warns.push({sev:'warn',txt:'<b>'+esc(s.www)+'</b> — '+kindTxt+' je NEDOSTUPNÝ'+note+'. Rozpracováno — dotáhnout do provozu!'});
+      else warns.push({sev:'crit',txt:'<b>'+esc(s.www)+'</b> — '+kindTxt+' je NEDOSTUPNÝ'+note+'. Okamžitá pozornost!'});
+    } else if(s.expect==='wip'){
+      warns.push({sev:'info',txt:'<b>'+esc(s.www)+'</b> — rozpracovaný portál odpovídá, ale je označený jako wip — ověř, že má správný obsah/branding.'});
+    }
+    if(st.mx){
+      if(st.mx.provider==='žádný MX' && s.group==='web')
+        warns.push({sev:'warn',txt:'<b>'+esc(s.www)+'</b> nemá MX záznam — e-maily na tuto doménu se NEDORUČUJÍ (příjem neexistuje). Nastav příjem (Cloudflare Email Routing / Google Workspace) — pouhé odesílání přes SMTP to neřeší.'});
+      else if(st.mx.provider==='?')
+        warns.push({sev:'info',txt:'<b>'+esc(s.www)+'</b> — MX se nepodařilo ověřit (DNS blokování) — spusť audit znovu.'});
+    }
   }
 
   /* služby */
+  const svcRes=[];
   for(const s of SERVICES){
     if(s.local && !isLocalPage){
       logRow(ts, s.name, 'local', 'lokální — neověřeno z https');
-      const c=document.getElementById('infra-'+s.key); if(c){ c.style.borderColor='rgba(0,229,255,.45)'; c.querySelector('.sdot').style.background='var(--cyan)'; }
-      continue;
+      const c=document.getElementById('infra-'+s.key);
+      if(c){ c.style.borderColor='rgba(0,229,255,.45)'; c.querySelector('.sdot').style.background='var(--cyan)'; }
+      warns.push({sev:'info',txt:'<b>TURBOW</b> běží lokálně na Macu (:8877) — z https ji nelze změřit. Pro kontrolu TURBOW otevři stránku z localhostu.'});
+      svcRes.push({key:s.key,ok:true,local:true}); continue;
     }
     const ok = await probeOnce(s.url);
+    svcRes.push({key:s.key,ok});
     const c=document.getElementById('infra-'+s.key);
     if(c){ c.style.borderColor = ok?'rgba(57,255,20,.5)':'rgba(255,77,77,.6)'; c.querySelector('.sdot').style.background = ok?'var(--ok)':'var(--bad)'; }
+    if(!ok) warns.push({sev:'crit',txt:'<b>'+esc(s.name)+'</b> — platformní služba je NEDOSTUPNÁ. Okamžitá pozornost!'});
     logRow(ts, s.name, ok?'ok':'bad', ok?'DOSTUPNÉ':'NEDOSTUPNÉ');
   }
 
   /* souhrn */
   const up = results.filter(r=>r.st.ok).length;
   const down = results.filter(r=>!r.st.ok).length;
-  const hostCount = {};
-  results.forEach(r=>{ const h=r.st.hosting.split('·')[0].trim(); hostCount[h]=(hostCount[h]||0)+1; });
-  const vercel = (hostCount['Vercel']||0)+(hostCount['Cloudflare']||0);
-  const other  = results.length - up - vercel;
   $('#sum-total').textContent = results.length + (viaApi?' webů':' webů (lokální režim)');
   const sOk=$('#sum-ok'),sBad=$('#sum-bad'),sV=$('#sum-vercel'),sC=$('#sum-cf'),sO=$('#sum-other');
   sOk.querySelector('b').textContent=up; sOk.style.display= up?'inline-block':'none';
@@ -614,10 +730,46 @@ async function runAudit(){
     sO.querySelector('b').textContent = results.filter(r=>/VPS/.test(r.st.hosting)).length;
     sO.style.display='inline-block';
   } else { sV.style.display='none'; sC.style.display='none'; sO.style.display='none'; }
-  $('#audit-time').textContent = (viaApi?'hosting z API':'dostupnost lokálně') + ' · ' + new Date().toLocaleTimeString('cs-CZ');
+  $('#audit-time').textContent = (viaApi?'hosting z API':'dostupnost lokálně') + ' · ' + ts;
   $('#audit-ico').innerHTML='&#10003;';
   $('#audit-label').textContent='Audit hotov — spustit znovu';
   auditing=false; btn.disabled=false;
+
+  /* varování + uložení stavu */
+  renderWarnings(warns, ts);
+  try{
+    const site={}; results.forEach(r=>{ site[r.id]={ok:r.st.ok,hosting:r.st.hosting,mx:r.st.mx?r.st.mx.provider:null}; });
+    localStorage.setItem('majlajf-audit-v1', JSON.stringify({ts:tsNum,mode:viaApi?'api':'local',site,svc:svcRes,warns,counts:{up,down}}));
+  }catch(e){}
+}
+
+/* ── obnovení posledního auditu + auto-audit při otevření ── */
+function restoreState(){
+  let saved=null; try{ saved=JSON.parse(localStorage.getItem('majlajf-audit-v1')||'null'); }catch(e){}
+  if(!saved) return false;
+  if(saved.ts && Date.now()-saved.ts<60000) return true; // audit běžel před chvílí
+  Object.keys(saved.site||{}).forEach(id=>{
+    const v=saved.site[id], c=document.getElementById('site-'+id);
+    if(!c) return;
+    setSiteState(id, v.ok);
+    setSiteBadge(id, v.ok?'':'bad', 'hosting: '+(v.ok?v.hosting:'✕'), 'h');
+    if(v.mx) setSiteBadge(id, 'e-mail: '+v.mx, 'm');
+  });
+  (saved.svc||[]).forEach(s=>{
+    const c=document.getElementById('infra-'+s.key);
+    if(!c) return;
+    c.style.borderColor = s.local?'rgba(0,229,255,.45)':(s.ok?'rgba(57,255,20,.5)':'rgba(255,77,77,.6)');
+    c.querySelector('.sdot').style.background = s.local?'var(--cyan)':(s.ok?'var(--ok)':'var(--bad)');
+  });
+  const total=Object.keys(saved.site||{}).length;
+  $('#sum-total').textContent = total + ' webů';
+  if(saved.counts){ $('#sum-ok').style.display='inline-block'; $('#sum-ok').querySelector('b').textContent=saved.counts.up;
+    if(saved.counts.down){ $('#sum-bad').style.display='inline-block'; $('#sum-bad').querySelector('b').textContent=saved.counts.down; } }
+  const t=new Date(saved.ts);
+  renderWarnings(saved.warns||[], t.toLocaleTimeString('cs-CZ'));
+  $('#audit-time').textContent = (saved.mode==='api'?'hosting z API':'lokální režim') + ' · ' + t.toLocaleTimeString('cs-CZ');
+  $('#audit-label').textContent='Audit hotov — spustit znovu';
+  return false;
 }
 
 /* ── úpravy ── */
@@ -647,6 +799,8 @@ function renderUpdates(){
 }
 
 renderSites(); renderInfra(); renderUpdates();
+const fresh = restoreState();
+if(!fresh) setTimeout(()=>runAudit(), 600); // auto-audit po otevření (monitorovací stránka)
 </script>
 </body>
 </html>
