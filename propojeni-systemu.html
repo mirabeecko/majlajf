@@ -1,0 +1,694 @@
+<!--
+  ██████╗ ██████╗     ██████╗  ██████╗  ██████╗ ███████╗██╗ ██████╗ ███╗   ██╗██╗
+  ██╔══██╗██╔══██╗    ██╔══██╗██╔═══██╗██╔═══██╗██╔════╝██║██╔════╝ ████╗  ██║██║
+  ██████╔╝██████╔╝    ██████╔╝██║   ██║██║   ██║█████╗  ██║██║  ███╗██╔██╗ ██║██║
+  ██╔═══╝ ██╔═══╝     ██╔══██╗██║   ██║██║   ██║██╔══╝  ██║██║   ██║██║╚██╗██║██║
+  ██║     ██║         ██████╔╝╚██████╔╝╚██████╔╝███████╗██║╚██████╔╝██║ ╚████║╚██╗
+  ╚═╝     ╚═╝         ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝
+  PROPOJENÍ SYSTÉMU — živá mapa (Customer Platform / TURBOW / weby / portál)
+  --------------------------------------------------------------------------------
+  ▸ SNAPSHOT dat: 2026-09-06 (stav repo main + produkce; vše ověřeno HTTP)
+  ▸ ÚDRŽBA "Posledních 5 úprav": uprav pole UPDATES níže v <script> —
+    nový záznam se automaticky vykreslí jako rozklikávací karta se shrnutím
+    (co se změnilo / co je jinak / dopad). Formát: {date, repo, commit,
+    kind, title, status, changed:[...], meaning, impact}
+  ▸ AUDIT: tlačítko níže kontroluje dostupnost služeb (HTTP) z aktuálního
+    prohlížeče a překreslí stav uzlů v mapě. Lokální služby (TURBOW na
+    localhostu) lze měřit jen když stránku otevíráš z localhostu.
+-->
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>Propojení systému — mapa | MAJLAJF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0f; --bg2:#111118; --bg3:#1a1a24;
+  --line:rgba(255,255,255,.07);
+  --txt:#f0f0f5; --txt2:#9494a8; --txt3:#5a5a6e;
+  --cyan:#00e5ff; --magenta:#ff00ff; --lime:#39ff14; --amber:#ffb428; --pink:#ff1493;
+  --ok:#39ff14; --bad:#ff4d4d; --warn:#ffb428; --info:#00e5ff;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{
+  margin:0; background:var(--bg); color:var(--txt);
+  font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{background:rgba(0,229,255,.25);}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#33334a;border-radius:4px}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+
+/* ── Hlavička ── */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  background:rgba(10,10,15,.85);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .wrap{display:flex;align-items:center;gap:14px;padding-top:12px;padding-bottom:12px;flex-wrap:wrap}
+.backlink{
+  display:inline-flex;align-items:center;gap:6px;text-decoration:none;
+  font-size:12px;font-weight:600;color:var(--txt2);
+  border:1px solid var(--line);border-radius:10px;padding:6px 10px;
+  transition:.2s;white-space:nowrap;
+}
+.backlink:hover{color:var(--cyan);border-color:rgba(0,229,255,.4)}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand h1{margin:0;font-size:17px;font-weight:800;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.brand h1 .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:breathe 2.4s infinite}
+.brand small{color:var(--txt3);font-size:11px;font-weight:500}
+.top-actions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* ── Audit ── */
+.audit-bar{
+  margin-top:18px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(180deg,rgba(17,17,24,.9),rgba(17,17,24,.6));
+  padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.btn-audit{
+  display:inline-flex;align-items:center;gap:10px;cursor:pointer;
+  background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(255,0,255,.12));
+  border:1px solid rgba(0,229,255,.35);color:#eafcff;
+  font-family:inherit;font-size:14px;font-weight:700;letter-spacing:.01em;
+  padding:12px 20px;border-radius:14px;transition:.2s;
+}
+.btn-audit:hover{transform:translateY(-1px);box-shadow:0 0 24px rgba(0,229,255,.25)}
+.btn-audit:active{transform:scale(.97)}
+.btn-audit:disabled{opacity:.6;cursor:wait;transform:none}
+.btn-audit .ico{font-size:16px;line-height:1}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,255,.3);border-top-color:var(--cyan);border-radius:50%;animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.audit-meta{display:flex;flex-direction:column;gap:2px;min-width:200px}
+.audit-meta .t{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.sum-row{display:flex;gap:8px;flex-wrap:wrap}
+.sum-chip{font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--txt2);background:rgba(255,255,255,.02)}
+.sum-chip b{font-size:13px}
+.sum-chip.ok{color:#06100a;background:var(--ok);border-color:transparent}
+.sum-chip.ok b{color:#06100a}
+.sum-chip.bad{color:#fff;background:rgba(255,77,77,.15);border-color:rgba(255,77,77,.5)}
+.sum-chip.warn{color:#1a1204;background:var(--warn);border-color:transparent}
+.audit-note{width:100%;font-size:11px;color:var(--txt3);line-height:1.5;border-top:1px dashed var(--line);padding-top:10px;margin-top:2px}
+.audit-note code{font-family:'JetBrains Mono',monospace;color:var(--txt2);font-size:10px}
+
+/* ── Log výsledků ── */
+.log-box{display:none;margin-top:10px;border:1px solid var(--line);border-radius:14px;background:rgba(10,10,15,.7);overflow:hidden}
+.log-box.open{display:block}
+.log-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;color:var(--txt2);font-weight:700;text-transform:uppercase;letter-spacing:.12em}
+.log-body{max-height:260px;overflow:auto;padding:6px 0;font-family:'JetBrains Mono',monospace;font-size:11px}
+.log-row{display:flex;gap:10px;padding:4px 14px;align-items:baseline}
+.log-row .tm{color:var(--txt3);white-space:nowrap}
+.log-row .nm{color:var(--txt2);white-space:nowrap}
+.log-row .st{margin-left:auto;white-space:nowrap;font-weight:600}
+.log-row .st.ok{color:var(--ok)} .log-row .st.bad{color:var(--bad)}
+.log-row .st.warn{color:var(--warn)} .log-row .st.local{color:var(--info)}
+.log-row .st.info{color:var(--txt3)}
+
+/* ── Schéma ── */
+.sec-title{display:flex;align-items:center;gap:10px;margin:30px 0 14px}
+.sec-title .bar{width:5px;height:20px;border-radius:99px;background:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.sec-title h2{margin:0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.22em;color:var(--txt)}
+.sec-title .sub{font-size:11px;color:var(--txt3);font-weight:500;letter-spacing:0;text-transform:none}
+
+.diagram{
+  position:relative;width:100%;height:880px;
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  background:
+    radial-gradient(600px 300px at 50% 40%, rgba(0,229,255,.05), transparent 70%),
+    radial-gradient(500px 300px at 12% 85%, rgba(255,0,255,.05), transparent 70%),
+    radial-gradient(500px 300px at 88% 85%, rgba(57,255,20,.04), transparent 70%),
+    var(--bg);
+}
+.diagram svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.node{
+  position:absolute;transform:translate(-50%,-50%);
+  width:232px;min-height:118px;
+  background:linear-gradient(180deg,rgba(26,26,36,.92),rgba(17,17,24,.92));
+  border:1px solid rgba(255,255,255,.09);border-radius:16px;
+  padding:12px 14px;z-index:2;transition:border-color .5s, box-shadow .5s;
+}
+.node .n-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.node .n-ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex:none}
+.node .n-name{font-size:13px;font-weight:800;letter-spacing:.01em;line-height:1.15}
+.node .n-role{font-size:11px;color:var(--txt2);line-height:1.45}
+.node .n-role b{color:var(--txt);font-weight:700}
+.node .n-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--txt2);letter-spacing:.04em;text-transform:uppercase}
+.tag.c{color:var(--cyan);border-color:rgba(0,229,255,.3)}
+.tag.m{color:var(--magenta);border-color:rgba(255,0,255,.3)}
+.tag.l{color:var(--lime);border-color:rgba(57,255,20,.3)}
+.tag.a{color:var(--amber);border-color:rgba(255,180,40,.3)}
+.tag.p{color:var(--pink);border-color:rgba(255,20,147,.3)}
+.tag.gray{color:var(--txt3)}
+/* stav uzlu po auditu */
+.node .sdot{width:8px;height:8px;border-radius:50%;margin-left:auto;flex:none;background:var(--txt3)}
+.node.ok{border-color:rgba(57,255,20,.45);box-shadow:0 0 18px rgba(57,255,20,.08)}
+.node.ok .sdot{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.node.down{border-color:rgba(255,77,77,.6);box-shadow:0 0 18px rgba(255,77,77,.12)}
+.node.down .sdot{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+.node.local{border-color:rgba(0,229,255,.45)}
+.node.local .sdot{background:var(--info);box-shadow:0 0 8px var(--info);animation:breathe 1.6s infinite}
+.node.pending{opacity:.75}
+.node .n-state{font-size:10px;font-weight:700;margin-top:6px;color:var(--txt3);text-transform:uppercase;letter-spacing:.08em}
+.node.ok .n-state{color:var(--ok)}
+.node.down .n-state{color:var(--bad)}
+.node.local .n-state{color:var(--info)}
+/* badge čísla spojů */
+.ebadge{
+  position:absolute;transform:translate(-50%,-50%);z-index:3;
+  width:22px;height:22px;border-radius:50%;
+  background:#0a0a0f;border:1px solid rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:var(--txt);font-family:'JetBrains Mono',monospace;
+  box-shadow:0 0 10px rgba(0,0,0,.6);
+}
+.legend-flow{margin-top:16px;border:1px solid var(--line);border-radius:16px;background:var(--bg2);padding:14px 16px}
+.legend-flow .lf-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:var(--cyan);margin-bottom:10px}
+.legend-flow ol{margin:0;padding:0;list-style:none;counter-reset:lf}
+.legend-flow li{counter-increment:lf;display:flex;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.05);font-size:12px;color:var(--txt2);line-height:1.5;align-items:flex-start}
+.legend-flow li:last-child{border-bottom:none}
+.legend-flow li::before{
+  content:counter(lf);flex:none;width:20px;height:20px;border-radius:50%;
+  background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--cyan);
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;margin-top:1px;
+}
+.legend-flow li b{color:var(--txt);font-weight:700}
+.legend-flow li code{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--lime);background:rgba(57,255,20,.06);padding:1px 5px;border-radius:5px;white-space:nowrap}
+
+/* ── Role systémů (kdo co dělá) ── */
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:4px}
+.role-card{border:1px solid var(--line);border-radius:14px;background:var(--bg2);padding:12px 14px}
+.role-card h3{margin:0 0 6px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:8px}
+.role-card h3 .sq{width:14px;height:14px;border-radius:4px;flex:none}
+.role-card ul{margin:0;padding-left:16px;font-size:11.5px;color:var(--txt2);line-height:1.6}
+.role-card ul li b{color:var(--txt)}
+.role-card ul li{margin-bottom:3px}
+
+/* ── Úpravy ── */
+.upd-list{display:flex;flex-direction:column;gap:10px}
+details.upd{border:1px solid var(--line);border-radius:16px;background:var(--bg2);overflow:hidden;transition:border-color .3s}
+details.upd[open]{border-color:rgba(0,229,255,.3)}
+details.upd summary{
+  list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;
+  padding:13px 16px;user-select:none;flex-wrap:wrap;
+}
+details.upd summary::-webkit-details-marker{display:none}
+details.upd summary .chev{transition:transform .25s;color:var(--txt3);font-size:11px;margin-left:auto}
+details.upd[open] summary .chev{transform:rotate(180deg);color:var(--cyan)}
+.d-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt2);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:3px 8px;border-radius:7px;white-space:nowrap}
+.d-repo{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);white-space:nowrap}
+.d-title{font-size:13.5px;font-weight:700;color:var(--txt);min-width:200px}
+.kind-chip{font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.kind-feat{background:rgba(0,229,255,.12);color:var(--cyan);border:1px solid rgba(0,229,255,.3)}
+.kind-fix{background:rgba(57,255,20,.1);color:var(--lime);border:1px solid rgba(57,255,20,.3)}
+.kind-navrh{background:rgba(255,180,40,.12);color:var(--amber);border:1px solid rgba(255,180,40,.35)}
+.kind-ops{background:rgba(255,255,255,.06);color:var(--txt2);border:1px solid var(--line)}
+.d-body{padding:0 16px 14px;border-top:1px dashed var(--line)}
+.d-body h4{margin:12px 0 6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.14em}
+.d-body h4.ch{color:var(--cyan)} .d-body h4.jn{color:var(--amber)} .d-body h4.do{color:var(--pink)}
+.d-body ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--txt2);line-height:1.65}
+.d-body ul li b{color:var(--txt)}
+.d-body p{margin:4px 0 0;font-size:12.5px;color:var(--txt2);line-height:1.65}
+.d-body p b{color:var(--txt)}
+.d-body .commit{display:inline-block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--txt3);text-decoration:none;border:1px solid var(--line);padding:4px 9px;border-radius:7px;transition:.2s}
+.d-body .commit:hover{color:var(--cyan);border-color:rgba(0,229,255,.4)}
+
+.foot{margin:26px 0 10px;padding-top:14px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--txt3)}
+.foot code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt2)}
+
+/* ── Responsive: <1120px schéma bez absolutních spojnic ── */
+@media(max-width:1120px){
+  .diagram{height:auto;background:var(--bg);padding:10px;display:flex;flex-direction:column;gap:10px}
+  .diagram svg.lines,.ebadge{display:none}
+  .node{position:static;transform:none;width:100%;min-height:0}
+}
+@media(max-width:640px){
+  .brand h1{font-size:15px}
+  .audit-bar{padding:12px}
+  .btn-audit{width:100%;justify-content:center}
+  .upd-list details.upd summary{flex-wrap:wrap}
+  .d-title{min-width:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="topbar">
+  <div class="wrap">
+    <a class="backlink" href="./">&larr; MAJLAJF</a>
+    <div class="brand">
+      <h1><span class="dot"></span>Propojení systému <span style="font-weight:600;color:var(--txt3);font-size:13px">/ živá mapa</span></h1>
+      <small>Customer Platform · TURBOW · zákaznické weby · portál — kdo co dělá a kudy tečou data</small>
+    </div>
+    <div class="top-actions">
+      <span class="kind-chip kind-ops" id="snapshot-chip">snapshot 2026-09-06</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ═══ AUDIT ═══ -->
+  <div class="audit-bar">
+    <button class="btn-audit" id="btn-audit" onclick="runAudit()">
+      <span class="ico" id="audit-ico">&#9654;</span>
+      <span id="audit-label">Spustit audit systému</span>
+    </button>
+    <div class="audit-meta">
+      <span class="t">Výsledek</span>
+      <div class="sum-row" id="sum-row">
+        <span class="sum-chip" id="sum-total">0 služeb</span>
+        <span class="sum-chip ok" id="sum-ok" style="display:none"><b>0</b> dostupných</span>
+        <span class="sum-chip bad" id="sum-bad" style="display:none"><b>0</b> nedostupných</span>
+        <span class="sum-chip warn" id="sum-warn" style="display:none"><b>0</b> lokálních</span>
+      </div>
+      <span id="audit-time" style="font-size:10px;color:var(--txt3);font-family:'JetBrains Mono',monospace"></span>
+    </div>
+    <div class="audit-note">
+      Audit = kontrola <b>dostupnosti</b> (HTTP odpověď) každé služby přímo z tvého prohlížeče — nekontroluje vnitřní funkce.
+      Ověřované adresy: <code id="probe-list"></code>. Lokální služby (TURBOW :8877) se měří jen při otevření stránky z localhostu,
+      jinak jsou označené jako „lokální". Po skončení se mapa i přehled níže přebarví podle skutečného stavu.
+    </div>
+  </div>
+
+  <div class="log-box" id="log-box">
+    <div class="log-head"><span>Průběh auditu</span><span id="log-count"></span></div>
+    <div class="log-body" id="log-body"></div>
+  </div>
+
+  <!-- ═══ SCHÉMA ═══ -->
+  <div class="sec-title"><span class="bar"></span><h2>Schéma propojení</h2><span class="sub">číslované spoje = legenda pod mapou</span></div>
+
+  <div class="diagram" id="diagram">
+    <svg class="lines" viewBox="0 0 1200 880" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0L10 5L0 10z" fill="rgba(255,255,255,.5)"/>
+        </marker>
+      </defs>
+      <!-- 1 zákazník → web -->
+      <path d="M 258 150 L 284 150" stroke="rgba(255,255,255,.45)" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+      <!-- 2 web ⇄ runtime (obsah) -->
+      <path d="M 528 150 L 800 150" stroke="rgba(255,180,40,.55)" stroke-width="1.6" fill="none" marker-start="url(#ar)" marker-end="url(#ar)"/>
+      <!-- 3 web → API (formuláře/publish) -->
+      <path d="M 420 215 C 450 300, 520 330, 560 384" stroke="rgba(57,255,20,.5)" stroke-width="1.6" fill="none" marker-end="url(#ar)"/>
+      <!-- 4 API ⇄ runtime -->
+      <path d="M 748 445 C 830 400, 870 330, 874 214" stroke="rgba(255,180,40,.4)" stroke-width="1.4" fill="none" stroke-dasharray="4 5" marker-end="url(#ar)" marker-start="url(#ar)"/>
+      <!-- 5 API ⇄ Supabase -->
+      <path d="M 560 528 C 470 600, 400 620, 340 668" stroke="rgba(0,229,255,.55)" stroke-width="1.6" fill="none" marker-start="url(#ar)" marker-end="url(#ar)"/>
+      <!-- 6 TURBOW → API (WON handoff) -->
+      <path d="M 600 668 L 600 534" stroke="rgba(255,0,255,.6)" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+      <!-- 7 TURBOW → web (generace+connect, dashed) -->
+      <path d="M 585 668 C 520 560, 470 380, 455 218" stroke="rgba(255,0,255,.4)" stroke-width="1.4" fill="none" stroke-dasharray="5 6" marker-end="url(#ar)"/>
+      <!-- 8 API ⇄ portál -->
+      <path d="M 756 470 L 898 470" stroke="rgba(0,229,255,.5)" stroke-width="1.6" fill="none" marker-start="url(#ar)" marker-end="url(#ar)"/>
+    </svg>
+
+    <!-- ZÁKAZNÍK -->
+    <div class="node" id="n-zak" data-node="zak" style="left:11%;top:16%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(255,255,255,.08);color:var(--txt)">U</div><div class="n-name">Zákazník</div><span class="sdot"></span></div>
+      <div class="n-role">Prohlíží web, <b>vyplňuje formulář</b> (poptávka), po koupi se přihlašuje do <b>portálu</b>.</div>
+      <div class="n-state">vždy v provozu</div>
+    </div>
+
+    <!-- WEB CONNECTED -->
+    <div class="node" id="n-web" data-node="web" data-probe="web" style="left:34%;top:16%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(57,255,20,.12);color:var(--lime)">W</div><div class="n-name">Web zákazníka</div><span class="sdot"></span></div>
+      <div class="n-role"><b>CONNECTED</b> — Next.js + site-sdk, env <code style="font-size:9.5px">PLATFORM_SITE_API_URL</code> a <code style="font-size:9.5px">WEBSITE_ID</code>. Příklad: Horizont (studio-horizont.vercel.app).</div>
+      <div class="n-tags"><span class="tag l">connected</span><span class="tag gray">content_hub</span></div>
+      <div class="n-state">čeká na audit</div>
+    </div>
+
+    <!-- SITE RUNTIME -->
+    <div class="node" id="n-run" data-node="run" data-probe="run" style="left:77%;top:16%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(255,180,40,.12);color:var(--amber)">R</div><div class="n-name">Site runtime</div><span class="sdot"></span></div>
+      <div class="n-role">Servíruje <b>náhledy draftů</b> (preview token) a <b>live obsah</b> z content hubu. Vercel projekt customer-site-runtime.</div>
+      <div class="n-tags"><span class="tag a">runtime</span></div>
+      <div class="n-state">čeká na audit</div>
+    </div>
+
+    <!-- CP API -->
+    <div class="node" id="n-api" data-node="api" data-probe="api" style="left:53%;top:52%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(0,229,255,.14);color:var(--cyan)">CP</div><div class="n-name">Customer Platform API</div><span class="sdot"></span></div>
+      <div class="n-role"><b>Jádro všeho</b> — FastAPI (Vercel). Auth, workspaces, obsah, formuláře, poptávky/leady, nabídky, publikace (verze), media, AI change sety, provisioning.</div>
+      <div class="n-tags"><span class="tag c">/api/v1</span><span class="tag c">/site/v1</span><span class="tag c">/internal/v1</span></div>
+      <div class="n-state">čeká na audit</div>
+    </div>
+
+    <!-- SUPABASE -->
+    <div class="node" id="n-sup" data-node="sup" data-probe="sup" style="left:20%;top:84%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(255,0,255,.12);color:var(--magenta)">S</div><div class="n-name">Supabase</div><span class="sdot"></span></div>
+      <div class="n-role">Postgres <b>platform_v1</b> (p1_*), <b>GoTrue</b> auth (login e-mail+heslo), Storage (media).</div>
+      <div class="n-tags"><span class="tag m">db</span><span class="tag m">auth</span></div>
+      <div class="n-state">čeká na audit</div>
+    </div>
+
+    <!-- TURBOW -->
+    <div class="node" id="n-trb" data-node="trb" data-probe="trb" style="left:50%;top:84%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(255,20,147,.14);color:var(--pink)">T</div><div class="n-name">TURBOW</div><span class="sdot"></span></div>
+      <div class="n-role"><b>Prodej + generace</b> — CRM/leady (poptávky z webů), audit webu, <b>generátor webů</b> (WeByBudoucnosti), nabídky. Obsahuje <b>registr zdrojů</b> (branding).</div>
+      <div class="n-tags"><span class="tag p">CRM</span><span class="tag p">generátor</span><span class="tag gray">localhost:8877</span></div>
+      <div class="n-state">lokální služba</div>
+    </div>
+
+    <!-- PORTÁL -->
+    <div class="node" id="n-por" data-node="por" data-probe="por" style="left:85%;top:52%">
+      <div class="n-top"><div class="n-ico" style="background:rgba(0,229,255,.12);color:var(--cyan)">P</div><div class="n-name">Portál zákazníka</div><span class="sdot"></span></div>
+      <div class="n-role"><b>Prezentační vrstva</b> (Next.js) — zákazník spravuje obsah, formuláře, poptávky, publikuje změny, AI příkazy. Login: GoTrue.</div>
+      <div class="n-tags"><span class="tag c">login.webybudoucnosti.cz</span></div>
+      <div class="n-state">čeká na audit</div>
+    </div>
+
+    <!-- číslované spoje -->
+    <div class="ebadge" style="left:22.5%;top:17%">1</div>
+    <div class="ebadge" style="left:55.5%;top:17%">2</div>
+    <div class="ebadge" style="left:40.5%;top:35%">3</div>
+    <div class="ebadge" style="left:70%;top:40.5%">4</div>
+    <div class="ebadge" style="left:36.6%;top:69%">5</div>
+    <div class="ebadge" style="left:50%;top:68%">6</div>
+    <div class="ebadge" style="left:40.7%;top:47%">7</div>
+    <div class="ebadge" style="left:69%;top:53.4%">8</div>
+  </div>
+
+  <!-- legenda spojů -->
+  <div class="legend-flow">
+    <div class="lf-title">Kudy tečou data — číslované spoje</div>
+    <ol>
+      <li><b>Zákazník → Web</b> — návštěva webu, vyplnění poptávkového formuláře.</li>
+      <li><b>Web ⇄ Site runtime</b> — živý obsah z content hubu + náhledy draftů (obousměrně).</li>
+      <li><b>Web → API</b> — odeslání formuláře na <code>POST /site/v1/forms/{formKey}/submit</code> → vznikne <b>submission + lead</b> ve workspace (viditelné v portálu); zpět: <b>publish</b> (verze webu).</li>
+      <li><b>API ⇄ Runtime</b> — content / verze / runtime-config a preview tokeny.</li>
+      <li><b>API ⇄ Supabase</b> — veškerá data (schema <code>platform_v1</code>), auth přes GoTrue, media ve Storage.</li>
+      <li><b>TURBOW → API</b> — po <b>WON</b> leadu: HMAC-podepsaný handoff na <code>/internal/v1/provisioning/handoffs</code> → workspace + objednávka + entitlementy + pozvánka do portálu.</li>
+      <li><b>TURBOW → Web</b> — generace webu (manifest + site-bundle, stav COMPATIBLE) a následný <b>connect</b> → CONNECTED (import obsahu do hubu).</li>
+      <li><b>Portál ⇄ API</b> — vše přes JWT: bootstrap, obsah, formuláře, poptávky, publikace, AI správa webu.</li>
+    </ol>
+  </div>
+
+  <!-- ═══ ROLE ═══ -->
+  <div class="sec-title"><span class="bar" style="background:var(--magenta);box-shadow:0 0 12px var(--magenta)"></span><h2>Kdo co dělá — role systémů</h2></div>
+  <div class="roles">
+    <div class="role-card"><h3><span class="sq" style="background:var(--pink)"></span>TURBOW (lokální)</h3>
+      <ul>
+        <li><b>Sbírá poptávky</b> z marketingových webů (leady) a vede prodejní pipeline.</li>
+        <li>Po <b>WON</b> vytvoří handoff job → CP API (nikdy neblokuje prodej při výpadku CP).</li>
+        <li><b>Generuje weby</b> (audit → brief → generace → validace COMPATIBLE).</li>
+        <li><b>Registr zdrojů</b> (webybudoucnosti/webyprobyznys): barvy, e-mail, portál — brand odpovědí.</li>
+        <li>Ukládá si jen reference: <code>platform_workspace_id</code>, <code>platform_website_id</code>.</li>
+      </ul>
+    </div>
+    <div class="role-card"><h3><span class="sq" style="background:var(--cyan)"></span>Customer Platform API (Vercel)</h3>
+      <ul>
+        <li><b>Jediný zdroj pravdy</b> — veškerá logika na serveru, portál je jen UI.</li>
+        <li>Workspaces + členové + role (owner/admin/editor/sales/viewer), tenant izolace.</li>
+        <li>Obsah → <b>draft / publish / verze / restore</b>; dopad změn na weby.</li>
+        <li>Formuláře (definice + <b>submissions</b>), <b>leady</b> se stage, nabídky z leadu.</li>
+        <li><b>AI správa obsahu</b>: propose → change set → publish / rollback (SDK i portál).</li>
+        <li>Provisioning handoffů (S2S, HMAC, idempotentní) + pozvánky uživatelů.</li>
+      </ul>
+    </div>
+    <div class="role-card"><h3><span class="sq" style="background:var(--magenta)"></span>Supabase</h3>
+      <ul>
+        <li>Postgres <b>platform_v1</b> — 69 tabulek: workspaces, weby, obsah, formuláře, leads, nabídky, objednávky, provisioning…</li>
+        <li><b>GoTrue</b> — login e-mailem a heslem, JWT (JWKS verifikace), session refresh.</li>
+        <li>Storage pro media (fotky/loga webů).</li>
+        <li>RLS + nulové policy = default deny; přístup jen přes service role na serveru.</li>
+      </ul>
+    </div>
+    <div class="role-card"><h3><span class="sq" style="background:var(--lime)"></span>Web zákazníka</h3>
+      <ul>
+        <li>Stav <b>COMPATIBLE</b>: manifest.json + site-bundle.json, běží standalone, formulář = mailto, demo badge.</li>
+        <li>Stav <b>CONNECTED</b>: má Website ID + secrets v env, formuláře jdou do API, obsah z hubu, badge zmizí.</li>
+        <li>Žádná data neukládá lokálně — vše ve workspace.</li>
+      </ul>
+    </div>
+    <div class="role-card"><h3><span class="sq" style="background:var(--amber)"></span>Portál zákazníka</h3>
+      <ul>
+        <li>Login, dashboard s onboardingem, /weby, /obsah, /formulare, /poptavky, /nabidky, /media, /automatizace, /statistiky, /nastaveni.</li>
+        <li>Účet vzniká <b>pozvanou</b> (invite e-mail — vyžaduje SMTP) nebo adminem.</li>
+        <li>Branding dnes „Webdo24 Portál“; multi-značkové domény = návrh (registry zdrojů).</li>
+      </ul>
+    </div>
+    <div class="role-card"><h3><span class="sq" style="background:var(--pink)"></span>MAJLAJF (tato stránka)</h3>
+      <ul>
+        <li>Rozcestník na weby a systémy + tato <b>živá mapa propojení</b>.</li>
+        <li>Tlačítko auditu kontroluje dostupnost všech služeb a překreslí mapu.</li>
+        <li>Přehled posledních úprav systému (rozklikávací shrnutí).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══ ÚPRAVY ═══ -->
+  <div class="sec-title"><span class="bar" style="background:var(--amber);box-shadow:0 0 12px var(--amber)"></span><h2>Poslední úpravy systému</h2><span class="sub">rozklikni záznam pro shrnutí — co se změnilo a co je jinak</span></div>
+  <div class="upd-list" id="upd-list"><!-- vykresluje JS z UPDATES --></div>
+
+  <div class="foot">
+    <span>Data: snapshot z repozitářů (main) a produkce ke dni 2026-09-06.</span>
+    <code>customers-platform · customers-portal · turbow · majlajf</code>
+    <span>Novou úpravu systému zapiš do pole <code>UPDATES</code> v hlavičce souboru → karta se vykreslí sama.</span>
+  </div>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   ÚPRAVY SYSTÉMU — SNAPSHOT 2026-09-06 (repo main; lokální = nepushnuto)
+   PO KAŽDÉ NOVÉ ÚPRAVĚ: přidej nový objekt NA ZAČÁTEK pole UPDATES.
+   Klíče: date, repo, commit (zkrácený hash), kind (feat|fix|ops|navrh),
+   title, status (NASAZENO|NÁVRH|LOKÁLNĚ|...), changed[], meaning, impact.
+   ══════════════════════════════════════════════════════════════════ */
+const UPDATES = [
+  {
+    date: "2026-09-06", repo: "customers-portal", commit: "c781432", kind: "navrh",
+    title: "Návrh multi-značkového portálu — login.webyprobyznys.cz (registry zdrojů)",
+    status: "NÁVRH",
+    changed: [
+      "Dokument MULTI-SOURCE-PORTALS.md: jedna aplikace portálu, branding podle domény (hostname).",
+      "Definice registru zdrojů: webybudoucnosti (teal), webyprobyznys (modrá), unknown (neutrální fallback).",
+      "Plán: uložit <b>source_key</b> do Workspace.settings → bootstrap vrací jen workspaces dané značky."
+    ],
+    meaning: "Zákazník z webyprobyznys.cz dnes v portálu vidí branding „Webdo24 Portál“ — návrh oddělí značky, e-maily i nabídky tak, aby se nikdy nesmíchaly.",
+    impact: "Zatím žádná změna provozu. Kód TURBOW části je na nepublikované větvi (viz další záznam)."
+  },
+  {
+    date: "2026-09-06", repo: "turbow", commit: "081f916", kind: "feat",
+    title: "Registr zdrojů zákazníků v TURBOW — barevné rozlišení + brand odpovědí",
+    status: "LOKÁLNĚ · NEPUBLIKOVÁNO",
+    changed: [
+      "app/sources.py — registry (key, barvy, e-mail, portál) + resolvery podle domény / source_detail.",
+      "Lead i customer nesou source_key + source; UI ukazuje barevný štítek/banner zdroje.",
+      "Nabídky (quotes + public offer) používají e-mail a patičku ZDROJE — pryč pevné „WebyBudoucnosti“.",
+      "Migrace customers.source_key (aditivní) + 23 testů."
+    ],
+    meaning: "Zákazník z webyprobyznys.cz už nedostane nabídku podepsanou jako WebyBudoucnosti.cz — podepíše se správná značka.",
+    impact: "Větev feature/first-customer-e2e (7 commitů před origin/main) — čeká na merge a publikaci."
+  },
+  {
+    date: "2026-09-05", repo: "customers-portal", commit: "5247fd6", kind: "feat",
+    title: "AI správa webu v portálu — příkazy mění obsah webu (change set + publish)",
+    status: "NASAZENO",
+    changed: [
+      "Nový režim: napíšeš příkaz česky → AI navrhne změny obsahu (propose).",
+      "Změny se seskupí do change setu, který buď publikuješ, nebo zahodíš / rollback.",
+      "Editor sekcí ukazuje skutečný text z obsahu; náhled otevírá skutečný web."
+    ],
+    meaning: "Úprava webu už není „najdi políčko a přepiš“ — AI připraví změnu a ty ji jedním klikem schválíš.",
+    impact: "Volá nové API /api/v1/.../websites/{id}/ai/* (viz další záznam)."
+  },
+  {
+    date: "2026-09-05", repo: "customers-platform", commit: "1013b80", kind: "feat",
+    title: "AI správa obsahu webu — propose → change set → publish (SDK pipeline)",
+    status: "NASAZENO",
+    changed: [
+      "Nová doména ai_content: propose, change sets, publish, rollback, history, fields.",
+      "Stejná pipeline dostupná i mimo portál (SDK) — základ pro automatické AI úpravy obsahu.",
+      "Nové endpointy: /websites/{id}/ai/propose, /ai/change-sets, /ai/history, /ai/fields."
+    ],
+    meaning: "Obsah webu je strojově čitelný/zapisovatelný — AI může web upravovat konzistentně jako člověk v portálu.",
+    impact: "Produkční API má nyní 155 endpointů; change setů zatím 0 (feature čerstvě nasazená)."
+  },
+  {
+    date: "2026-09-02", repo: "customers-platform", commit: "2e72756", kind: "fix",
+    title: "Stabilizace produkce — DB pooler, connect přes worker, opravy importu",
+    status: "NASAZENO",
+    changed: [
+      "Supabase transaction pooler (:6543) + malý pool + statement_cache_size=0 — konec odpojování v serverless.",
+      "Connect webu: import obsahu přes worker job (site_connect.import) místo sync requestu (60s limit Vercelu).",
+      "Validátor: prázdná sekce OK při capabilities false; intake neblokuje osiřelý draft.",
+      "Import zachovává kategorie (category/categoryLabel) u produktů a služeb."
+    ],
+    meaning: "Připojení většího webu už nepadá na limitu serverless requestu a databáze drží spojení — klidnější provoz.",
+    impact: "Běžný provoz; souvisí s prvním produkčním CONNECTED webem (Horizont)."
+  }
+];
+
+/* ══════════ PROBES — služby, které audit kontroluje ══════════
+   reachable: kontrolovatelné přes https (no-cors → odpověď = dostupné)
+   local: jen z localhostu (mixed content by https stránku zablokoval)  */
+const PROBES = [
+  { id:"api",  label:"CP API (Vercel)",            url:"https://customer-platform-chi.vercel.app/health/ready", reachable:true },
+  { id:"por",  label:"Portál — login.webybudoucnosti.cz", url:"https://login.webybudoucnosti.cz/", reachable:true },
+  { id:"web",  label:"Web CONNECTED (Horizont)",   url:"https://studio-horizont.vercel.app/", reachable:true },
+  { id:"run",  label:"Site runtime",               url:"https://customer-site-runtime.vercel.app/", reachable:true },
+  { id:"sup",  label:"Supabase (auth health)",     url:"https://mljqltwcdqknezuqpisb.supabase.co/auth/v1/health", reachable:true },
+  { id:"trb",  label:"TURBOW UI (localhost:8877)", url:"http://localhost:8877/", reachable:false }
+];
+const DOMAIN_PROBES = [
+  "https://mirabee.cz/","https://webybudoucnosti.cz/","https://webyprobyznys.cz/",
+  "https://sheskates.cz/","https://ninja-tyden.cz/","https://tjkrupka.cz/",
+  "https://app.tjkrupka.cz/","https://brozek24.cz/"
+];
+
+const $ = s => document.querySelector(s);
+const isLocalPage = location.protocol === "http:" && ["localhost","127.0.0.1"].includes(location.hostname);
+let auditing = false;
+
+function setNodeState(id, cls, label){
+  const n = document.getElementById("n-"+id);
+  if(!n) return;
+  n.classList.remove("ok","down","local","pending");
+  if(cls) n.classList.add(cls);
+  const st = n.querySelector(".n-state");
+  if(st) st.textContent = label;
+}
+
+function logRow(time, name, state, text){
+  const box = $("#log-body"); const row = document.createElement("div");
+  row.className = "log-row";
+  row.innerHTML = `<span class="tm">${time}</span><span class="nm">${name}</span><span class="st ${state}">${text}</span>`;
+  box.appendChild(row);
+  const cnt = box.children.length;
+  $("#log-count").textContent = cnt + " kontrol";
+}
+
+function probeOnce(url, timeoutMs){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), timeoutMs);
+  return fetch(url, { method:"GET", mode:"no-cors", cache:"no-store", signal:ctrl.signal })
+    .then(()=>true)
+    .catch(()=>false)
+    .finally(()=>clearTimeout(t));
+}
+
+async function runAudit(){
+  if(auditing) return;
+  auditing = true;
+  const btn = $("#btn-audit"); btn.disabled = true;
+  $("#audit-ico").innerHTML = '<span class="spin"></span>';
+  $("#audit-label").textContent = "Probíhá audit…";
+  $("#log-box").classList.add("open"); $("#log-body").innerHTML = "";
+  $("#log-count").textContent = "";
+
+  // pending stavy v mapě
+  PROBES.forEach(p => { if(p.reachable || isLocalPage) setNodeState(p.id,"pending","kontroluji…"); });
+
+  const now = new Date();
+  const ts = now.toLocaleTimeString("cs-CZ");
+  const results = [];
+  const targets = PROBES.filter(p => p.reachable || isLocalPage);
+
+  for(const p of targets){
+    const ok = await probeOnce(p.url, 8000);
+    results.push({ id:p.id, ok, label:p.label, url:p.url });
+    if(ok){
+      logRow(ts, p.label, "ok", "DOSTUPNÉ");
+      setNodeState(p.id, "ok", "dostupné");
+    } else {
+      logRow(ts, p.label, "bad", "NEDOSTUPNÉ");
+      setNodeState(p.id, "down", "nedostupné");
+    }
+  }
+
+  // TURBOW mimo localhost — nelze měřit (mixed content), stav lokální
+  const trb = PROBES.find(p=>p.id==="trb");
+  if(!isLocalPage){
+    logRow(ts, trb.label, "local", "lokální — neověřeno z https");
+    setNodeState("trb", "local", "lokální služba");
+  }
+
+  // domény z pruhu
+  const domResults = [];
+  for(const u of DOMAIN_PROBES){
+    const ok = await probeOnce(u, 8000);
+    domResults.push({ok, url:u});
+    const host = u.replace(/^https:\/\//,"").replace(/\/$/,"");
+    logRow(ts, host, ok ? "ok" : "bad", ok ? "DOSTUPNÉ" : "NEDOSTUPNÉ");
+  }
+
+  const allRes = results.concat(domResults);
+  const up = allRes.filter(r=>r.ok).length;
+  const down = allRes.filter(r=>!r.ok).length;
+  $("#sum-total").textContent = targets.length + domResults.length + " služeb";
+  const sOk = $("#sum-ok"), sBad = $("#sum-bad"), sWarn = $("#sum-warn");
+  sOk.querySelector("b").textContent = up;
+  sOk.style.display = up ? "inline-block" : "none";
+  sBad.querySelector("b").textContent = down;
+  sBad.style.display = down ? "inline-block" : "none";
+  sWarn.querySelector("b").textContent = isLocalPage ? 0 : 1;
+  sWarn.style.display = !isLocalPage ? "inline-block" : "none";
+  $("#audit-time").textContent = "audit dokončen " + new Date().toLocaleTimeString("cs-CZ");
+
+  $("#audit-ico").innerHTML = "&#10003;";
+  $("#audit-label").textContent = "Audit hotov — spustit znovu";
+  auditing = false; btn.disabled = false;
+}
+
+/* ══════════ Vykreslení úprav ══════════ */
+function renderUpdates(){
+  const kindClass = { feat:"kind-feat", fix:"kind-fix", navrh:"kind-navrh", ops:"kind-ops" };
+  const kindLabel = { feat:"feat", fix:"fix", navrh:"návrh", ops:"ops" };
+  const list = $("#upd-list");
+  list.innerHTML = "";
+  UPDATES.forEach(u=>{
+    const d = document.createElement("details");
+    d.className = "upd";
+    d.innerHTML = `
+      <summary>
+        <span class="d-date">${u.date}</span>
+        <span class="kind-chip ${kindClass[u.kind]||kindClass.ops}">${kindLabel[u.kind]||u.kind}</span>
+        <span class="d-repo">${u.repo} · ${u.commit}</span>
+        <span class="d-title">${u.title}</span>
+        <span class="kind-chip ${u.status==='NASAZENO'?'kind-feat':u.status==='NÁVRH'?'kind-navrh':'kind-fix'}" style="margin-left:auto">${u.status}</span>
+        <span class="chev">&#9662;</span>
+      </summary>
+      <div class="d-body">
+        <h4 class="ch">Co se změnilo</h4>
+        <ul>${u.changed.map(c=>`<li>${c}</li>`).join("")}</ul>
+        <h4 class="jn">Co je jinak / co to znamená</h4>
+        <p>${u.meaning}</p>
+        <h4 class="do">Dopad / stav</h4>
+        <p>${u.impact}</p>
+        <a class="commit" target="_blank" rel="noopener"
+           href="https://github.com/mirabeecko/${u.repo}/commit/${u.commit}">github.com/mirabeecko/${u.repo} · ${u.commit}</a>
+      </div>`;
+    list.appendChild(d);
+  });
+}
+
+/* ══════════ Init ══════════ */
+renderUpdates();
+$("#probe-list").textContent = PROBES.filter(p=>p.reachable).map(p=>p.url.replace("https://","")).join(" · ");
+if(isLocalPage){
+  setNodeState("trb","local","lokální služba");
+  const tr = PROBES.find(p=>p.id==="trb");
+  // lokální prostředí: TURBOW půjde měřit
+} else {
+  setNodeState("trb","local","lokální služba");
+}
+document.querySelectorAll(".node[data-probe]").forEach(n=>{
+  const probe = PROBES.find(p=>p.id===n.dataset.probe);
+  if(probe && probe.reachable && !isLocalPage && n.id!=="n-trb"){
+    // necháme čekající stav do auditu
+  }
+});
+</script>
+</body>
+</html>

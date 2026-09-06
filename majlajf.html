@@ -274,6 +274,132 @@
     <!-- ═══════════════ MAIN ═══════════════ -->
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
 
+        <!-- ━━━━━━━━━━━━━━━ PROJEKTY & DOMÉNY — světlý pruh (jedna session = jeden řádek) ━━━━━━━━━━━━━━━ -->
+        <style>
+            .dom-row{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+            .dom-row::-webkit-scrollbar{height:3px}
+            .dom-row::-webkit-scrollbar-thumb{background:rgba(22,22,28,.25);border-radius:3px}
+            .dom-chip{display:inline-flex;align-items:center;gap:8px;text-decoration:none;background:#ffffff;border:1px solid rgba(22,22,28,.14);border-radius:13px;padding:6px 12px 6px 7px;color:#16161c;white-space:nowrap;transition:.15s;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+            .dom-chip:hover{border-color:var(--acc,#16161c);box-shadow:0 3px 12px rgba(0,0,0,.16);transform:translateY(-1px)}
+            .dom-logo{width:24px;height:24px;border-radius:7px;object-fit:contain;background:rgba(22,22,28,.05);flex:none}
+            .mj-mono{width:24px;height:24px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;background:var(--acc,#333);flex:none;font-family:'Plus Jakarta Sans',sans-serif}
+            .chip-txt{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+            .chip-txt .nm{font-size:12.5px;font-weight:800;color:#16161c}
+            .chip-txt .dm{font-size:9.5px;color:#8a8a94;font-weight:600}
+            .strip-sep{height:1px;background:rgba(22,22,28,.12);margin:8px 0 9px}
+        </style>
+        <section id="sec-projekty" class="section-anchor">
+            <div style="background:linear-gradient(135deg,#f7f6f1,#edece5);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:13px 16px 9px;box-shadow:0 4px 24px rgba(0,0,0,.35)">
+                <div class="flex items-center gap-2 mb-2.5" style="color:#4b4b57">
+                    <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#ff4a00,#3b82f6);flex:none"></div>
+                    <h2 style="font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;margin:0">Projekty &amp; domény</h2>
+                    <span style="font-size:10px;color:#9a9aa4;margin-left:auto;font-weight:600">loga + odkaz — vše na jednom řádku</span>
+                </div>
+                <div class="dom-row">
+                    <a class="dom-chip" style="--acc:#FF4A00" href="https://mirabee.cz" target="_blank" rel="noopener" title="mirabee.cz">
+                        <img class="dom-logo" alt="" data-acc="#FF4A00" data-mono="M" data-cands='["data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 fill=%27%2317140D%27/%3E%3Crect x=%2710%27 y=%2742%27 width=%2744%27 height=%278%27 fill=%27%23FF4A00%27/%3E%3Crect x=%2710%27 y=%2714%27 width=%2730%27 height=%278%27 fill=%27%23F3F0E8%27/%3E%3C/svg%3E","https://www.google.com/s2/favicons?sz=64&domain=mirabee.cz"]'>
+                        <span class="chip-txt"><span class="nm">Mirabee.cz</span><span class="dm">mirabee.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#14B8A6" href="https://webybudoucnosti.cz" target="_blank" rel="noopener" title="webybudoucnosti.cz">
+                        <img class="dom-logo" alt="" data-acc="#14B8A6" data-mono="W" data-cands='["https://webybudoucnosti.cz/favicon.ico?favicon.3fpu2ql9ns1a0.ico","https://www.google.com/s2/favicons?sz=64&domain=webybudoucnosti.cz"]'>
+                        <span class="chip-txt"><span class="nm">WebyBudoucnosti</span><span class="dm">webybudoucnosti.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#3B82F6" href="https://webyprobyznys.cz" target="_blank" rel="noopener" title="webyprobyznys.cz">
+                        <img class="dom-logo" alt="" data-acc="#3B82F6" data-mono="P" data-cands='["https://webyprobyznys.cz/favicon.ico?favicon.3fpu2ql9ns1a0.ico","https://www.google.com/s2/favicons?sz=64&domain=webyprobyznys.cz"]'>
+                        <span class="chip-txt"><span class="nm">WebyProByznys</span><span class="dm">webyprobyznys.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#0f172a" href="https://sheskates.cz" target="_blank" rel="noopener" title="sheskates.cz">
+                        <img class="dom-logo" alt="" data-acc="#0f172a" data-mono="S" data-cands='["https://www.google.com/s2/favicons?sz=64&domain=sheskates.cz","https://sheskates.cz/assets/favicon.png"]'>
+                        <span class="chip-txt"><span class="nm">SheSkates</span><span class="dm">sheskates.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#f59e0b" href="https://ninja-tyden.cz" target="_blank" rel="noopener" title="ninja-tyden.cz">
+                        <img class="dom-logo" alt="" data-acc="#f59e0b" data-mono="N" data-cands='["https://ninja-tyden.cz/favicon/apple-touch-icon.png","https://www.google.com/s2/favicons?sz=64&domain=ninja-tyden.cz"]'>
+                        <span class="chip-txt"><span class="nm">Ninja Týden</span><span class="dm">ninja-tyden.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#16a34a" href="https://tjkrupka.cz" target="_blank" rel="noopener" title="tjkrupka.cz">
+                        <img class="dom-logo" alt="" data-acc="#16a34a" data-mono="T" data-cands='["https://www.google.com/s2/favicons?sz=64&domain=tjkrupka.cz"]'>
+                        <span class="chip-txt"><span class="nm">TJ Krupka</span><span class="dm">tjkrupka.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#16a34a" href="https://app.tjkrupka.cz" target="_blank" rel="noopener" title="app.tjkrupka.cz">
+                        <img class="dom-logo" alt="" data-acc="#16a34a" data-mono="A" data-cands='["https://app.tjkrupka.cz/apple-touch-icon.png","https://www.google.com/s2/favicons?sz=64&domain=app.tjkrupka.cz"]'>
+                        <span class="chip-txt"><span class="nm">TJ Krupka App</span><span class="dm">app.tjkrupka.cz</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#060606" href="https://brozek24.cz" target="_blank" rel="noopener" title="brozek24.cz">
+                        <img class="dom-logo" alt="" data-acc="#060606" data-mono="B" data-cands='[]'>
+                        <span class="chip-txt"><span class="nm">Brožek24</span><span class="dm">brozek24.cz</span></span>
+                    </a>
+                </div>
+                <div class="strip-sep"></div>
+                <div class="flex items-center gap-2 mb-2" style="color:#4b4b57">
+                    <div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#ff00ff,#00e5ff);flex:none"></div>
+                    <h2 style="font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.2em;margin:0">Systémy</h2>
+                </div>
+                <div class="dom-row" style="padding-bottom:6px">
+                    <a class="dom-chip" style="--acc:#ff1493" href="http://localhost:8877" target="_blank" rel="noopener" title="TURBOW — CRM a generátor webů (lokální služba)">
+                        <span class="mj-mono" style="background:linear-gradient(135deg,#ff1493,#7c3aed)">T</span>
+                        <span class="chip-txt"><span class="nm">TURBOW</span><span class="dm">localhost:8877 · CRM</span></span>
+                    </a>
+                    <a class="dom-chip" style="--acc:#14B8A6" href="https://login.webybudoucnosti.cz" target="_blank" rel="noopener" title="Portál zákazníků — Customer Platform">
+                        <img class="dom-logo" alt="" data-acc="#14B8A6" data-mono="P" data-cands='["https://webybudoucnosti.cz/favicon.ico?favicon.3fpu2ql9ns1a0.ico"]'>
+                        <span class="chip-txt"><span class="nm">Portál zákazníků</span><span class="dm">login.webybudoucnosti.cz</span></span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━━━━━━━━━━━━━ PROPOJENÍ SYSTÉMU — odkaz na živou mapu ━━━━━━━━━━━━━━━ -->
+        <section id="sec-map" class="section-anchor">
+            <div class="app-card neon-lime rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-2 h-2 rounded-full" style="background:var(--neon-lime);box-shadow:0 0 8px var(--neon-lime);animation:breathe 2.4s infinite"></div>
+                        <span class="text-xs font-bold uppercase tracking-wider" style="color:var(--neon-lime);">Propojení systému — živá mapa</span>
+                    </div>
+                    <p class="text-[11.5px] text-[#9494a8] leading-relaxed mb-1" style="margin:0">
+                        Schéma kdo co dělá (TURBOW · Customer Platform API · Supabase · portál · weby), kudy tečou data,
+                        tlačítko <b style="color:#d4d4e0">auditu dostupnosti</b> (překreslí mapu podle skutečného stavu)
+                        a <b style="color:#d4d4e0">posledních 5 úprav systému</b> s rozklikávacím shrnutím.
+                    </p>
+                    <div class="flex gap-2 mt-2 flex-wrap">
+                        <span class="tag-gray" style="font-size:9px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,.1);color:#5a5a6e;text-transform:uppercase;letter-spacing:.06em">mapa</span>
+                        <span style="font-size:9px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,.1);color:#5a5a6e;text-transform:uppercase;letter-spacing:.06em">audit</span>
+                        <span style="font-size:9px;font-weight:700;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,.1);color:#5a5a6e;text-transform:uppercase;letter-spacing:.06em">posledních 5 úprav</span>
+                    </div>
+                </div>
+                <a href="propojeni-systemu.html" target="_blank" rel="noopener"
+                   class="text-xs font-bold px-5 py-3 rounded-xl text-center transition-all hover:scale-105 whitespace-nowrap"
+                   style="background:rgba(57,255,20,.12);color:var(--neon-lime);border:1px solid rgba(57,255,20,.35);box-shadow:0 0 18px rgba(57,255,20,.12)">
+                    Otevřít mapu systému →
+                </a>
+            </div>
+        </section>
+
+        <script>
+            (function(){
+                function loadDomLogos(){
+                    document.querySelectorAll('img.dom-logo[data-cands]').forEach(function(img){
+                        var cands=[]; try{cands=JSON.parse(img.getAttribute('data-cands')||'[]');}catch(e){}
+                        var i=0;
+                        function next(){
+                            if(i>=cands.length){
+                                var m=document.createElement('span');
+                                m.className='mj-mono';
+                                m.style.background=img.getAttribute('data-acc')||'#333';
+                                m.textContent=img.getAttribute('data-mono')||'•';
+                                img.parentNode.replaceChild(m,img);
+                                return;
+                            }
+                            img.src=cands[i++];
+                        }
+                        img.addEventListener('error',next);
+                        if(cands.length){ img.src=cands[0]; i=1; } else { next(); }
+                    });
+                }
+                if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',loadDomLogos); }
+                else { loadDomLogos(); }
+            })();
+        </script>
+
         <!-- ━━━━━━━━━━━━━━━ AI PŘEHLED — Email + Kalendář ━━━━━━━━━━━━━━━ -->
         <section id="sec-ai-overview" class="section-anchor">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
