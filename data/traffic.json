@@ -1,6 +1,6 @@
 {
   "schema": "majlajf-traffic/v1",
-  "updated_at": "2026-09-06T14:43:33+02:00",
+  "updated_at": "2026-09-06T22:22:24+02:00",
   "windows": {
     "overview_days": 30,
     "short_days": 7
@@ -17,7 +17,7 @@
         "totalUsers": 62,
         "newUsers": 64,
         "bounceRate": 0.6538461538461539,
-        "avgSessionDuration": 67.55638732051283,
+        "avgSessionDuration": 67.55640092307694,
         "pageViews": 110,
         "conversions": 0.0,
         "revenue": 0.0
@@ -201,12 +201,12 @@
           "users": 4
         },
         {
-          "channel": "Unassigned",
-          "sessions": 3,
-          "users": 3
+          "channel": "Organic Social",
+          "sessions": 2,
+          "users": 2
         },
         {
-          "channel": "Organic Social",
+          "channel": "Unassigned",
           "sessions": 2,
           "users": 2
         }
@@ -427,6 +427,75 @@
       ]
     },
     {
+      "domain": "webybudoucnosti.cz",
+      "name": "webybudoucnosti.cz",
+      "property_id": "552512090",
+      "category": "leadgen",
+      "overview": {
+        "sessions": 39,
+        "totalUsers": 29,
+        "newUsers": 29,
+        "bounceRate": 0.9230769230769231,
+        "avgSessionDuration": 81.4949314102564,
+        "pageViews": 45,
+        "conversions": 0.0,
+        "revenue": 0.0
+      },
+      "last7": {
+        "sessions": 39,
+        "totalUsers": 29,
+        "pageViews": 45,
+        "conversions": 0.0
+      },
+      "daily": [
+        {
+          "date": "20260903",
+          "sessions": 4,
+          "users": 2,
+          "pageViews": 2,
+          "conversions": 0.0
+        },
+        {
+          "date": "20260904",
+          "sessions": 15,
+          "users": 15,
+          "pageViews": 18,
+          "conversions": 0.0
+        },
+        {
+          "date": "20260905",
+          "sessions": 7,
+          "users": 6,
+          "pageViews": 13,
+          "conversions": 0.0
+        },
+        {
+          "date": "20260906",
+          "sessions": 13,
+          "users": 9,
+          "pageViews": 12,
+          "conversions": 0.0
+        }
+      ],
+      "sources": [
+        {
+          "channel": "Direct",
+          "sessions": 32,
+          "users": 24
+        },
+        {
+          "channel": "Paid Search",
+          "sessions": 5,
+          "users": 5
+        },
+        {
+          "channel": "Unassigned",
+          "sessions": 4,
+          "users": 2
+        }
+      ]
+    },
+    {
       "domain": "dousa-elektro.cz",
       "name": "dousa-elektro.cz",
       "property_id": "535620018",
@@ -592,93 +661,24 @@
       ]
     },
     {
-      "domain": "webybudoucnosti.cz",
-      "name": "webybudoucnosti.cz",
-      "property_id": "552512090",
-      "category": "leadgen",
-      "overview": {
-        "sessions": 29,
-        "totalUsers": 23,
-        "newUsers": 23,
-        "bounceRate": 0.896551724137931,
-        "avgSessionDuration": 96.48144672413792,
-        "pageViews": 37,
-        "conversions": 0.0,
-        "revenue": 0.0
-      },
-      "last7": {
-        "sessions": 29,
-        "totalUsers": 23,
-        "pageViews": 37,
-        "conversions": 0.0
-      },
-      "daily": [
-        {
-          "date": "20260903",
-          "sessions": 4,
-          "users": 2,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260904",
-          "sessions": 15,
-          "users": 15,
-          "pageViews": 18,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260905",
-          "sessions": 7,
-          "users": 6,
-          "pageViews": 13,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260906",
-          "sessions": 3,
-          "users": 3,
-          "pageViews": 4,
-          "conversions": 0.0
-        }
-      ],
-      "sources": [
-        {
-          "channel": "Direct",
-          "sessions": 24,
-          "users": 18
-        },
-        {
-          "channel": "Paid Search",
-          "sessions": 5,
-          "users": 5
-        },
-        {
-          "channel": "Unassigned",
-          "sessions": 1,
-          "users": 1
-        }
-      ]
-    },
-    {
       "domain": "live-vet.cz",
       "name": "live-vet.cz",
       "property_id": "552474189",
       "category": "service",
       "overview": {
-        "sessions": 22,
-        "totalUsers": 21,
-        "newUsers": 21,
-        "bounceRate": 0.9545454545454546,
-        "avgSessionDuration": 5.801484681818182,
-        "pageViews": 23,
+        "sessions": 23,
+        "totalUsers": 22,
+        "newUsers": 22,
+        "bounceRate": 0.9565217391304348,
+        "avgSessionDuration": 5.549246217391304,
+        "pageViews": 24,
         "conversions": 3.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 22,
-        "totalUsers": 21,
-        "pageViews": 23,
+        "sessions": 23,
+        "totalUsers": 22,
+        "pageViews": 24,
         "conversions": 3.0
       },
       "daily": [
@@ -691,17 +691,17 @@
         },
         {
           "date": "20260906",
-          "sessions": 7,
-          "users": 7,
-          "pageViews": 7,
+          "sessions": 8,
+          "users": 8,
+          "pageViews": 8,
           "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 22,
-          "users": 21
+          "sessions": 23,
+          "users": 22
         },
         {
           "channel": "Unassigned",
@@ -956,6 +956,49 @@
       ]
     },
     {
+      "domain": "webyprobyznys.cz",
+      "name": "webyprobyznys.cz",
+      "property_id": "552768005",
+      "category": "leadgen",
+      "overview": {
+        "sessions": 4,
+        "totalUsers": 3,
+        "newUsers": 3,
+        "bounceRate": 1.0,
+        "avgSessionDuration": 3.867961,
+        "pageViews": 5,
+        "conversions": 0.0,
+        "revenue": 0.0
+      },
+      "last7": {
+        "sessions": 4,
+        "totalUsers": 3,
+        "pageViews": 5,
+        "conversions": 0.0
+      },
+      "daily": [
+        {
+          "date": "20260906",
+          "sessions": 4,
+          "users": 3,
+          "pageViews": 5,
+          "conversions": 0.0
+        }
+      ],
+      "sources": [
+        {
+          "channel": "Direct",
+          "sessions": 3,
+          "users": 3
+        },
+        {
+          "channel": "Unassigned",
+          "sessions": 1,
+          "users": 1
+        }
+      ]
+    },
+    {
       "domain": "sheskates.cz",
       "name": "SheSkates",
       "property_id": "540216883",
@@ -994,9 +1037,9 @@
       ]
     },
     {
-      "domain": "webyprobyznys.cz",
-      "name": "webyprobyznys.cz",
-      "property_id": "552768005",
+      "domain": "mirabee.cz",
+      "name": "mirabee.cz",
+      "property_id": "222057102",
       "category": "leadgen",
       "overview": {
         "sessions": 0,
