@@ -550,7 +550,7 @@ function logRow(time,name,state,text){
   box.appendChild(row);
   $('#log-count').textContent=box.children.length+' kontrol';
 }
-const probeOnce=(url,ms=7000)=>{
+const probeOnce=(url,ms=12000)=>{
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),ms);
   return fetch(url,{method:'GET',mode:'no-cors',cache:'no-store',signal:ctrl.signal}).then(()=>true).catch(()=>false).finally(()=>clearTimeout(t));
 };
@@ -707,7 +707,7 @@ async function runAudit(){
       warns.push({sev:'info',txt:'<b>TURBOW</b> běží lokálně na Macu (:8877) — z https ji nelze změřit. Pro kontrolu TURBOW otevři stránku z localhostu.'});
       svcRes.push({key:s.key,ok:true,local:true}); continue;
     }
-    const ok = await probeOnce(s.url);
+    const ok = await probeOnce(s.url, 18000);
     svcRes.push({key:s.key,ok});
     const c=document.getElementById('infra-'+s.key);
     if(c){ c.style.borderColor = ok?'rgba(57,255,20,.5)':'rgba(255,77,77,.6)'; c.querySelector('.sdot').style.background = ok?'var(--ok)':'var(--bad)'; }
