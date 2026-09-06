@@ -524,34 +524,42 @@
             </div>
         </section>
 
-        <!-- ━━━━━━━━━━━━━━━ GA4 RYCHLÝ PŘEHLED ━━━━━━━━━━━━━━━ -->
+        <!-- ━━━━━━━━━━━━━━━ NÁVŠTĚVNOST WEBŮ (traffic feed) ━━━━━━━━━━━━━━━ -->
         <section id="sec-ga4" class="section-anchor">
-            <div class="flex items-center gap-3 mb-4">
-                <div class="w-1.5 h-5 bg-[var(--neon-amber)] rounded-full" style="box-shadow: 0 0 10px var(--neon-amber);"></div>
-                <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-amber); --cat-color:var(--neon-amber)">GA4 — Analytics</h2>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="app-card neon-amber rounded-2xl p-4 flex flex-col gap-1">
-                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Aktivní uživatelé</span>
-                    <span class="text-2xl font-bold ga-number" style="color:var(--neon-amber);" id="ga-users">--</span>
-                    <span class="text-[9px] text-[#5a5a6e]">posledních 30 min</span>
+            <div class="flex items-center justify-between mb-4 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-5 bg-[var(--neon-amber)] rounded-full" style="box-shadow: 0 0 10px var(--neon-amber);"></div>
+                    <h2 class="cat-title text-xs font-bold uppercase tracking-[0.2em] flex items-center" style="color:var(--neon-amber); --cat-color:var(--neon-amber)">Návštěvnost webů</h2>
                 </div>
-                <div class="app-card neon-cyan rounded-2xl p-4 flex flex-col gap-1">
-                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Zobrazení dnes</span>
-                    <span class="text-2xl font-bold ga-number" style="color:var(--neon-cyan);" id="ga-views">--</span>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="prehled-webu-a-vps.html" class="text-[10px] px-3 py-1.5 rounded-lg font-semibold transition-transform hover:scale-105" style="background:rgba(0,229,255,0.10); color:var(--neon-cyan); border:1px solid rgba(0,229,255,0.25);">Weby · VPS · E-maily ↗</a>
+                    <a href="https://analytics.google.com/analytics/web/" target="_blank" class="text-[10px] px-3 py-1.5 rounded-lg font-semibold transition-transform hover:scale-105" style="background:rgba(255,180,40,0.12); color:var(--neon-amber); border:1px solid rgba(255,180,40,0.25);">Otevřít GA4 ↗</a>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3" id="traffic-summary">
+                <div class="app-card rounded-2xl p-4 flex flex-col gap-1">
+                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Weby s daty</span>
+                    <span class="text-2xl font-bold" style="color:var(--neon-amber);" id="sum-sites">--</span>
+                    <span class="text-[9px] text-[#5a5a6e]">z celkového počtu</span>
+                </div>
+                <div class="app-card rounded-2xl p-4 flex flex-col gap-1">
+                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Návštěvy 30 dní</span>
+                    <span class="text-2xl font-bold" style="color:var(--neon-cyan);" id="sum-sessions">--</span>
+                    <span class="text-[9px] text-[#5a5a6e]">sessions celkem</span>
+                </div>
+                <div class="app-card rounded-2xl p-4 flex flex-col gap-1">
+                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Uživatelé 30 dní</span>
+                    <span class="text-2xl font-bold" style="color:var(--neon-lime);" id="sum-users">--</span>
+                    <span class="text-[9px] text-[#5a5a6e]">active users</span>
+                </div>
+                <div class="app-card rounded-2xl p-4 flex flex-col gap-1">
+                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Zobrazení 30 dní</span>
+                    <span class="text-2xl font-bold" style="color:var(--neon-magenta);" id="sum-views">--</span>
                     <span class="text-[9px] text-[#5a5a6e]">page views</span>
                 </div>
-                <div class="app-card neon-lime rounded-2xl p-4 flex flex-col gap-1">
-                    <span class="text-[10px] uppercase tracking-wider text-[#5a5a6e]">Konverze</span>
-                    <span class="text-2xl font-bold ga-number" style="color:var(--neon-lime);" id="ga-conv">--</span>
-                    <span class="text-[9px] text-[#5a5a6e]">dnes</span>
-                </div>
-                <a href="https://analytics.google.com/analytics/web/" target="_blank" class="app-card neon-magenta rounded-2xl p-4 flex flex-col items-center justify-center gap-2 group hover:scale-[1.02] transition-transform">
-                    <svg class="w-6 h-6" style="color:var(--neon-magenta);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
-                    <span class="text-xs font-semibold text-[#c4c4d4] group-hover:text-white">Otevřít Analytics</span>
-                </a>
             </div>
-            <div id="ga4-status" class="text-[10px] text-[#5a5a6e] mt-2 text-right">Připojení k Analytics API...</div>
+            <div id="traffic-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+            <div id="ga4-status" class="text-[10px] text-[#5a5a6e] mt-2 text-right">Načítám data...</div>
         </section>
 
         <!-- ━━━━━━━━━━━━━━━ EMAIL — Stav schránky ━━━━━━━━━━━━━━━ -->
@@ -1106,44 +1114,106 @@
     refreshEmail();
     setInterval(refreshEmail, 5 * 60 * 1000);
 
-    // ═══════════════ GA4 DATA ═══════════════
-    async function loadGA4() {
+    // ═══════════════ NÁVŠTĚVNOST WEBŮ (traffic feed) ═══════════════
+    const TRAFFIC_COLORS = ['#ffb428', '#00e5ff', '#39ff14', '#ff00ff', '#ff1493'];
+
+    function fmtNum(n) {
+        if (n === null || n === undefined || isNaN(n)) return '—';
+        return Number(n).toLocaleString('cs-CZ');
+    }
+
+    function trafficSparkline(daily, color) {
+        const vals = (daily || []).map(d => Number(d.sessions) || 0);
+        const W = 100, H = 26, PAD = 2;
+        if (!vals.length) {
+            return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="w-full h-6" style="opacity:0.3"><line x1="${PAD}" y1="${H - PAD}" x2="${W - PAD}" y2="${H - PAD}" stroke="${color}" stroke-width="1.5"/></svg>`;
+        }
+        const max = Math.max.apply(null, vals.concat([1]));
+        const step = (W - 2 * PAD) / Math.max(vals.length - 1, 1);
+        const pts = vals.map((v, i) => {
+            const x = PAD + i * step;
+            const y = H - PAD - (v / max) * (H - 2 * PAD);
+            return x.toFixed(1) + ',' + y.toFixed(1);
+        });
+        const line = pts.join(' ');
+        const area = PAD + ',' + H + ' ' + line + ' ' + (W - PAD).toFixed(1) + ',' + H;
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" class="w-full h-6"><polygon points="${area}" fill="${color}" opacity="0.10"/><polyline points="${line}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+    }
+
+    function trafficCard(site, i) {
+        const color = TRAFFIC_COLORS[i % TRAFFIC_COLORS.length];
+        const o = site.overview || {};
+        const l7 = site.last7 || {};
+        const domain = site.domain || site.name || '?';
+        const sessions = Number(o.sessions) || 0;
+        const hasData = !site.error && (sessions > 0 || (Number(o.totalUsers) || 0) > 0);
+        let badge;
+        if (site.error) {
+            badge = `<span class="text-[9px] px-2 py-0.5 rounded-full font-bold" style="background:rgba(255,20,147,0.15); color:var(--neon-pink); border:1px solid rgba(255,20,147,0.3);" title="${escapeHtml(site.error)}">chyba měření</span>`;
+        } else if (hasData) {
+            badge = `<span class="text-[9px] px-2 py-0.5 rounded-full font-bold" style="background:rgba(57,255,20,0.12); color:var(--neon-lime); border:1px solid rgba(57,255,20,0.3);">${fmtNum(sessions)} / 30 dní</span>`;
+        } else {
+            badge = `<span class="text-[9px] px-2 py-0.5 rounded-full font-bold" style="background:rgba(148,148,168,0.12); color:#9494a8; border:1px solid rgba(148,148,168,0.25);">měření se spouští</span>`;
+        }
+        const sources = (site.sources || []).slice(0, 3).map(s => {
+            const pct = sessions ? Math.round((Number(s.sessions) / sessions) * 100) : 0;
+            return `<span class="text-[9px] px-1.5 py-0.5 rounded-md" style="background:rgba(255,255,255,0.05); color:#c4c4d4;">${escapeHtml(s.channel)} ${pct}%</span>`;
+        }).join(' ');
+        const meta = ((site.name && site.name !== domain) ? escapeHtml(site.name) + (site.category ? ' · ' : '') : '') + ((site.name && site.name !== domain) ? '' : (site.category ? escapeHtml(site.category) : ''));
+        return `
+        <div class="app-card rounded-2xl p-4 flex flex-col gap-3" style="border-color:${color}33;">
+            <div class="flex items-center gap-3">
+                <img src="https://www.google.com/s2/favicons?sz=64&domain=${encodeURIComponent(domain)}" class="w-8 h-8 rounded-lg" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold truncate" style="color:${color};">${escapeHtml(domain)}</div>
+                    <div class="text-[10px] text-[#5a5a6e] truncate">${meta}</div>
+                </div>
+                ${badge}
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <div><div class="text-[9px] uppercase tracking-wider text-[#5a5a6e]">Uživatelé</div><div class="text-base font-bold">${hasData ? fmtNum(o.totalUsers) : '—'}</div></div>
+                <div><div class="text-[9px] uppercase tracking-wider text-[#5a5a6e]">Zobrazení</div><div class="text-base font-bold">${hasData ? fmtNum(o.pageViews) : '—'}</div></div>
+                <div><div class="text-[9px] uppercase tracking-wider text-[#5a5a6e]">7 dní</div><div class="text-base font-bold">${hasData ? fmtNum(l7.sessions) : '—'}</div></div>
+            </div>
+            <div>${trafficSparkline(site.daily, color)}</div>
+            ${sources ? `<div class="flex flex-wrap gap-1.5">${sources}</div>` : ''}
+        </div>`;
+    }
+
+    async function loadTraffic() {
+        const grid = document.getElementById('traffic-grid');
+        const status = document.getElementById('ga4-status');
         try {
-            const res = await fetch('/api/ga4-quick');
-            if (!res.ok) throw new Error('GA4 API nedostupné');
-            const data = await res.json();
-            document.getElementById('ga-users').textContent = data.activeUsers || '--';
-            document.getElementById('ga-views').textContent = data.todayViews || '--';
-            document.getElementById('ga-conv').textContent = data.todayConversions || '--';
-            document.getElementById('ga4-status').textContent = 'Live data • ' + new Date().toLocaleTimeString('cs-CZ');
+            const res = await fetch('data/traffic.json', { cache: 'no-store' });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const feed = await res.json();
+            const sites = feed.sites || [];
+            const live = sites.filter(s => !s.error && (Number((s.overview || {}).sessions) || 0) > 0);
+            const sum = key => sites.reduce((a, s) => a + (Number((s.overview || {})[key]) || 0), 0);
+            document.getElementById('sum-sites').textContent = fmtNum(live.length) + '/' + fmtNum(sites.length);
+            document.getElementById('sum-sessions').textContent = fmtNum(sum('sessions'));
+            document.getElementById('sum-users').textContent = fmtNum(sum('totalUsers'));
+            document.getElementById('sum-views').textContent = fmtNum(sum('pageViews'));
+            grid.innerHTML = sites.map(trafficCard).join('');
+            const upd = feed.updated_at ? new Date(feed.updated_at) : null;
+            status.textContent = 'GA4 • ' + (upd && !isNaN(upd) ? 'aktualizace ' + upd.toLocaleString('cs-CZ') : String(feed.updated_at || ''));
+            status.style.color = 'var(--neon-lime)';
         } catch (e) {
-            // Fallback: lokální API
-            try {
-                const localRes = await fetch('http://localhost:3111/ga4-quick');
-                if (localRes.ok) {
-                    const data = await localRes.json();
-                    document.getElementById('ga-users').textContent = data.activeUsers || '--';
-                    document.getElementById('ga-views').textContent = data.todayViews || '--';
-                    document.getElementById('ga-conv').textContent = data.todayConversions || '--';
-                    document.getElementById('ga4-status').textContent = 'Live data • ' + new Date().toLocaleTimeString('cs-CZ');
-                } else {
-                    showGA4Placeholder();
-                }
-            } catch (e2) {
-                showGA4Placeholder();
-            }
+            grid.innerHTML = `<div class="app-card rounded-2xl p-5 col-span-full">
+                <div class="text-sm font-semibold" style="color:var(--neon-amber);">Feed dat není dostupný</div>
+                <div class="text-[11px] text-[#5a5a6e] mt-1">Data se aktualizují každé ráno z GA4. Lokálně spusť: <code style="background:#1a1a24;padding:1px 4px;border-radius:3px;">python3 .dev-status-checker/traffic_feed.py</code> · ${escapeHtml(e.message)}</div>
+            </div>`;
+            document.getElementById('sum-sites').textContent = '—';
+            document.getElementById('sum-sessions').textContent = '—';
+            document.getElementById('sum-users').textContent = '—';
+            document.getElementById('sum-views').textContent = '—';
+            status.textContent = '⚠ feed nedostupný — ' + e.message;
+            status.style.color = 'var(--neon-pink)';
         }
     }
 
-    function showGA4Placeholder() {
-        document.getElementById('ga-users').textContent = '—';
-        document.getElementById('ga-views').textContent = '—';
-        document.getElementById('ga-conv').textContent = '—';
-        document.getElementById('ga4-status').textContent = '⚠ API nedostupné — zobrazuji placeholder';
-    }
-
-    loadGA4();
-    setInterval(loadGA4, 60 * 1000);
+    loadTraffic();
+    setInterval(loadTraffic, 5 * 60 * 1000);
 
     // ═══════════════ AI EMAIL SUMMARY ═══════════════
     async function refreshAIEmailSummary() {
