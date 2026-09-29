@@ -4,6 +4,11 @@
       "source": "/mission-control",
       "destination": "/mission-control/",
       "permanent": true
+    },
+    {
+      "source": "/datahub",
+      "destination": "/datahub/",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -14,6 +19,10 @@
     {
       "source": "/mission-control/:path*",
       "destination": "/mission-control/index.html"
+    },
+    {
+      "source": "/datahub/:path*",
+      "destination": "/datahub/index.html"
     }
   ]
 }
