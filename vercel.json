@@ -14,6 +14,11 @@
       "source": "/llm-arena",
       "destination": "/llm-arena/",
       "permanent": true
+    },
+    {
+      "source": "/ppc-generator",
+      "destination": "/ppc-generator/",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -32,10 +37,17 @@
     {
       "source": "/llm-arena/:path*",
       "destination": "/llm-arena/index.html"
+    },
+    {
+      "source": "/ppc-generator/:path*",
+      "destination": "/ppc-generator/index.html"
     }
   ],
   "functions": {
     "api/arena.js": {
+      "maxDuration": 300
+    },
+    "api/ppc.js": {
       "maxDuration": 300
     }
   }

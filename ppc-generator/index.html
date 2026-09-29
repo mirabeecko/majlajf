@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="robots" content="noindex,nofollow">
+<title>PPC Generator — kompletní reklamní sestavy pro Google Ads Editor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: {
+    sans: ['"Plus Jakarta Sans"','Inter','system-ui','sans-serif'],
+    mono: ['"SF Mono"','ui-monospace','monospace'],
+  }}}};
+</script>
+<style>
+  :root{
+    --bg-primary:#0a0a0f; --bg-secondary:#111118; --border:rgba(255,255,255,.06);
+    --text-primary:#f0f0f5; --text-secondary:#9494a8; --text-tertiary:#5a5a6e;
+    --neon-cyan:#00e5ff; --neon-magenta:#ff00ff; --neon-lime:#39ff14; --neon-amber:#ffb428; --neon-pink:#ff1493; --neon-violet:#7b6cff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);
+       -webkit-font-smoothing:antialiased;margin:0;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(900px 500px at 12% -10%,rgba(0,229,255,.07),transparent 60%),
+               radial-gradient(800px 500px at 88% 0%,rgba(255,0,255,.06),transparent 60%),
+               radial-gradient(700px 400px at 50% 110%,rgba(57,255,20,.05),transparent 60%)}
+  .wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:26px 18px 110px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--bg-secondary);
+        border:1px solid var(--border);border-radius:16px}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.03);
+        border:1px solid var(--border);font-size:12.5px;color:var(--text-secondary);transition:.16s;cursor:pointer;white-space:nowrap;text-decoration:none}
+  .pill:hover{border-color:rgba(0,229,255,.4);color:#fff;transform:translateY(-1px)}
+  .pill.on{border-color:rgba(0,229,255,.6);color:#00e5ff;background:rgba(0,229,255,.07);box-shadow:0 0 22px rgba(0,229,255,.12)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;border-radius:999px;cursor:pointer;
+       border:1px solid transparent;transition:.18s;font-family:inherit;white-space:nowrap}
+  .btn-main{background:linear-gradient(120deg,#00e5ff,#7b6cff 55%,#ff00ff);color:#05050a;padding:15px 32px;font-size:15.5px;
+            box-shadow:0 10px 34px rgba(0,229,255,.22)}
+  .btn-main:hover{filter:brightness(1.09);transform:translateY(-1px)}
+  .btn-main:disabled{opacity:.42;cursor:not-allowed;transform:none;filter:none}
+  .btn-ghost{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--text-secondary);padding:8px 15px;font-size:13px}
+  .btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+  .btn-go{background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00e5ff;padding:8px 16px;font-size:13px}
+  .btn-go:hover{background:rgba(0,229,255,.2)}
+  .btn-go:disabled{opacity:.4;cursor:not-allowed}
+  .btn-mini{padding:4px 9px;font-size:11.5px;border-radius:8px;background:rgba(255,255,255,.05);
+            border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-family:inherit;transition:.15s}
+  .btn-mini:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+  .btn-del{color:#ff1493}
+  .btn-del:hover{border-color:rgba(255,20,147,.5);color:#ff1493}
+  textarea,input,select{font-family:inherit;background:rgba(0,0,0,.35);border:1px solid var(--border);color:var(--text-primary);
+                        border-radius:11px;outline:none;transition:.16s;font-size:14px}
+  textarea:focus,input:focus,select:focus{border-color:rgba(0,229,255,.5);box-shadow:0 0 0 3px rgba(0,229,255,.08)}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--text-secondary) 50%),linear-gradient(135deg,var(--text-secondary) 50%,transparent 50%);
+         background-position:calc(100% - 15px) 51%,calc(100% - 10px) 51%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px;cursor:pointer}
+  select option{background:#15151d;color:#f0f0f5}
+  .mono{font-family:'SF Mono',ui-monospace,monospace}
+  .lbl{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-weight:700}
+  .badge{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+  .b-wait{background:rgba(255,255,255,.06);color:var(--text-tertiary)}
+  .b-run{background:rgba(0,229,255,.12);color:#00e5ff}
+  .b-ok{background:rgba(57,255,20,.12);color:#39ff14}
+  .b-err{background:rgba(255,20,147,.14);color:#ff1493}
+  .b-warn{background:rgba(255,180,40,.16);color:#ffb428}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);text-align:left;padding:8px 10px;font-weight:700}
+  td{padding:6px 8px;border-top:1px solid var(--border);font-size:13.5px;vertical-align:top}
+  .spin{width:14px;height:14px;border:2px solid rgba(0,229,255,.25);border-top-color:#00e5ff;border-radius:50%;
+        display:inline-block;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  a{color:#00e5ff;text-decoration:none}
+  details summary{cursor:pointer;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  .sumrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .arrow{transition:.2s;color:var(--text-tertiary);flex:none}
+  details[open] > summary .arrow{transform:rotate(90deg)}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#111118;border:1px solid rgba(0,229,255,.4);
+         padding:12px 20px;border-radius:12px;font-size:13.5px;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.6);max-width:92vw}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.04);
+        border:1px solid var(--border);font-size:12.5px}
+  .chip button{background:none;border:0;color:var(--text-tertiary);cursor:pointer;font-size:14px;line-height:1;padding:0}
+  .chip button:hover{color:#ff1493}
+  .grp{border:1px solid var(--border);border-radius:13px;padding:13px;background:rgba(255,255,255,.014)}
+  .len{font-size:10.5px;font-family:'SF Mono',monospace;color:var(--text-tertiary)}
+  .len.bad{color:#ff1493;font-weight:700}
+  .len.warn{color:#ffb428}
+  .drop{border:1.5px dashed rgba(0,229,255,.35);border-radius:14px;padding:22px;text-align:center;transition:.2s;cursor:pointer}
+  .drop.hot{background:rgba(0,229,255,.05);border-color:rgba(0,229,255,.7)}
+  .sect-ttl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+  .lock{position:fixed;inset:0;z-index:99;background:rgba(6,6,10,.94);display:flex;align-items:center;justify-content:center;padding:20px}
+  .flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11.5px;color:var(--text-tertiary)}
+  .flow .d{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.13);flex:none}
+  .flow .on{color:#00e5ff}.flow .on .d{background:#00e5ff;box-shadow:0 0 10px #00e5ff}
+  .flow .done{color:#39ff14}.flow .done .d{background:#39ff14}
+  .code{white-space:pre-wrap;font-family:'SF Mono',ui-monospace,monospace;font-size:12px;line-height:1.55;color:#c9cad8;
+        background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:11px;padding:12px;max-height:340px;overflow:auto;margin:0}
+  .num{font-family:'SF Mono',monospace;font-size:11.5px;color:var(--text-tertiary)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ───────── hlavička ───────── -->
+  <header class="mb-6">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <div class="flex items-center gap-3 mb-1">
+          <div class="w-11 h-11 flex items-center justify-center rounded-xl" style="background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(255,0,255,.14));border:1px solid rgba(0,229,255,.3)">
+            <svg class="w-6 h-6" style="color:var(--neon-cyan)" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-extrabold m-0 leading-tight">PPC Generator</h1>
+            <p class="text-[12.5px] m-0" style="color:var(--text-secondary)">Z adresy webu vygeneruje kompletní reklamní sestavy pro Google Ads — a uloží je jako jeden soubor pro import do Google Ads Editoru.</p>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <a class="pill" href="/" title="Zpět na rozcestník">← Rozcestník</a>
+        <a class="pill" href="/llm-arena/" title="Porovnání modelů">LLM Arena</a>
+        <button class="pill" id="btn-json">Uložit projekt</button>
+        <button class="pill" id="btn-load">Načíst projekt</button>
+      </div>
+    </div>
+    <div class="card mt-4 p-3.5 flex items-center gap-3 flex-wrap">
+      <span class="lbl">Postup</span>
+      <div class="flow" id="flow"></div>
+      <span class="flex-1"></span>
+      <span class="num" id="stat"></span>
+    </div>
+  </header>
+
+  <!-- ───────── zadání ───────── -->
+  <section class="card p-5 mb-4">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="w-1.5 h-5 rounded-full" style="background:var(--neon-cyan);box-shadow:0 0 10px var(--neon-cyan)"></div>
+      <h2 class="sect-ttl m-0" style="color:var(--neon-cyan)">Zadání</h2>
+    </div>
+
+    <div class="flex gap-2 flex-wrap items-stretch">
+      <input id="url" class="flex-1 min-w-[240px] px-4 py-3.5" placeholder="https://www.vasedomena.cz" spellcheck="false">
+      <button class="btn btn-main" id="btn-site" style="padding:14px 26px">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        Načíst web
+      </button>
+    </div>
+    <div id="site-info" class="mt-3"></div>
+
+    <details class="mt-4">
+      <summary class="sumrow">
+        <svg class="arrow w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+        <span class="text-[13.5px] font-semibold">Volitelné parametry</span>
+        <span class="text-[11.5px]" style="color:var(--text-tertiary)">čím víc toho víte, tím přesnější výstup (vše lze doplnit i později)</span>
+      </summary>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4" id="params"></div>
+      <div class="mt-3">
+        <span class="lbl">Dodatečné zadání pro modely</span>
+        <textarea id="uprava" rows="3" class="w-full mt-1.5 p-3" placeholder="Např.: cílovka jsou řemeslníci do 40 let, vyhni se slovu „levný“, zmiň Pardubice."></textarea>
+      </div>
+    </details>
+  </section>
+
+  <!-- ───────── kroky ───────── -->
+  <div class="flex items-center gap-3 mb-3 mt-6 flex-wrap">
+    <div class="w-1.5 h-5 rounded-full" style="background:var(--neon-violet);box-shadow:0 0 10px var(--neon-violet)"></div>
+    <h2 class="sect-ttl m-0" style="color:var(--neon-violet)">Kroky — u každého si vyberete model</h2>
+    <span class="flex-1"></span>
+    <button class="btn btn-go" id="btn-all">Spustit vše popořadě</button>
+  </div>
+  <div id="steps"></div>
+
+  <!-- ───────── výstup ───────── -->
+  <section class="card p-5 mt-6" id="out">
+    <div class="flex items-center gap-2 mb-3">
+      <div class="w-1.5 h-5 rounded-full" style="background:var(--neon-lime);box-shadow:0 0 10px var(--neon-lime)"></div>
+      <h2 class="sect-ttl m-0" style="color:var(--neon-lime)">Výstup pro Google Ads Editor</h2>
+    </div>
+    <p class="text-[13px] mt-0" style="color:var(--text-secondary)">
+      Soubor se generuje jako <b>UTF-16 (Unicode Text) s oddělovačem TAB</b> — přesně v tom tvaru, který Google Ads Editor sám exportuje a bezpečně naimportuje.
+      Prázdná buňka znamená „nic neměň“. Kampaň i reklamy jsou ve výchozím stavu <b>Paused</b>, takže po importu nic neutrácí, dokud si je nepustíte.
+    </p>
+    <div id="out-report" class="my-3"></div>
+    <div class="flex gap-2 flex-wrap items-center">
+      <button class="btn btn-main" id="btn-build">VYGENEROVAT DATA PRO IMPORT DO GOOGLE ADS EDITOR</button>
+      <button class="btn btn-ghost" id="btn-csv" style="display:none">Stáhnout i jako UTF-8 (pro kontrolu v Excelu)</button>
+      <button class="btn btn-ghost" id="btn-report" style="display:none">Zkopírovat report</button>
+    </div>
+    <details class="mt-4">
+      <summary class="sumrow">
+        <svg class="arrow w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
+        <span class="text-[13px] font-semibold">Jak soubor naimportovat (3 kroky)</span>
+      </summary>
+      <ol class="text-[13px] mt-2 pl-5" style="color:var(--text-secondary);line-height:1.75">
+        <li>V Google Ads Editoru mějte otevřený účet, do kterého chcete kampaně nahrát.</li>
+        <li>Menu <b>Účty → Ze souboru…</b> a vyberte stažený soubor (Editor ho bere jako „Unicode Text“).</li>
+        <li>Zkontrolujte náhled sloupců, klikněte <b>Importovat</b>, projděte seznam chyb a teprve pak <b>Ponechat navržené změny</b>. Do účtu se nic neposílá, dokud nedáte <b>Odeslat</b>.</li>
+      </ol>
+    </details>
+  </section>
+
+  <footer class="mt-8 text-[11.5px] text-center" style="color:var(--text-tertiary)">
+    Formát ověřen proti dokumentaci Google Ads Editoru, proti binárce Editoru 14.13 a proti reálnému importu z vašeho účtu.
+    · <a href="https://support.google.com/google-ads/editor/answer/57747?hl=cs" target="_blank">Seznam sloupců (Google)</a>
+    · <a href="https://support.google.com/google-ads/editor/answer/56368?hl=cs" target="_blank">Pravidla pro CSV (Google)</a>
+  </footer>
+</div>
+
+<div id="toast"></div>
+<div id="lock" class="lock" style="display:none"><div class="card p-6" style="max-width:420px">
+  <h3 class="m-0 mb-2 text-lg font-bold">Přístupný kód</h3>
+  <p class="text-[13px] mt-0 mb-3" style="color:var(--text-secondary)">Generátor volá placené modely, proto je za kódem. Kód zná majitel stránky.</p>
+  <input id="kod" type="password" class="w-full p-3 mb-3" placeholder="kód">
+  <button class="btn btn-main w-full" id="btn-kod" style="padding:12px">Odemknout</button>
+</div></div>
+
+<script src="import.js"></script>
+<script>
+/* ════════════════════════════════════════════════════════════════════════════
+   PPC Generator — klientská logika
+   ════════════════════════════════════════════════════════════════════════════ */
+const API = '/api/ppc';
+const STORE = 'ppc-generator-v1';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+  ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+/* ── stav ───────────────────────────────────────────────────────────────── */
+const PRAZDNY = () => ({
+  kod: '', url: '', uprava: '',
+  params: {
+    znacka: '', obor: '', cil: '', zeme: 'Česko', jazyk: 'čeština',
+    rozpocet: '15000', pocetSestav: '4', kliceNaSestavu: '12',
+    ton: '', konkurence: '', zakazanaSlova: '', sluzby: '', poznamka: '',
+    lokalitaId: '2203', startDate: '', stavKampane: 'Paused',
+    stavSestav: 'Paused', stavKlice: 'Paused', stavReklam: 'Paused',
+  },
+  site: null,
+  modely: {},            // stepId -> model
+  vysledky: {},          // stepId -> data
+  stav: {},              // stepId -> {faze:'ceka'|'bezi'|'ok'|'chyba', info, usage, model}
+  hotovo: null,          // výsledek build()
+});
+let S = PRAZDNY();
+let KONF = null;         // konfigurace ze serveru
+
+const uloz = () => { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} };
+const nacti = () => {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (s && s.params) S = Object.assign(PRAZDNY(), s);
+  } catch (e) {}
+};
+
+const PARAMS = [
+  ['znacka', 'Značka / název firmy', 'např. Dousa Elektro'],
+  ['obor', 'Obor podnikání', 'např. elektrikářské práce'],
+  ['cil', 'Hlavní cíl kampaní', 'např. poptávky z formuláře'],
+  ['zeme', 'Cílový trh', 'Česko'],
+  ['jazyk', 'Jazyk inzerátů', 'čeština'],
+  ['rozpocet', 'Měsíční rozpočet celkem (Kč)', '15000'],
+  ['pocetSestav', 'Kolik sestav (přibližně)', '4'],
+  ['kliceNaSestavu', 'Klíčových slov na sestavu', '12'],
+  ['ton', 'Tón komunikace', 'např. věcný, přátelský'],
+  ['konkurence', 'Konkurence (weby nebo firmy)', 'např. konkurent.cz'],
+  ['zakazanaSlova', 'Nepoužívat slova', 'např. „levný“, „zdarma“'],
+  ['sluzby', 'Zdůraznit služby', 'např. montáž, pohotovost 24/7'],
+  ['poznamka', 'Další poznámky', 'cokoliv důležitého'],
+];
+
+/* ── volání API ─────────────────────────────────────────────────────────── */
+async function getKonf() {
+  const r = await fetch(API, { method: 'GET' });
+  const j = await r.json();
+  if (!j.ok) throw new Error(j.error || 'konfiguraci se nepodařilo načíst');
+  KONF = j;
+  KONF.kroky.forEach((k) => { if (!S.modely[k.id]) S.modely[k.id] = k.doporuceny; });
+}
+async function post(body) {
+  const r = await fetch(API, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ kod: S.kod }, body)),
+  });
+  const j = await r.json().catch(() => ({ ok: false, error: 'server vrátil nečitelnou odpověď' }));
+  if (j.kodPotreba || r.status === 401) { odemkni(true); throw new Error(j.error || 'chybí přístupový kód'); }
+  return j;
+}
+
+/* ── pomocné pro UI ─────────────────────────────────────────────────────── */
+function toast(t, ms) {
+  const el = document.getElementById('toast');
+  el.innerHTML = '<div class="toast">' + esc(t) + '</div>';
+  clearTimeout(el._t); el._t = setTimeout(() => { el.innerHTML = ''; }, ms || 4200);
+}
+function st(id) { return S.stav[id] || (S.stav[id] = { faze: 'ceka' }); }
+const badge = (s) => ({
+  ceka: '<span class="badge b-wait">čeká</span>',
+  bezi: '<span class="badge b-run"><span class="spin"></span> běží</span>',
+  ok:   '<span class="badge b-ok">hotovo</span>',
+  chyba:'<span class="badge b-err">chyba</span>',
+}[s] || '');
+
+/* ════════════════════════════════════════════════════════════════════════
+   RENDER
+   ════════════════════════════════════════════════════════════════════════ */
+function render() {
+  renderParams();
+  renderSteps();
+  renderReport();
+  renderFlow();
+  const n = Object.keys(S.vysledky).length;
+  document.getElementById('stat').textContent =
+    KONF ? n + ' / ' + KONF.kroky.length + ' kroků hotovo' : '';
+  uloz();
+}
+
+function renderFlow() {
+  if (!KONF) return;
+  document.getElementById('flow').innerHTML = KONF.kroky.map((k) => {
+    const f = st(k.id).faze;
+    return '<span class="' + (f === 'ok' ? 'done' : f === 'bezi' ? 'on' : '') + '">'
+      + '<span class="d" style="display:inline-block;margin-right:5px"></span>' + esc(k.nazev.split('·')[1].trim()) + '</span>';
+  }).join('<span style="color:var(--text-tertiary)">›</span>');
+}
+
+function renderParams() {
+  const box = document.getElementById('params');
+  if (!S.params.startDate) {
+    const d = new Date(); S.params.startDate = d.toISOString().slice(0, 10);
+  }
+  box.innerHTML = PARAMS.map(([k, l, ph]) =>
+    '<div><span class="lbl">' + esc(l) + '</span>'
+    + '<input class="w-full mt-1.5 px-3 py-2.5" data-p="' + k + '" value="' + esc(S.params[k]) + '" placeholder="' + esc(ph) + '"></div>'
+  ).join('')
+  + '<div><span class="lbl">Start kampaní</span><input type="date" class="w-full mt-1.5 px-3 py-2.5" data-p="startDate" value="' + esc(S.params.startDate) + '"></div>'
+  + '<div><span class="lbl">ID cílové lokality</span><input class="w-full mt-1.5 px-3 py-2.5" data-p="lokalitaId" value="' + esc(S.params.lokalitaId) + '" placeholder="2203 = Česko"></div>'
+  + '<div><span class="lbl">Stav po importu</span><select class="w-full mt-1.5 px-3 py-2.5" data-p="stavKampane">'
+    + ['Paused', 'Enabled'].map((v) => '<option value="' + v + '"' + (S.params.stavKampane === v ? ' selected' : '') + '>'
+      + (v === 'Paused' ? 'Pozastaveno (bezpečné)' : 'Aktivní (utrácí!)') + '</option>').join('')
+  + '</select></div>';
+  document.getElementById('url').value = S.url;
+  document.getElementById('uprava').value = S.uprava;
+  renderSite();
+}
+
+function renderSite() {
+  const b = document.getElementById('site-info');
+  if (!S.site) { b.innerHTML = ''; return; }
+  const s = S.site;
+  b.innerHTML = '<div class="grp">'
+    + '<div class="flex items-center gap-2 flex-wrap mb-1">'
+    + '<span class="badge b-ok">web načten</span>'
+    + '<b class="text-[13.5px]">' + esc(s.title || s.url) + '</b></div>'
+    + (s.desc ? '<div class="text-[12.5px]" style="color:var(--text-secondary)">' + esc(s.desc) + '</div>' : '')
+    + '<div class="text-[11.5px] mt-1.5" style="color:var(--text-tertiary)">'
+    + (s.h1 || []).slice(0, 3).map(esc).join(' · ') + ' — ' + (s.text || '').length + ' znaků textu'
+    + (s.tel ? ' · tel ' + esc(s.tel) : '') + (s.mail ? ' · ' + esc(s.mail) : '') + '</div>'
+    + '<details class="mt-2"><summary class="text-[12px]" style="color:var(--neon-cyan)">Zobrazit stažený text webu</summary>'
+    + '<pre class="code mt-2">' + esc((s.text || '').slice(0, 6000)) + '</pre></details>'
+    + '</div>';
+}
+
+/* ── seznam kroků ───────────────────────────────────────────────────────── */
+function renderSteps() {
+  if (!KONF) return;
+  document.getElementById('steps').innerHTML = KONF.kroky.map((k) => {
+    const s = st(k.id);
+    const ma = S.vysledky[k.id];
+    return '<section class="card p-4 mb-3" id="krok-' + k.id + '">'
+      + '<details open>'
+      + '<summary class="sumrow"><svg class="arrow w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>'
+      + '<b class="text-[14.5px]">' + esc(k.nazev) + '</b>' + badge(s.faze)
+      + (ma ? '<span class="num">' + esc(s.model || '') + '</span>' : '')
+      + '<span class="flex-1"></span>'
+      + (s.usage && s.usage.total_tokens ? '<span class="num">' + s.usage.total_tokens + ' tok · $' + (s.cena || 0).toFixed(4) + '</span>' : '')
+      + '</summary>'
+      + '<p class="text-[13px] mt-3 mb-3" style="color:var(--text-secondary)">' + esc(k.popis) + '</p>'
+      + '<div class="flex items-end gap-2 flex-wrap mb-3">'
+      + '<div style="min-width:250px"><span class="lbl">Model pro tento krok</span><br>'
+      + '<select class="w-full mt-1.5 px-3 py-2.5" data-model="' + k.id + '">'
+      + KONF.modely.map((m) => '<option value="' + esc(m.id) + '"' + (S.modely[k.id] === m.id ? ' selected' : '') + '>'
+        + esc(m.nazev) + (m.id === k.doporuceny ? '  ⭐ doporučeno' : '') + '</option>').join('')
+      + '</select></div>'
+      + '<button class="btn btn-go" data-run="' + k.id + '"' + (s.faze === 'bezi' ? ' disabled' : '') + '>'
+      + (s.faze === 'bezi' ? '<span class="spin"></span> pracuji…' : (ma ? 'Spustit znovu' : 'Spustit krok'))
+      + '</button>'
+      + (ma ? '<label class="text-[12px] flex items-center gap-2" style="color:var(--text-tertiary)"><input type="checkbox" data-wrap="' + k.id + '"' + (s.zabaleno !== false ? ' checked' : '') + '> skrýt detail</label>' : '')
+      + '</div>'
+      + '<div class="text-[11.5px] mb-3" style="color:var(--neon-amber)">⭐ doporučuji <b>' + esc(nazevModelu(k.doporuceny)) + '</b> — ' + esc(k.duvod) + '</div>'
+      + (s.info ? '<div class="text-[12px] mb-2" style="color:' + (s.faze === 'chyba' ? 'var(--neon-pink)' : 'var(--text-tertiary)') + '">' + esc(s.info) + '</div>' : '')
+      + '<div id="v-' + k.id + '">' + (ma && s.zabaleno !== false ? '' : renderVysledek(k.id)) + '</div>'
+      + '</details></section>';
+  }).join('');
+}
+const nazevModelu = (id) => {
+  const m = KONF && KONF.modely.find((x) => x.id === id);
+  return m ? m.nazev : id;
+};
+
+/* ── vykreslení výsledku jednotlivých kroků ─────────────────────────────── */
+function renderVysledek(id) {
+  const d = S.vysledky[id];
+  if (!d) return '';
+  CTX = id;                      // kontext pro pole()/seznam()/tabulka()
+  const v = {
+    analyza: () => [
+      pole('nazev', 'Název firmy'), pole('obor', 'Obor'),
+      pole('popis', 'Popis', true),
+      seznam('sluzby', 'Služby'), seznam('usp', 'Výhody (USP)'),
+      seznam('geografie', 'Oblasti působení'), seznam('temata', 'Témata pro sestavy'),
+      seznam('seoFraze', 'Fráze z webu'),
+      tabulka('cilovky', 'Cílové skupiny', [['nazev', 'Cílová skupina'], ['potreba', 'Co potřebuje']], 'cilovky'),
+      pole('ton', 'Tón komunikace'), pole('cenovaHladina', 'Cenová hladina'),
+      pole('chybi', 'Na webu chybí', true), pole('poznamka', 'Poznámka', true),
+    ].join(''),
+
+    struktura: () => (d.kampane || []).map((k, i) => '<div class="grp mb-3">'
+      + '<div class="flex items-center gap-2 flex-wrap mb-2"><b>' + esc(k.nazev) + '</b>'
+      + '<span class="num">' + esc(k.typ || 'Search') + ' · ' + esc(k.sit || '') + ' · ' + esc(k.rozpocet || '?') + ' Kč/den · ' + esc(k.nabidka || '') + '</span>'
+      + '<span class="flex-1"></span><button class="btn-mini btn-del" data-rm-kampan="' + i + '">odebrat kampaň</button></div>'
+      + (k.cil ? '<div class="text-[12.5px] mb-2" style="color:var(--text-secondary)">' + esc(k.cil) + '</div>' : '')
+      + '<table><thead><tr><th>Sestava</th><th>Téma</th><th>Má chytit</th><th>Cílová URL</th><th></th></tr></thead><tbody>'
+      + (k.sestavy || []).map((a, j) => '<tr>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="struktura.kampane.' + i + '.sestavy.' + j + '.nazev" value="' + esc(a.nazev) + '"></td>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="struktura.kampane.' + i + '.sestavy.' + j + '.tema" value="' + esc(a.tema) + '"></td>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="struktura.kampane.' + i + '.sestavy.' + j + '.cil" value="' + esc(a.cil) + '"></td>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="struktura.kampane.' + i + '.sestavy.' + j + '.url" value="' + esc(a.url) + '"></td>'
+        + '<td><button class="btn-mini btn-del" data-rm-sestava="' + i + '.' + j + '">×</button></td></tr>').join('')
+      + '</tbody></table>'
+      + '<button class="btn-mini mt-2" data-add-sestava="' + i + '">+ přidat sestavu</button>'
+      + '</div>').join('')
+      + '<div class="grp"><div class="grid sm:grid-cols-3 gap-3">'
+      + '<div><span class="lbl">Název kampaně</span><input class="w-full mt-1.5 px-3 py-2" data-edit="struktura.kampane.0.nazev" value="' + esc((d.kampane && d.kampane[0] && d.kampane[0].nazev) || '') + '"></div>'
+      + '<div><span class="lbl">Rozpočet Kč/den</span><input class="w-full mt-1.5 px-3 py-2" data-edit="struktura.kampane.0.rozpocet" value="' + esc((d.kampane && d.kampane[0] && d.kampane[0].rozpocet) || '') + '"></div>'
+      + '<div><span class="lbl">Nabídková strategie</span><select class="w-full mt-1.5 px-3 py-2" data-edit="struktura.kampane.0.nabidka">'
+      + ['Maximize clicks', 'Maximize conversions', 'Target CPA', 'Manual CPC'].map((x) => '<option' + ((d.kampane && d.kampane[0] && d.kampane[0].nabidka) === x ? ' selected' : '') + '>' + x + '</option>').join('')
+      + '</select></div></div></div>',
+
+    klice: () => (d.sestavy || []).map((sk, i) => '<div class="grp mb-3">'
+      + '<div class="flex items-center gap-2 mb-2"><b>' + esc(sk.sestava) + '</b><span class="num">' + (sk.klice || []).length + ' klíčových slov</span></div>'
+      + '<table><thead><tr><th style="width:38%">Klíčové slovo</th><th style="width:14%">Shoda</th><th style="width:14%">Priorita</th><th>Proč</th><th></th></tr></thead><tbody>'
+      + (sk.klice || []).map((k, j) => '<tr>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="klice.sestavy.' + i + '.klice.' + j + '.slovo" value="' + esc(k.slovo) + '"></td>'
+        + '<td><select class="w-full px-2 py-1.5" data-edit="klice.sestavy.' + i + '.klice.' + j + '.shoda">'
+          + ['exact', 'phrase', 'broad'].map((x) => '<option' + (String(k.shoda).toLowerCase() === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></td>'
+        + '<td><select class="w-full px-2 py-1.5" data-edit="klice.sestavy.' + i + '.klice.' + j + '.priorita">'
+          + ['vysoká', 'střední', 'nízká'].map((x) => '<option' + (k.priorita === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></td>'
+        + '<td><input class="w-full px-2 py-1.5" data-edit="klice.sestavy.' + i + '.klice.' + j + '.duvod" value="' + esc(k.duvod) + '"></td>'
+        + '<td><button class="btn-mini btn-del" data-rm-klice="' + i + '.' + j + '">×</button></td></tr>').join('')
+      + '</tbody></table>'
+      + '<div class="flex gap-2 mt-2"><button class="btn-mini" data-add-klice="' + i + '">+ přidat slovo</button>'
+      + '<label class="text-[11.5px] flex items-center gap-1.5" style="color:var(--text-tertiary)">vyplnit z textu webu: <input class="px-2 py-1 w-32" data-add-mnozstvi="' + i + '" placeholder="počet"></label></div>'
+      + '</div>').join('') + seznam('poznamka', 'Poznámka'),
+
+    negativa: () => '<div class="grp mb-3"><div class="flex items-center gap-2 mb-2"><b>Vylučující slova na úrovni kampaně</b>'
+      + '<span class="num">' + ((d.kampanove || []).length) + ' slov</span></div>'
+      + tabulka('kampanove', '', [['slovo', 'Slovo'], ['shoda', 'Shoda'], ['duvod', 'Proč vyloučit']], 'kampanove', ['broad', 'phrase', 'exact'], 'negativa.kampanove')
+      + '<button class="btn-mini mt-2" data-add-negs="k">+ přidat slovo</button></div>'
+      + (d.sestavy || []).map((sn, i) => '<div class="grp mb-3"><div class="flex items-center gap-2 mb-2"><b>Vylučující slova v sestavě: ' + esc(sn.sestava) + '</b>'
+        + '<span class="num">' + ((sn.slova || []).length) + ' slov</span></div>'
+        + tabulka('slova', '', [['slovo', 'Slovo'], ['shoda', 'Shoda'], ['duvod', 'Proč vyloučit']], 'negativa.sestavy.' + i + '.slova', ['broad', 'phrase', 'exact'], 'negativa.sestavy.' + i + '.slova')
+        + '<button class="btn-mini mt-2" data-add-negs="' + i + '">+ přidat slovo</button></div>').join(''),
+
+    publika: () => tabulka('segmenty', 'Publika', [
+        ['nazev', 'Publikum'], ['typ', 'Typ'], ['cileni', 'Kdo to je'], ['modifikator', 'Modifikátor'], ['poznamka', 'Jak nastavit']],
+        'publika.segmenty', ['In-market', 'Affinity', 'Custom intent', 'Similar', 'Detailed demographics', 'Remarketing'],
+        'publika.segmenty', 'doImportu')
+      + ((d.customIntent || []).length ? '<div class="grp mt-3"><b>Custom intent publika (z klíčových slov)</b>'
+        + (d.customIntent || []).map((ci) => '<div class="mt-2 text-[12.5px]"><b>' + esc(ci.nazev) + '</b> '
+          + '<span style="color:var(--text-tertiary)">' + (ci.klice || []).map(esc).join(' · ') + '</span></div>').join('') + '</div>' : '')
+      + pole('lookalike', 'Podobná publika (lookalike)', true)
+      + pole('poznamka', 'Upozornění', true),
+
+    reklamy: () => (d.sestavy || []).map((r, i) => '<div class="grp mb-3">'
+      + '<div class="flex items-center gap-2 flex-wrap mb-2"><b>' + esc(r.sestava) + '</b>'
+      + '<span class="num">' + (r.titulky || []).length + ' titulků · ' + (r.popisky || []).length + ' popisků</span>'
+      + '<span class="flex-1"></span>'
+      + (limityOk(r) ? '<span class="badge b-ok">limity v pořádku</span>' : '<span class="badge b-err">překročené limity</span>') + '</div>'
+      + '<div class="grid sm:grid-cols-3 gap-2 mb-3">'
+      + '<div class="sm:col-span-1"><span class="lbl">Cílová URL</span><input class="w-full mt-1 px-2 py-1.5" data-edit="reklamy.sestavy.' + i + '.finalUrl" value="' + esc(r.finalUrl) + '"></div>'
+      + '<div><span class="lbl">Cesta 1 (max 15)</span><input class="w-full mt-1 px-2 py-1.5" data-edit="reklamy.sestavy.' + i + '.cesty.0" value="' + esc((r.cesty || [])[0] || '') + '"></div>'
+      + '<div><span class="lbl">Cesta 2 (max 15)</span><input class="w-full mt-1 px-2 py-1.5" data-edit="reklamy.sestavy.' + i + '.cesty.1" value="' + esc((r.cesty || [])[1] || '') + '"></div>'
+      + '</div>'
+      + '<div class="lbl mb-1.5">Titulky (max 30 znaků)</div><div class="grid sm:grid-cols-2 gap-1.5 mb-3">'
+      + (r.titulky || []).map((t, j) => delka(('reklamy.sestavy.' + i + '.titulky.' + j), t, 30, 'reklamy.sestavy.' + i + '.titulky.' + j)).join('')
+      + '</div>'
+      + '<div class="lbl mb-1.5">Popisky (max 90 znaků)</div><div class="grid gap-1.5">'
+      + (r.popisky || []).map((t, j) => delka(('reklamy.sestavy.' + i + '.popisky.' + j), t, 90, 'reklamy.sestavy.' + i + '.popisky.' + j)).join('')
+      + '</div>'
+      + '<div class="flex gap-2 mt-2"><button class="btn-mini" data-add-titulek="' + i + '">+ titulek</button>'
+      + '<button class="btn-mini" data-add-popisek="' + i + '">+ popisek</button>'
+      + '<button class="btn-mini btn-del" data-rm-reklama="' + i + '">odebrat reklamu</button></div>'
+      + '</div>').join('')
+      + pole('poznamkaKLimitum', 'Poznámka k limitům', true),
+
+    rozsireni: () => tabulka('sitelinky', 'Sitelinky', [
+        ['text', 'Text (25)'], ['popis1', 'Popis 1 (35)'], ['popis2', 'Popis 2 (35)'], ['url', 'URL']],
+        'rozsireni.sitelinky', null, 'rozsireni.sitelinky')
+      + '<div class="grp mt-3"><b>Callouty (max 25 znaků)</b>'
+      + '<div class="grid sm:grid-cols-2 gap-1.5 mt-2">'
+      + (d.callouty || []).map((c, i) => delka('', (c.text || c), 25, 'rozsireni.callouty.' + i + '.text')).join('')
+      + '</div><button class="btn-mini mt-2" data-add-callout="1">+ callout</button></div>'
+      + (d.snippety || []).map((s, i) => '<div class="grp mt-3"><b>Snippet: ' + esc(s.header) + '</b>'
+        + '<div class="mt-1.5 text-[12.5px]" style="color:var(--text-secondary)">' + (s.hodnoty || []).map(esc).join(' · ') + '</div>'
+        + '<input class="w-full mt-2 px-2 py-1.5" data-edit="rozsireni.snippety.' + i + '.hodnoty" value="' + esc((s.hodnoty || []).join('; ')) + '" placeholder="hodnoty oddělené ;">'
+        + '</div>').join('')
+      + pole('poznamka', 'Poznámka', true),
+
+    nastaveni: () => (d.lokality && d.lokality.length ? '<div class="grp mb-3"><b>Cílové lokality</b><table class="mt-2"><thead><tr><th>Lokalita</th><th>ID</th><th>Proč</th></tr></thead><tbody>'
+        + d.lokality.map((l, i) => '<tr><td><input class="w-full px-2 py-1.5" data-edit="nastaveni.lokality.' + i + '.nazev" value="' + esc(l.nazev) + '"></td>'
+          + '<td><input class="w-full px-2 py-1.5" data-edit="nastaveni.lokality.' + i + '.id" value="' + esc(l.id) + '"></td>'
+          + '<td>' + esc(l.duvod || '') + '</td></tr>').join('') + '</tbody></table></div>' : '')
+      + ((d.kampane || []).length ? '<div class="grp mb-3"><b>Rozpočty a nabídky</b><table class="mt-2"><thead><tr><th>Kampaň</th><th>Rozpočet/den</th><th>Nabídka</th><th>Poznámka</th></tr></thead><tbody>'
+        + d.kampane.map((k, i) => '<tr><td>' + esc(k.nazev) + '</td>'
+          + '<td><input class="w-24 px-2 py-1" data-edit="nastaveni.kampane.' + i + '.rozpocet" value="' + esc(k.rozpocet) + '"></td>'
+          + '<td><input class="w-full px-2 py-1" data-edit="nastaveni.kampane.' + i + '.nabidka" value="' + esc(k.nabidka) + '"></td>'
+          + '<td>' + esc(k.poznamka || '') + '</td></tr>').join('') + '</tbody></table></div>' : '')
+      + pole('konverze', 'Co měřit (konverze)')
+      + pole('planovani', 'Plánování zobrazování')
+      + ((d.kontrola || []).length ? '<div class="grp mb-3"><b>Závěrečná kontrola</b><table class="mt-2"><tbody>'
+        + d.kontrola.map((k) => '<tr><td style="width:38%">' + esc(k.co) + '</td><td>'
+          + '<span class="badge ' + (k.stav === 'ok' ? 'b-ok' : k.stav === 'pozor' ? 'b-warn' : 'b-err') + '">' + esc(k.stav) + '</span></td>'
+          + '<td>' + esc(k.poznamka) + '</td></tr>').join('') + '</tbody></table></div>' : '')
+      + ((d.priority || []).length ? '<div class="grp mb-3"><b>Co udělat po importu</b><ol class="mt-2 pl-5 text-[13px]">'
+        + d.priority.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ol></div>' : '')
+      + pole('poznamka', 'Shrnutí pro zadavatele', true),
+  }[id];
+  try { return v ? v() : '<pre class="code">' + esc(JSON.stringify(d, null, 2)) + '</pre>'; }
+  catch (e) { return '<pre class="code">' + esc(JSON.stringify(d, null, 2)) + '</pre>'; }
+}
+
+function limityOk(r) {
+  return (r.titulky || []).every((t) => String(t).length <= 30)
+    && (r.popisky || []).every((t) => String(t).length <= 90)
+    && (r.titulky || []).length >= 3 && (r.popisky || []).length >= 2
+    && (r.cesty || []).every((c) => String(c).length <= 15);
+}
+const delka = (cesta, text, max, edit) => {
+  const l = String(text || '').length;
+  const cls = l > max ? 'bad' : l > max * 0.92 ? 'warn' : '';
+  return '<div class="flex items-center gap-1.5">'
+    + '<input class="flex-1 px-2 py-1.5" data-edit="' + edit + '" value="' + esc(text) + '">'
+    + '<span class="len ' + cls + '">' + l + '/' + max + '</span></div>';
+};
+const pole = (k, l, area) =>
+  '<div class="grp mb-2"><span class="lbl">' + esc(l) + '</span>'
+  + (area ? '<textarea rows="3" class="w-full mt-1.5 p-2.5" data-edit="' + cestaPole(k) + '">' + esc(hodnotaPole(k)) + '</textarea>'
+          : '<input class="w-full mt-1.5 px-3 py-2" data-edit="' + cestaPole(k) + '" value="' + esc(hodnotaPole(k)) + '">')
+  + '</div>';
+
+let CTX = '';      // id právě vykreslovaného kroku
+const cestaPole = (k) => CTX + '.' + k;
+const hodnotaPole = (k) => (S.vysledky[CTX] || {})[k] || '';
+
+function seznam(k, l) {
+  const a = (S.vysledky[CTX] || {})[k] || [];
+  return '<div class="grp mb-2"><span class="lbl">' + esc(l) + '</span><div class="flex flex-wrap gap-1.5 mt-2">'
+    + a.map((x, i) => '<span class="chip">' + esc(typeof x === 'string' ? x : JSON.stringify(x))
+      + '<button data-rm-pole="' + cestaPole(k) + '.' + i + '">×</button></span>').join('')
+    + '</div><input class="w-full mt-2 px-3 py-2" placeholder="napište a stiskněte Enter pro přidání" data-add-pole="' + cestaPole(k) + '"></div>';
+}
+
+function tabulka(klic, titulek, sloupce, cesta, volby, cestaEdit, typKontrola) {
+  const a = (S.vysledky[CTX] || {})[klic] || [];
+  return '<div class="grp mb-2">' + (titulek ? '<b>' + esc(titulek) + '</b>' : '')
+    + '<table class="mt-2"><thead><tr>' + sloupce.map(([, l]) => '<th>' + esc(l) + '</th>').join('')
+    + (typKontrola ? '<th>Importovat</th>' : '') + '<th></th></tr></thead><tbody>'
+    + a.map((o, i) => '<tr>' + sloupce.map(([f, l]) => {
+        const val = o[f] == null ? '' : o[f];
+        if (volby && f === 'shoda') {
+          return '<td><select class="w-full px-2 py-1.5" data-edit="' + cestaEdit + '.' + i + '.' + f + '">'
+            + volby.map((x) => '<option' + (String(val).toLowerCase() === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></td>';
+        }
+        if (volby && f === 'typ') {
+          return '<td><select class="w-full px-2 py-1.5" data-edit="' + cestaEdit + '.' + i + '.' + f + '">'
+            + volby.map((x) => '<option' + (val === x ? ' selected' : '') + '>' + x + '</option>').join('')
+            + '<option' + (volby.indexOf(val) < 0 ? ' selected' : '') + '>' + esc(val) + '</option></select></td>';
+        }
+        return '<td><input class="w-full px-2 py-1.5" data-edit="' + cestaEdit + '.' + i + '.' + f + '" value="' + esc(val) + '"></td>';
+      }).join('')
+      + (typKontrola ? '<td><input type="checkbox" data-cil="' + cestaEdit + '.' + i + '.doImportu"' + (o.doImportu ? ' checked' : '') + '></td>' : '')
+      + '<td><button class="btn-mini btn-del" data-rm-cesta="' + cestaEdit + '.' + i + '">×</button></td></tr>').join('')
+    + '</tbody></table></div>';
+}
+
+/* ── report výstupu ─────────────────────────────────────────────────────── */
+function renderReport() {
+  const box = document.getElementById('out-report');
+  if (!S.hotovo) { box.innerHTML = ''; document.getElementById('btn-csv').style.display = 'none'; document.getElementById('btn-report').style.display = 'none'; return; }
+  const r = S.hotovo.report;
+  const radky = Object.entries(r.stats).map(([k, v]) =>
+    '<span class="chip">' + esc({ campaign: 'kampaně', location: 'lokality', adgroup: 'sestavy', keyword: 'klíčová slova', negative: 'negativa v sestavě', negative_campaign: 'kampaňová negativa', ad: 'reklamy', sitelink: 'sitelinky', callout: 'callouty', snippet: 'snippety', call: 'telefon', audience: 'publika' }[k] || k) + ': <b>' + v + '</b></span>').join('');
+  box.innerHTML = '<div class="flex flex-wrap gap-1.5 mb-2">' + radky + '</div>'
+    + '<div class="text-[12.5px] mb-2" style="color:var(--text-secondary)">Soubor <b>' + esc(S.hotovo.fileName) + '</b> · ' + S.hotovo.columns + ' sloupců · '
+    + (S.hotovo.bytes.length / 1024).toFixed(1) + ' kB · UTF-16 (Unicode Text) + TAB</div>'
+    + (r.errors.length ? '<div class="grp mb-2" style="border-color:rgba(255,20,147,.35)"><b style="color:var(--neon-pink)">'
+        + r.errors.length + ' chyb, které Editor odmítne</b><ul class="text-[12.5px] mt-2 pl-5" style="color:var(--text-secondary)">'
+        + r.errors.slice(0, 40).map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul></div>' : '<span class="badge b-ok">0 chyb — soubor je připravený k importu</span>')
+    + (r.warnings.length ? '<details class="mt-2"><summary class="text-[12.5px]" style="color:var(--neon-amber)">'
+        + r.warnings.length + ' upozornění (import projde)</summary><ul class="text-[12.5px] mt-2 pl-5" style="color:var(--text-secondary)">'
+        + r.warnings.slice(0, 40).map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul></details>' : '');
+  document.getElementById('btn-csv').style.display = 'inline-flex';
+  document.getElementById('btn-report').style.display = 'inline-flex';
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   AKCE
+   ════════════════════════════════════════════════════════════════════════ */
+function cesta(obj, path, hodnota) {           // zápis do vnořeného stavu
+  const casti = path.split('.');
+  let o = obj;
+  for (let i = 0; i < casti.length - 1; i++) {
+    const c = casti[i];
+    if (o[c] == null) o[c] = /^\d+$/.test(casti[i + 1]) ? [] : {};
+    o = o[c];
+  }
+  o[casti[casti.length - 1]] = hodnota;
+}
+function precti(obj, path) {
+  return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
+}
+
+async function nactiWeb() {
+  const url = document.getElementById('url').value.trim();
+  if (!url) return toast('Zadejte adresu webu.');
+  S.url = url; S.params.url = url; uloz();
+  const b = document.getElementById('btn-site');
+  b.disabled = true; b.innerHTML = '<span class="spin"></span> načítám…';
+  try {
+    const j = await post({ action: 'site', url });
+    if (!j.ok) { toast('Web se nepodařilo načíst: ' + j.error); return; }
+    S.site = j.site; renderSite(); uloz();
+    toast('Web načten — ' + (j.site.text || '').length + ' znaků textu.');
+  } catch (e) { toast(String(e.message || e)); }
+  finally { b.disabled = false; b.innerHTML = 'Načíst web'; }
+}
+
+function kontextPro(id) {
+  const v = S.vysledky;
+  const mix = (o) => JSON.stringify(o).slice(0, 24000);
+  const site = S.site ? ['Název: ' + (S.site.title || ''), 'Popis: ' + (S.site.desc || ''),
+    'Nadpisy: ' + [...(S.site.h1 || []), ...(S.site.h2 || [])].join(' | '),
+    'Text webu:', (S.site.text || '').slice(0, 14000)].join('\n') : '(web zatím nenačten)';
+  const m = {
+    analyza: site,
+    struktura: mix({ analyza: v.analyza }),
+    klice: mix({ analyza: v.analyza, struktura: v.struktura }),
+    negativa: mix({ analyza: v.analyza, struktura: v.struktura, klice: v.klice }),
+    publika: mix({ analyza: v.analyza, klice: v.klice }),
+    reklamy: mix({ analyza: v.analyza, struktura: v.struktura, klice: v.klice }),
+    rozsireni: mix({ analyza: v.analyza, struktura: v.struktura }),
+    nastaveni: mix({ analyza: v.analyza, struktura: v.struktura, reklamy: v.reklamy, negativa: { kampaňová: (v.negativa || {}).kampanove || [] } }),
+  };
+  return String(m[id] || '').slice(0, 30000);
+}
+
+// srovná odpověď modelu do tvaru, se kterým pracuje import.js
+function srovnej(id, d) {
+  const A = (x) => (Array.isArray(x) ? x : []);
+  if (id === 'analyza') {
+    ['sluzby', 'usp', 'geografie', 'temata', 'seoFraze'].forEach((k) => { d[k] = A(d[k]).map(String); });
+    d.cilovky = A(d.cilovky).map((c) => ({ nazev: String(c.nazev || c.nazevSkupiny || ''), potreba: String(c.potreba || c.co || '') }));
+  }
+  if (id === 'struktura') {
+    d.kampane = A(d.kampane).map((k) => ({
+      nazev: String(k.nazev || 'Kampaň'), typ: String(k.typ || 'Search'),
+      sit: String(k.sit || 'Google search;Search Partners'),
+      rozpocet: String(k.rozpocet || ''), nabidka: String(k.nabidka || 'Maximize clicks'),
+      cil: String(k.cil || ''), cilovaCPA: String(k.cilovaCPA || ''),
+      sestavy: A(k.sestavy).map((a) => ({ nazev: String(a.nazev || ''), tema: String(a.tema || ''),
+        cil: String(a.cil || ''), url: String(a.url || S.url) })),
+    }));
+  }
+  if (id === 'klice') {
+    d.sestavy = A(d.sestavy).map((s) => ({ sestava: String(s.sestava || ''),
+      klice: A(s.klice).map((k) => (typeof k === 'string' ? { slovo: k, shoda: 'phrase' }
+        : { slovo: String(k.slovo || k.klic || ''), shoda: String(k.shoda || 'phrase').toLowerCase(),
+            priorita: String(k.priorita || 'střední'), duvod: String(k.duvod || '') })).filter((k) => k.slovo) }));
+  }
+  if (id === 'negativa') {
+    const sl = (k) => (typeof k === 'string' ? { slovo: k, shoda: 'broad', duvod: '' }
+      : { slovo: String(k.slovo || ''), shoda: String(k.shoda || 'broad').toLowerCase(), duvod: String(k.duvod || '') });
+    d.kampanove = A(d.kampanove).map(sl).filter((k) => k.slovo);
+    d.sestavy = A(d.sestavy).map((s) => ({ sestava: String(s.sestava || ''), slova: A(s.slova).map(sl).filter((k) => k.slovo) }));
+  }
+  if (id === 'publika') {
+    d.segmenty = A(d.segmenty).map((s) => ({ nazev: String(s.nazev || ''), typ: String(s.typ || 'In-market'),
+      cileni: String(s.cileni || ''), modifikator: String(s.modifikator || ''),
+      doImportu: s.doImportu !== false, poznamka: String(s.poznamka || '') }));
+    d.customIntent = A(d.customIntent).map((c) => ({ nazev: String(c.nazev || ''), klice: A(c.klice).map(String), url: String(c.url || '') }));
+  }
+  if (id === 'reklamy') {
+    d.sestavy = A(d.sestavy).map((r) => ({ sestava: String(r.sestava || ''),
+      finalUrl: String(r.finalUrl || S.url), cesty: A(r.cesty).map(String).slice(0, 2),
+      titulky: A(r.titulky).map(String).slice(0, 15), popisky: A(r.popisky).map(String).slice(0, 4) }));
+  }
+  if (id === 'rozsireni') {
+    d.sitelinky = A(d.sitelinky).map((s) => (typeof s === 'string' ? { text: s, url: S.url }
+      : { text: String(s.text || ''), popis1: String(s.popis1 || ''), popis2: String(s.popis2 || ''),
+          url: String(s.url || S.url) })).filter((s) => s.text);
+    d.callouty = A(d.callouty).map((c) => ({ text: String(typeof c === 'string' ? c : c.text || '') })).filter((c) => c.text);
+    d.snippety = A(d.snippety).map((s) => ({ header: String(s.header || ''), hodnoty: A(s.hodnoty).map(String) }));
+  }
+  if (id === 'nastaveni') {
+    d.lokality = A(d.lokality).map((l) => (typeof l === 'string' ? { nazev: l, id: '' }
+      : { nazev: String(l.nazev || ''), id: String(l.id || ''), duvod: String(l.duvod || '') }));
+    d.kampane = A(d.kampane).map((k) => ({ nazev: String(k.nazev || ''), rozpocet: String(k.rozpocet || ''),
+      nabidka: String(k.nabidka || ''), cilovaCPA: String(k.cilovaCPA || ''), poznamka: String(k.poznamka || '') }));
+    d.kontrola = A(d.kontrola).map((k) => ({ co: String(k.co || ''), stav: String(k.stav || 'ok'), poznamka: String(k.poznamka || '') }));
+    d.priority = A(d.priority).map(String);
+  }
+  return d;
+}
+
+async function spustKrok(id) {
+  const k = KONF.kroky.find((x) => x.id === id);
+  const s = st(id);
+  if (s.faze === 'bezi') return;
+  if (!S.url) { toast('Nejdřív zadejte adresu webu.'); return; }
+  if (id !== 'analyza' && !S.site) { toast('Nejdřív načtěte web tlačítkem „Načíst web“.'); return; }
+  s.faze = 'bezi'; s.info = ''; renderSteps(); renderFlow();
+  S.params.url = S.url; S.params.uprava = '';
+  const t0 = Date.now();
+  try {
+    const j = await post({ action: 'step', step: id, model: S.modely[id],
+      params: Object.assign({}, S.params, { uprava: document.getElementById('uprava').value || S.uprava }),
+      kontext: kontextPro(id) });
+    if (!j.ok) {
+      s.faze = 'chyba'; s.info = (j.error || 'neznámá chyba') + (j.ukazka ? ' — ' + j.ukazka.slice(0, 300) : '');
+      s.model = j.model || S.modely[id];
+    } else {
+      s.faze = 'ok'; s.model = j.model; s.usage = j.usage;
+      s.cena = cena(j.model, j.usage);
+      s.zabaleno = false;
+      S.vysledky[id] = srovnej(id, j.data);
+      slij(id);
+      s.info = 'hotovo za ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s'
+        + (j.opraveno ? ' (odpověď opravena na platný JSON)' : '')
+        + (j.truncated ? ' — odpověď byla zkrácena, doporučuji spustit znovu' : '');
+    }
+  } catch (e) { s.faze = 'chyba'; s.info = String(e.message || e); }
+  render();
+  if (id === 'reklamy') prekontroluj();
+}
+
+// přibližná cena podle ceníku OpenRouter (jen orientačně, pro kontrolu nákladů)
+const CENY = {
+  'anthropic/claude-opus-5': [15, 75], 'anthropic/claude-sonnet-5': [3, 15],
+  'anthropic/claude-haiku-4.5': [1, 5], 'openai/gpt-6-sol': [2.5, 10],
+  'openai/gpt-6-luna-pro': [1.25, 10], 'openai/gpt-6-luna': [0.4, 1.6],
+  'google/gemini-3.1-pro-preview': [1.25, 10], 'google/gemini-3.8-flash': [0.3, 2.5],
+  'google/gemini-3.5-flash': [0.3, 2.5], 'x-ai/grok-4.7': [3, 15],
+  'deepseek/deepseek-v4-pro': [0.5, 1.6], 'deepseek/deepseek-v4-flash': [0.14, 0.28],
+  'qwen/qwen3.8-27b': [0.3, 1.2], 'meta-llama/llama-4-maverick': [0.27, 0.85],
+};
+function cena(model, u) {
+  const c = CENY[model] || [1, 4];
+  return (((u && u.prompt_tokens) || 0) * c[0] + ((u && u.completion_tokens) || 0) * c[1]) / 1e6;
+}
+
+// slije výsledek kroku do kanonického stavu, který jde do souboru
+function slij(id) {
+  const v = S.vysledky;
+  if (id === 'struktura') { if (!((v.struktura || {}).kampane || []).length) return; }
+  if (id === 'nastaveni' && v.struktura && v.struktura.kampane) {
+    (v.nastaveni.kampane || []).forEach((k) => {
+      const c = v.struktura.kampane.find((x) => x.nazev === k.nazev) || v.struktura.kampane[0];
+      if (!c) return;
+      if (k.rozpocet) c.rozpocet = k.rozpocet;
+      if (k.nabidka) c.nabidka = k.nabidka;
+      if (k.cilovaCPA) c.cilovaCPA = k.cilovaCPA;
+    });
+    if ((v.nastaveni.lokality || []).length) {
+      S.params.lokality = v.nastaveni.lokality.map((l) => l.nazev);
+      S.params.lokalitaId = v.nastaveni.lokality[0].id || S.params.lokalitaId;
+    }
+  }
+  // klíčová slova / negativa / reklamy doplní název kampaně podle struktury
+  const campPro = (sestava) => {
+    const ks = ((v.struktura || {}).kampane) || [];
+    for (const k of ks) if ((k.sestavy || []).some((a) => a.nazev === sestava)) return k.nazev;
+    return (ks[0] || {}).nazev || '';
+  };
+  ['klice', 'negativa', 'reklamy'].forEach((klic) => {
+    const o = v[klic]; if (!o) return;
+    const list = klic === 'negativa' ? (o.sestavy || []) : (o.sestavy || []);
+    list.forEach((s) => { s.kampan = campPro(s.sestava); });
+  });
+}
+
+function stav() {
+  const p = Object.assign({}, S.params);
+  const k = (S.vysledky.struktura || {}).kampane || [];
+  if (k.length && p.stavKampane) k.forEach((x) => { x.stav = p.stavKampane; });
+  const a = ((S.vysledky.struktura || {}).kampane || [])[0];
+  return {
+    params: Object.assign(p, { url: S.url, lokality: p.lokality || [p.zeme || 'Česko'] }),
+    site: S.site, struktura: S.vysledky.struktura, keywords: S.vysledky.klice,
+    negatives: S.vysledky.negativa, publika: S.vysledky.publika, reklamy: S.vysledky.reklamy,
+    rozsireni: S.vysledky.rozsireni, nastaveni: S.vysledky.nastaveni,
+  };
+}
+
+function vygeneruj() {
+  const popis = { struktura: 'Struktura kampaní a sestav', klice: 'Klíčová slova',
+                  reklamy: 'Reklamy (titulky a popisky)' };
+  const chybi = Object.keys(popis).filter((x) => !S.vysledky[x]);
+  if (chybi.length) return toast('Ještě chybí: ' + chybi.map((c) => popis[c]).join(', ')
+    + '. Spusťte ty kroky a pak soubor vygenerujte.');
+  S.hotovo = PPCImport.build(stav());
+  if ((S.vysledky.struktura.kampane || []).length === 0) return toast('Struktura neobsahuje žádnou kampaň.');
+  renderReport(); uloz();
+  toast(S.hotovo.report.errors.length
+    ? 'Vygenerováno, ale soubor má ' + S.hotovo.report.errors.length + ' chyb — viz seznam níže.'
+    : 'Hotovo: ' + (S.hotovo.bytes.length / 1024).toFixed(1) + ' kB, 0 chyb. Můžete stáhnout.');
+  document.getElementById('out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function stahni(hotovo, utf8) {
+  if (!hotovo) return;
+  if (utf8) {
+    const t = PPCImport.text(hotovo.rows);
+    const b = new Blob(['\ufeff' + t], { type: 'text/csv;charset=utf-8' });
+    klik(b, hotovo.fileName.replace(/\.csv$/, '_utf8.csv'));
+  } else {
+    const b = new Blob([hotovo.bytes], { type: 'text/csv;charset=utf-16le' });
+    klik(b, hotovo.fileName);
+  }
+}
+function klik(blob, nazev) {
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = nazev; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(u); a.remove(); }, 1500);
+  toast('Stahuji ' + nazev);
+}
+
+// hlídač limitů: po každé ruční úpravě reklam zkontroluje délky
+function prekontroluj() {
+  const r = (S.vysledky.reklamy || {}).sestavy || [];
+  const spatne = [];
+  r.forEach((x) => {
+    (x.titulky || []).forEach((t, i) => { if (String(t).length > 30) spatne.push(x.sestava + ' — titulek ' + (i + 1) + ' (' + String(t).length + '/' + 30 + ')'); });
+    (x.popisky || []).forEach((t, i) => { if (String(t).length > 90) spatne.push(x.sestava + ' — popisek ' + (i + 1) + ' (' + String(t).length + '/90)'); });
+  });
+  if (spatne.length) toast('Překročené limity Google Ads: ' + spatne.slice(0, 3).join(' · ') + (spatne.length > 3 ? ' …' : ''), 7000);
+}
+
+/* ── události (delegace) ────────────────────────────────────────────────── */
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.p) { S.params[t.dataset.p] = t.value; uloz(); return; }
+  if (t.id === 'uprava') { S.uprava = t.value; uloz(); return; }
+  if (t.id === 'url') { S.url = t.value; return; }
+  if (t.dataset.model) { S.modely[t.dataset.model] = t.value; uloz(); return; }
+  if (t.dataset.edit) {
+    const casti = t.dataset.edit.split('.');
+    const krok = casti.shift();
+    if (!S.vysledky[krok]) return;
+    const cil = casti[casti.length - 1];
+    let h = t.value;
+    if (cil === 'hodnoty') h = t.value.split(';').map((x) => x.trim()).filter(Boolean);
+    cesta(S.vysledky[krok], casti.join('.'), h);
+    // přepočet čítače znaků u textů reklam
+    const len = t.parentElement && t.parentElement.querySelector('.len');
+    if (len) {
+      const max = +len.textContent.split('/')[1];
+      const l = t.value.length;
+      len.textContent = l + '/' + max;
+      len.className = 'len ' + (l > max ? 'bad' : l > max * 0.92 ? 'warn' : '');
+    }
+    uloz();
+  }
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.dataset.addPole) {
+    e.preventDefault();
+    const v = e.target.value.trim(); if (!v) return;
+    const [krok, ...rest] = e.target.dataset.addPole.split('.');
+    const arr = precti(S.vysledky[krok], rest.join('.'));
+    if (Array.isArray(arr)) arr.push(v);
+    e.target.value = ''; render(); toast('Přidáno.');
+  }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.dataset.cil) {
+    const [krok, ...rest] = e.target.dataset.cil.split('.');
+    cesta(S.vysledky[krok], rest.join('.'), e.target.checked); uloz();
+  }
+  if (e.target.dataset.wrap) { st(e.target.dataset.wrap).zabaleno = e.target.checked; uloz(); }
+});
+
+document.addEventListener('click', async (e) => {
+  const t = e.target.closest('button, a'); if (!t) return;
+  const d = t.dataset;
+
+  if (d.run) { await spustKrok(d.run); return; }
+  if (t.id === 'btn-site') { await nactiWeb(); return; }
+  if (t.id === 'btn-build') { vygeneruj(); return; }
+  if (t.id === 'btn-csv') { if (!S.hotovo) vygeneruj(); stahni(S.hotovo, true); return; }
+  if (t.id === 'btn-report') {
+    const r = S.hotovo.report;
+    const txt = 'PPC Generator — report\nSoubor: ' + S.hotovo.fileName + '\nSloupců: ' + S.hotovo.columns
+      + '\nEntity: ' + JSON.stringify(r.stats) + '\nChyby: ' + (r.errors.join(' | ') || 'žádné')
+      + '\nUpozornění: ' + (r.warnings.join(' | ') || 'žádná');
+    navigator.clipboard.writeText(txt).then(() => toast('Report zkopírován do schránky.'));
+    return;
+  }
+  if (t.id === 'btn-json') {
+    klik(new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' }),
+      'ppc-projekt-' + new Date().toISOString().slice(0, 10) + '.json');
+    return;
+  }
+  if (t.id === 'btn-load') {
+    const f = document.createElement('input'); f.type = 'file'; f.accept = '.json';
+    f.onchange = () => { const fr = new FileReader();
+      fr.onload = () => { try { S = Object.assign(PRAZDNY(), JSON.parse(fr.result)); if (!S.modely) S.modely = {};
+        render(); toast('Projekt načten.'); } catch (err) { toast('Soubor není platný projekt.'); } };
+      fr.readAsText(f.files[0]); };
+    f.click(); return;
+  }
+  if (t.id === 'btn-all') {
+    if (!S.site) { toast('Nejdřív načtěte web.'); return; }
+    for (const k of KONF.kroky) { await spustKrok(k.id); }
+    return;
+  }
+  if (t.id === 'btn-kod') {
+    S.kod = document.getElementById('kod').value; uloz();
+    try { await getKonf(); document.getElementById('lock').style.display = 'none'; render(); toast('Odemčeno.'); }
+    catch (err) { toast('Kód nesouhlasí.'); }
+    return;
+  }
+  if (!d.edit) return;
+
+  // mazání a přidávání prvků
+  const rm = (path, odecist) => {
+    const [krok, ...rest] = path.split('.');
+    const pole = precti(S.vysledky[krok], rest.slice(0, -1).join('.'));
+    if (Array.isArray(pole)) pole.splice(+rest[rest.length - 1] - (odecist || 0), 1);
+    render();
+  };
+  if (d.rmPole) return rm(d.rmPole);
+  if (d.rmCesta) return rm(d.rmCesta);
+  if (d.rmKlice) return rm('klice.sestavy.' + d.rmKlice);
+  if (d.rmKampan) { S.vysledky.struktura.kampane.splice(+d.rmKampan, 1); return render(); }
+  if (d.rmSestava) { const [i, j] = d.rmSestava.split('.').map(Number);
+    S.vysledky.struktura.kampane[i].sestavy.splice(j, 1); return render(); }
+  if (d.rmReklama) { S.vysledky.reklamy.sestavy.splice(+d.rmReklama, 1); return render(); }
+  if (d.addSestava) { const i = +d.addSestava;
+    S.vysledky.struktura.kampane[i].sestavy.push({ nazev: 'S' + String(S.vysledky.struktura.kampane[i].sestavy.length + 1).padStart(2, '0') + ' | Nová sestava', tema: '', cil: '', url: S.url });
+    return render(); }
+  if (d.addKlice) { const i = +d.addKlice;
+    S.vysledky.klice.sestavy[i].klice.push({ slovo: '', shoda: 'phrase', priorita: 'střední', duvod: '' }); return render(); }
+  if (d.addTitulek) { S.vysledky.reklamy.sestavy[+d.addTitulek].titulky.push(''); return render(); }
+  if (d.addPopisek) { S.vysledky.reklamy.sestavy[+d.addPopisek].popisky.push(''); return render(); }
+  if (d.addCallout) { S.vysledky.rozsireni.callouty.push({ text: '' }); return render(); }
+  if (d.addNegs) {
+    if (d.addNegs === 'k') S.vysledky.negativa.kampanove.push({ slovo: '', shoda: 'broad', duvod: '' });
+    else S.vysledky.negativa.sestavy[+d.addNegs].slova.push({ slovo: '', shoda: 'broad', duvod: '' });
+    return render(); }
+});
+
+/* ── start ──────────────────────────────────────────────────────────────── */
+function odemkni(ukaz) {
+  if (ukaz || (KONF && KONF.kodPotreba && !S.kod)) document.getElementById('lock').style.display = 'flex';
+}
+(async function start() {
+  nacti();
+  try {
+    await getKonf();
+    if (KONF.kodPotreba && !S.kod) { document.getElementById('lock').style.display = 'flex'; return; }
+    render();
+  } catch (e) {
+    document.getElementById('steps').innerHTML = '<div class="card p-5">Server neodpovídá: ' + esc(e.message) + '</div>';
+  }
+})();
+</script>
+</body>
+</html>
