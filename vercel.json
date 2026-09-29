@@ -9,6 +9,11 @@
       "source": "/datahub",
       "destination": "/datahub/",
       "permanent": true
+    },
+    {
+      "source": "/llm-arena",
+      "destination": "/llm-arena/",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -23,6 +28,15 @@
     {
       "source": "/datahub/:path*",
       "destination": "/datahub/index.html"
+    },
+    {
+      "source": "/llm-arena/:path*",
+      "destination": "/llm-arena/index.html"
     }
-  ]
+  ],
+  "functions": {
+    "api/arena.js": {
+      "maxDuration": 300
+    }
+  }
 }

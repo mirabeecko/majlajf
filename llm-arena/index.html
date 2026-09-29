@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>LLM Arena — anonymní souboj modelů</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script>
+  tailwind.config = { theme: { extend: { fontFamily: {
+    sans: ['"Plus Jakarta Sans"','Inter','system-ui','sans-serif'],
+    mono: ['"SF Mono"','ui-monospace','monospace'],
+  }}}};
+</script>
+<style>
+  :root{
+    --bg-primary:#0a0a0f; --bg-secondary:#111118; --bg-tertiary:#1a1a24;
+    --border:rgba(255,255,255,.06); --text-primary:#f0f0f5; --text-secondary:#9494a8; --text-tertiary:#5a5a6e;
+    --neon-cyan:#00e5ff; --neon-magenta:#ff00ff; --neon-lime:#39ff14; --neon-amber:#ffb428; --neon-pink:#ff1493;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);
+       -webkit-font-smoothing:antialiased;margin:0;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(900px 500px at 12% -10%,rgba(0,229,255,.07),transparent 60%),
+               radial-gradient(800px 500px at 88% 0%,rgba(255,0,255,.06),transparent 60%)}
+  .wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:28px 20px 90px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--bg-secondary);
+        border:1px solid var(--border);border-radius:16px}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.03);
+        border:1px solid var(--border);font-size:12.5px;color:var(--text-secondary);transition:.16s;cursor:pointer;white-space:nowrap}
+  .pill:hover{border-color:rgba(0,229,255,.4);color:#fff;transform:translateY(-1px)}
+  .pill.on{border-color:rgba(0,229,255,.6);color:#00e5ff;background:rgba(0,229,255,.07);box-shadow:0 0 22px rgba(0,229,255,.12)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:600;border-radius:999px;cursor:pointer;
+       border:1px solid transparent;transition:.18s;font-family:inherit}
+  .btn-main{background:linear-gradient(120deg,#00e5ff,#7b6cff 55%,#ff00ff);color:#05050a;padding:15px 34px;font-size:15.5px;
+            box-shadow:0 10px 34px rgba(0,229,255,.22)}
+  .btn-main:hover{filter:brightness(1.09);transform:translateY(-1px)}
+  .btn-main:disabled{opacity:.42;cursor:not-allowed;transform:none;filter:none}
+  .btn-ghost{background:rgba(255,255,255,.04);border-color:var(--border);color:var(--text-secondary);padding:9px 16px;font-size:13px}
+  .btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+  textarea,input,select{font-family:inherit;background:rgba(0,0,0,.35);border:1px solid var(--border);color:var(--text-primary);
+                        border-radius:12px;outline:none;transition:.16s;font-size:14.5px}
+  textarea:focus,input:focus,select:focus{border-color:rgba(0,229,255,.5);box-shadow:0 0 0 3px rgba(0,229,255,.08)}
+  .mono{font-family:'SF Mono',ui-monospace,monospace}
+  .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-tertiary);font-weight:600}
+  .ans{white-space:pre-wrap;line-height:1.65;font-size:14px;color:#dfe0ea}
+  .collapsed{max-height:260px;overflow:hidden;position:relative}
+  .collapsed::after{content:'';position:absolute;left:0;right:0;bottom:0;height:80px;background:linear-gradient(transparent,var(--bg-secondary))}
+  .badge{padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .b-wait{background:rgba(255,255,255,.06);color:var(--text-tertiary)}
+  .b-run{background:rgba(0,229,255,.12);color:#00e5ff}
+  .b-ok{background:rgba(57,255,20,.12);color:#39ff14}
+  .b-err{background:rgba(255,20,147,.14);color:#ff1493}
+  .journey{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .step{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-tertiary)}
+  .step .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .step.on{color:#00e5ff}.step.on .dot{background:#00e5ff;box-shadow:0 0 12px #00e5ff}
+  .step.done{color:#39ff14}.step.done .dot{background:#39ff14}
+  .win{background:linear-gradient(120deg,rgba(0,229,255,.14),rgba(255,0,255,.12));border:1px solid rgba(0,229,255,.45);
+       box-shadow:0 0 60px rgba(0,229,255,.14)}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);text-align:left;padding:10px 12px;font-weight:700}
+  td{padding:12px;border-top:1px solid var(--border);font-size:14px}
+  tr.me td{background:rgba(0,229,255,.06)}
+  .bar{height:7px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#00e5ff,#ff00ff)}
+  .spin{width:15px;height:15px;border:2px solid rgba(0,229,255,.25);border-top-color:#00e5ff;border-radius:50%;
+        display:inline-block;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .pulse{animation:pl 1.6s ease-in-out infinite}
+  @keyframes pl{0%,100%{opacity:1}50%{opacity:.45}}
+  a{color:#00e5ff;text-decoration:none}
+  details summary{cursor:pointer;list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#111118;border:1px solid rgba(0,229,255,.4);
+         padding:12px 20px;border-radius:12px;font-size:13.5px;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── HLAVIČKA ── -->
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:26px">
+    <div>
+      <div class="lbl" style="margin-bottom:8px">majlajf &nbsp;/&nbsp; experiment</div>
+      <h1 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.1">
+        LLM <span style="background:linear-gradient(120deg,#00e5ff,#ff00ff);-webkit-background-clip:text;background-clip:text;color:transparent">Arena</span>
+      </h1>
+      <p style="margin:10px 0 0;color:var(--text-secondary);font-size:14.5px;max-width:680px;line-height:1.6">
+        Napíšeš jedno zadání. Několik modelů na něj odpoví. Pak si odpovědi vzájemně ohodnotí —
+        <b style="color:#f0f0f5">anonymně</b>, bez jmen, každý porotce v jiném pořadí. Výsledek je reálný: co si modely
+        skutečně napsaly a jak skutečně hlasovaly.
+      </p>
+    </div>
+    <a href="/" class="pill"><i data-lucide="arrow-left" style="width:14px;height:14px"></i> Zpět na majlajf</a>
+  </div>
+
+  <!-- ── OVLÁDÁNÍ ── -->
+  <div class="card" style="padding:20px;margin-bottom:18px">
+    <div style="display:grid;grid-template-columns:1fr;gap:16px">
+
+      <div>
+        <div class="lbl" style="margin-bottom:9px">1 — kdo soutěží</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="presetRow">
+          <button class="pill on" data-preset="flagship">🏆 Vlajkové (GPT-6 Sol, Gemini 3.1 Pro, Grok 4.7, Llama 4)</button>
+          <button class="pill" data-preset="levny">💰 Levné (pár haléřů)</button>
+          <button class="pill" data-preset="sest">🧠 Šest modelů (+ Claude, DeepSeek)</button>
+          <button class="pill" data-preset="vlastni">✏️ Vlastní</button>
+        </div>
+        <div id="customBox" style="display:none;margin-top:12px">
+          <input id="customModels" class="mono" style="width:100%;padding:12px 14px"
+                 placeholder="Jméno=model-id, Jméno2=model-id2   např. Claude=anthropic/claude-opus-5,Qwen=qwen/qwen3.8-27b">
+        </div>
+      </div>
+
+      <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:center">
+        <div>
+          <div class="lbl" style="margin-bottom:9px">2 — délka odpovědí</div>
+          <select id="lenSel" style="padding:9px 12px">
+            <option value="700">krátké (~700 tokenů)</option>
+            <option value="1200" selected>střední (~1200 tokenů)</option>
+            <option value="2200">dlouhé (~2200 tokenů)</option>
+          </select>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:9px">3 — kdo hodnotí</div>
+          <select id="judgeSel" style="padding:9px 12px">
+            <option value="vse" selected>všichni soutěžící</option>
+            <option value="bez_sebe">všichni, ale nikdo nevidí svou odpověď</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div class="lbl" style="margin-bottom:9px">4 — zadání</div>
+        <textarea id="prompt" rows="4" style="width:100%;padding:14px"
+          placeholder="Napiš, co mají modely udělat… (⌘/Ctrl + Enter odešle)"></textarea>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px" id="examples">
+          <span class="pill" data-ex="Navrhni 5 konkrétních nápadů na příspěvky na Facebook pro českou veterinární kliniku. Ke každému napiš krátký text příspěvku (2-3 věty) a proč funguje.">veterina · FB příspěvky</span>
+          <span class="pill" data-ex="Vysvětli laikovi v 5 bodech, jak funguje podvojné účetnictví a proč se výdaj a příjem nerovná nákladu a výnosu.">účetnictví pro laika</span>
+          <span class="pill" data-ex="Napiš HTML+CSS jednostránkový web pro řemeslníka (elektrikář) s poptávkovým formulářem. Vrať jen kód.">jednostránkový web</span>
+          <span class="pill" data-ex="Jaké jsou tři největší rizika při prodeji e-shopu a jak se proti nim pojistit? Buď konkrétní.">rizika prodeje e-shopu</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:4px">
+        <button id="go" class="btn btn-main"><i data-lucide="swords" style="width:18px;height:18px"></i> Spustit souboj</button>
+        <button id="dl" class="btn btn-ghost" disabled><i data-lucide="download" style="width:14px;height:14px"></i> Stáhnout JSON</button>
+        <button id="cp" class="btn btn-ghost" disabled><i data-lucide="clipboard" style="width:14px;height:14px"></i> Kopírovat JSON</button>
+        <span style="color:var(--text-tertiary);font-size:12.5px" id="hint">Běh trvá 30–90 s a stojí řádově centy.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRŮBĚH ── -->
+  <div class="card" id="journeyCard" style="padding:16px 20px;margin-bottom:18px;display:none">
+    <div class="journey" id="journey">
+      <div class="step" data-s="1"><span class="dot"></span> 1 · odpovědi modelů</div>
+      <div class="step" data-s="2"><span class="dot"></span> 2 · anonymizace</div>
+      <div class="step" data-s="3"><span class="dot"></span> 3 · hodnocení naslepo</div>
+      <div class="step" data-s="4"><span class="dot"></span> 4 · výsledek</div>
+      <div style="flex:1;min-width:120px" class="bar"><i id="prog" style="width:0%"></i></div>
+      <span id="progTxt" class="mono" style="font-size:12px;color:var(--text-secondary)"></span>
+    </div>
+  </div>
+
+  <!-- ── VÍTĚZ ── -->
+  <div class="card win" id="winnerCard" style="padding:24px;margin-bottom:18px;display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+      <div>
+        <div class="lbl" style="margin-bottom:7px">nejlepší podle poroty</div>
+        <div id="winnerName" style="font-size:30px;font-weight:800;letter-spacing:-.02em"></div>
+        <div id="winnerSub" style="color:var(--text-secondary);font-size:13.5px;margin-top:6px"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="lbl" style="margin-bottom:7px">cena běhu</div>
+        <div id="costTotal" class="mono" style="font-size:24px;font-weight:700"></div>
+        <div id="costDetail" class="mono" style="color:var(--text-tertiary);font-size:11.5px;margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ŽEBŘÍČEK ── -->
+  <div class="card" id="boardCard" style="padding:6px 6px 12px;margin-bottom:18px;display:none;overflow:auto">
+    <table>
+      <thead><tr>
+        <th style="width:46px">#</th><th>model</th><th style="width:130px">skóre</th>
+        <th style="width:80px">výher</th><th style="width:110px">Ø známka</th><th style="width:120px">odpověď</th>
+      </tr></thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ── ODPOVĚDI ── -->
+  <div id="ansSection" style="display:none;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;margin:0 0 12px">
+      <i data-lucide="message-square" style="width:17px;height:17px;color:#00e5ff"></i>
+      <span class="lbl" style="color:var(--text-secondary)">1 · odpovědi modelů (plné znění)</span>
+    </div>
+    <div id="ansGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px"></div>
+  </div>
+
+  <!-- ── HODNOCENÍ ── -->
+  <div id="judgeSection" style="display:none;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;margin:0 0 12px">
+      <i data-lucide="scale" style="width:17px;height:17px;color:#ff00ff"></i>
+      <span class="lbl" style="color:var(--text-secondary)">3 · jak hodnotil každý porotce (anonymně)</span>
+    </div>
+    <div id="judgeGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px"></div>
+  </div>
+
+  <!-- ── SYROVÁ DATA ── -->
+  <div class="card" id="jsonCard" style="padding:0;margin-bottom:18px;display:none">
+    <details>
+      <summary style="padding:16px 20px;display:flex;align-items:center;gap:10px">
+        <i data-lucide="braces" style="width:16px;height:16px;color:#ffb428"></i>
+        <span class="lbl" style="color:var(--text-secondary)">kompletní záznam běhu (JSON)</span>
+      </summary>
+      <pre id="jsonBox" class="mono" style="margin:0;padding:0 20px 20px;font-size:11.5px;color:#b9bacb;white-space:pre-wrap;max-height:520px;overflow:auto"></pre>
+    </details>
+  </div>
+
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  LLM ARENA — frontendová logika
+//  Anonymizace, míchání pořadí a sčítání hlasů běží tady v prohlížeči.
+//  Server (api/arena.js) je jen proxy, drží API klíč a volá modely.
+// ════════════════════════════════════════════════════════════════
+
+const PRESETY = {
+  flagship: {
+    ChatGPT: 'openai/gpt-6-sol',
+    Gemini:  'google/gemini-3.1-pro-preview',
+    Grok:    'x-ai/grok-4.7',
+    Llama:   'meta-llama/llama-4-maverick',
+  },
+  levny: {
+    ChatGPT: 'openai/gpt-6-luna-pro',
+    Gemini:  'google/gemini-2.5-flash-lite',
+    Grok:    'x-ai/grok-4.20',
+    Llama:   'meta-llama/llama-4-scout',
+  },
+  sest: {
+    ChatGPT:  'openai/gpt-6-sol',
+    Gemini:   'google/gemini-3.1-pro-preview',
+    Grok:     'x-ai/grok-4.7',
+    Llama:    'meta-llama/llama-4-maverick',
+    Claude:   'anthropic/claude-opus-5',
+    DeepSeek: 'deepseek/deepseek-v4-pro',
+  },
+};
+
+const $ = (id) => document.getElementById(id);
+const LETTERS = 'ABCDEFGH';
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const czk = (n) => '$' + (n || 0).toFixed(4);
+const tokens = (u) => (u && (u.prompt_tokens || 0)) + (u && (u.completion_tokens || 0));
+let run = null;
+let busy = false;
+
+// ── UI: presety ────────────────────────────────────────────────
+let preset = 'flagship';
+document.querySelectorAll('#presetRow .pill').forEach((b) => {
+  b.onclick = () => {
+    document.querySelectorAll('#presetRow .pill').forEach((x) => x.classList.remove('on'));
+    b.classList.add('on');
+    preset = b.dataset.preset;
+    $('customBox').style.display = preset === 'vlastni' ? 'block' : 'none';
+    if (preset !== 'vlastni') hintModels();
+  };
+});
+document.querySelectorAll('#examples .pill').forEach((b) => {
+  b.onclick = () => { $('prompt').value = b.dataset.ex; $('prompt').focus(); };
+});
+
+function parseModels() {
+  if (preset !== 'vlastni') return { ...PRESETY[preset] };
+  const out = {};
+  ($('customModels').value || '').split(',').forEach((part) => {
+    const i = part.indexOf('=');
+    if (i > 0) {
+      const k = part.slice(0, i).trim();
+      const v = part.slice(i + 1).trim();
+      if (k && v) out[k] = v;
+    }
+  });
+  return out;
+}
+function hintModels() {
+  const m = parseModels();
+  $('hint').textContent = `${Object.keys(m).length} modelů v aréně · běh trvá 30–90 s · platí se z kreditu OpenRouteru (~1–20 centů).`;
+}
+hintModels();
+
+// ── start ──────────────────────────────────────────────────────
+$('prompt').addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') $('go').click();
+});
+$('go').onclick = start;
+
+async function start() {
+  if (busy) return;
+  const prompt = $('prompt').value.trim();
+  if (prompt.length < 3) { toast('Napiš prosím zadání.'); return; }
+  const models = parseModels();
+  const labels = Object.keys(models);
+  if (labels.length < 2) { toast('Potřebuju aspoň 2 modely.'); return; }
+
+  busy = true;
+  $('go').disabled = true;
+  $('dl').disabled = true;
+  $('cp').disabled = true;
+  $('journeyCard').style.display = 'block';
+  $('ansSection').style.display = 'block';
+  $('judgeSection').style.display = 'none';
+  $('winnerCard').style.display = 'none';
+  $('boardCard').style.display = 'none';
+  $('jsonCard').style.display = 'none';
+  $('ansGrid').innerHTML = '';
+  $('judgeGrid').innerHTML = '';
+  step(1);
+  const t0 = Date.now();
+
+  run = {
+    cas: new Date().toISOString(), zadani: prompt, preset,
+    modely: models, hodnoti_bez_sebe: $('judgeSel').value === 'bez_sebe',
+    max_tokens: +$('lenSel').value,
+    odpovedi: {}, hodnoceni: {}, naklady: {}, trvani_s: 0,
+  };
+  const maxTok = run.max_tokens;
+
+  // ── FÁZE 1: odpovědi (paralelně) ──
+  labels.forEach((l) => cardAnswer(l, models[l], 'wait'));
+  let done = 0;
+  await Promise.all(labels.map(async (l) => {
+    const a = run.odpovedi[l] = { model: models[l], stav: 'bezi', text: '', error: '' };
+    cardAnswer(l, models[l], 'run');
+    const ts = Date.now();
+    try {
+      const r = await api({ action: 'answer', model: models[l], prompt, max_tokens: maxTok, temperature: 0.7 });
+      a.ms = Date.now() - ts;
+      if (!r.ok) { a.stav = 'chyba'; a.error = r.error || 'neznámá chyba'; cardAnswer(l, models[l], 'err'); }
+      else {
+        a.stav = 'hotovo'; a.text = r.text; a.usage = r.usage || {}; a.realny_model = r.model;
+        a.truncated = !!r.truncated; a.opakovano = !!r.opakovano;
+        run.naklady['odpoved:' + l] = +(r.usage && r.usage.cost || 0);
+        cardAnswer(l, models[l], 'ok');
+      }
+    } catch (e) { a.stav = 'chyba'; a.error = String(e.message || e); cardAnswer(l, models[l], 'err'); }
+    prog(++done / labels.length * 55, `odpovědi ${done}/${labels.length}`);
+  }));
+
+  const usable = labels.filter((l) => (run.odpovedi[l].text || '').trim().length > 0);
+  if (usable.length < 2) {
+    step(0); $('hint').textContent = 'Míň než 2 platné odpovědi — zkus to znovu.';
+    toast('Nepřišly aspoň 2 odpovědi, podívej se na chyby v kartách.'); busy = false; $('go').disabled = false; return;
+  }
+
+  // ── FÁZE 2: anonymizace ──
+  step(2);
+  const porotci = usable.slice();
+  const plany = porotci.map((j) => {
+    const pool = run.hodnoti_bez_sebe ? usable.filter((l) => l !== j) : usable.slice();
+    const order = shuffle(pool);
+    const mapping = {};
+    order.forEach((l, i) => { mapping[LETTERS[i]] = l; });
+    const letters = Object.keys(mapping);
+    const blocks = letters.map((lt) => `--- ODPOVĚĎ ${lt} ---\n${run.odpovedi[mapping[lt]].text.trim()}\n`).join('\n');
+    return { judge: j, letterOrder: letters, mapping, blocks, pool: order };
+  });
+  run.anonymizace = plany.map((p) => ({ porotce: p.judge, prirazeni: p.mapping }));
+  await sleep(250);
+  prog(58, 'anonymizováno');
+  $('judgeSection').style.display = 'block';
+  plany.forEach((p) => cardJudge(p, 'wait'));
+
+  // ── FÁZE 3: hodnocení (paralelně) ──
+  step(3);
+  $('hint').textContent = 'Porota hodnotí naslepo — každý porotce dostal odpovědi v jiném pořadí pod písmeny.';
+  let jd = 0;
+  await Promise.all(plany.map(async (p) => {
+    const res = run.hodnoceni[p.judge] = { model: models[p.judge], stav: 'bezi', prirazeni: p.mapping };
+    cardJudge(p, 'run');
+    const ts = Date.now();
+    try {
+      const r = await api({ action: 'judge', model: models[p.judge], prompt, blocks: p.blocks, letters: p.letterOrder, max_tokens: 1200 });
+      res.ms = Date.now() - ts;
+      if (!r.ok) { res.stav = 'chyba'; res.error = r.error || 'chyba'; cardJudge(p, 'err'); }
+      else {
+        run.naklady['porota:' + p.judge] = +(r.usage && r.usage.cost || 0);
+        const parsed = parseJudgement(r.text, p.letterOrder);
+        res.raw = r.text;
+        if (!parsed) { res.stav = 'chyba'; res.error = 'odpověď porotce se nedala přečíst jako JSON'; cardJudge(p, 'err', r.text); }
+        else {
+          res.stav = 'hotovo';
+          res.poradi_pismen = parsed.poradi;
+          res.poradi_modelu = parsed.poradi.map((lt) => p.mapping[lt]);
+          res.vitez_pismeno = parsed.vitez;
+          res.vitez_model = p.mapping[parsed.vitez];
+          res.znamky = {};
+          Object.keys(parsed.skore || {}).forEach((lt) => { if (p.mapping[lt]) res.znamky[p.mapping[lt]] = parsed.skore[lt]; });
+          res.duvod = parsed.duvod;
+          cardJudge(p, 'ok');
+        }
+      }
+    } catch (e) { res.stav = 'chyba'; res.error = String(e.message || e); cardJudge(p, 'err'); }
+    prog(60 + (++jd / plany.length) * 38, `hodnocení ${jd}/${plany.length}`);
+  }));
+
+  // ── FÁZE 4: sčítání ──
+  step(4);
+  run.vysledek = aggregate(usable);
+  renderBoard(run.vysledek, usable);
+  const total = Object.values(run.naklady).reduce((a, b) => a + b, 0);
+  run.naklady_celkem = total;
+  run.trvani_s = Math.round((Date.now() - t0) / 1000);
+  $('winnerCard').style.display = 'block';
+  const w = run.vysledek.vysledky[0];
+  $('winnerName').textContent = w ? w.model : '—';
+  $('winnerSub').textContent = w
+    ? `skóre ${w.skore.toFixed(2)} · ${w.vitazstvi}× vítězství z ${run.vysledek.pocet_porotcu} hlasů · Ø známka ${w.prumer_znamek != null ? w.prumer_znamek.toFixed(2) : '—'} · běh ${run.trvani_s} s`
+    : 'porota nedala dohromady výsledek';
+  $('costTotal').textContent = czk(total);
+  $('costDetail').innerHTML = Object.keys(run.naklady).length
+    ? Object.entries(run.naklady).map(([k, v]) => `${esc(k)} ${czk(v)}`).join('<br>') : '—';
+
+  $('jsonBox').textContent = JSON.stringify(run, null, 2);
+  $('jsonCard').style.display = 'block';
+  $('dl').disabled = false; $('cp').disabled = false;
+  try { localStorage.setItem('llm-arena-last', JSON.stringify(run)); } catch (e) {}
+  prog(100, `hotovo za ${run.trvani_s} s`);
+  $('hint').textContent = `Hotovo. Nejlepší: ${w ? w.model : '—'} · cena ${czk(total)} · ${run.trvani_s} s. Můžeš zadat další zadání.`;
+  toast(`Hotovo — vyhrál ${w ? w.model : '—'}.`);
+  busy = false; $('go').disabled = false;
+  $('winnerCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ── volání API ─────────────────────────────────────────────────
+let apiBase = '';
+try {
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    const p = new URLSearchParams(location.search).get('api');
+    apiBase = p || 'http://127.0.0.1:8788';
+  }
+} catch (e) {}
+
+async function api(payload) {
+  const r = await fetch(apiBase + '/api/arena', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  let j = null;
+  try { j = await r.json(); } catch (e) {}
+  if (!j) return { ok: false, error: `server vrátil HTTP ${r.status}` };
+  return j;
+}
+
+// ── karty odpovědí ─────────────────────────────────────────────
+function cardAnswer(label, mid, state) {
+  const id = 'ans-' + slug(label);
+  let el = $(id);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = id;
+    el.className = 'card';
+    el.style.padding = '16px 18px';
+    $('ansGrid').appendChild(el);
+  }
+  const a = (run && run.odpovedi[label]) || {};
+  const badge = { wait: ['b-wait', 'čeká'], run: ['b-run', 'odpovídá…'], ok: ['b-ok', 'hotovo'], err: ['b-err', 'chyba'] }[state];
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:9px;min-width:0">
+        <span class="badge ${badge[0]}">${badge[1]}</span>
+        <b style="font-size:15px">${esc(label)}</b>
+      </div>
+      <span class="mono" style="font-size:10.5px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(mid)}</span>
+    </div>
+    ${state === 'wait' || state === 'run' ? `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> model píše…</div>` : ''}
+    ${state === 'err' ? `<div style="color:#ff1493;font-size:13px;line-height:1.6">${esc(a.error || 'chyba')}</div>` : ''}
+    ${state === 'ok' ? `
+      ${a.truncated ? `<div style="background:rgba(255,180,40,.1);border:1px solid rgba(255,180,40,.35);color:#ffb428;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">
+        Pozor: modelu došel rozpočet tokenů, odpověď je uříznutá. Zkus zvolit delší odpovědi.</div>` : ''}
+      <div class="ans collapsed" id="txt-${slug(label)}">${esc(a.text)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;gap:10px;flex-wrap:wrap">
+        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">
+          ${a.text.length} znaků · ${tokens(a.usage)} tokenů · ${czk(a.usage && a.usage.cost)} · ${((a.ms || 0) / 1000).toFixed(1)} s${a.opakovano ? ' · na druhý pokus' : ''}
+        </span>
+        <span style="display:flex;gap:7px">
+          <button class="btn btn-ghost" style="padding:6px 12px" onclick="toggleTxt('${slug(label)}')">rozbalit</button>
+          <button class="btn btn-ghost" style="padding:6px 12px" onclick="copyTxt('${slug(label)}')">kopírovat</button>
+        </span>
+      </div>` : ''}`;
+}
+function toggleTxt(s) {
+  const el = $('txt-' + s);
+  el.classList.toggle('collapsed');
+  el.parentElement.querySelector('button').textContent = el.classList.contains('collapsed') ? 'rozbalit' : 'sbalit';
+}
+function copyTxt(s) {
+  const el = $('txt-' + s);
+  navigator.clipboard.writeText(el.innerText).then(() => toast('Odpověď zkopírována.'));
+}
+
+// ── karty poroty ───────────────────────────────────────────────
+function cardJudge(p, state, rawText) {
+  const id = 'jdg-' + slug(p.judge);
+  let el = $(id);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = id;
+    el.className = 'card';
+    el.style.padding = '16px 18px';
+    $('judgeGrid').appendChild(el);
+  }
+  const j = (run && run.hodnoceni[p.judge]) || {};
+  const badge = { wait: ['b-wait', 'čeká'], run: ['b-run', 'hodnotí…'], ok: ['b-ok', 'hotovo'], err: ['b-err', 'chyba'] }[state];
+  const mapa = Object.entries(p.mapping).map(([lt, m]) => `${lt}=${esc(m)}`).join(' · ');
+  let body = '';
+  if (state === 'wait' || state === 'run') body = `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> čte ${p.letterOrder.length} anonymních odpovědí…</div>`;
+  if (state === 'err') body = `<div style="color:#ff1493;font-size:13px;line-height:1.6">${esc(j.error || 'chyba')}${rawText ? `<pre class="mono" style="font-size:11px;white-space:pre-wrap;color:#8a8a9c;margin-top:8px">${esc(rawText.slice(0, 600))}</pre>` : ''}</div>`;
+  if (state === 'ok') {
+    const radky = j.poradi_modelu.map((m, i) => {
+      const lt = j.poradi_pismen[i];
+      const z = j.znamky[m] != null ? j.znamky[m] : '—';
+      const win = m === j.vitez_model;
+      return `<tr${win ? ' class="me"' : ''}>
+        <td style="width:34px;color:var(--text-tertiary)" class="mono">${i + 1}.</td>
+        <td class="mono" style="width:44px;color:var(--text-secondary)">${esc(lt)}</td>
+        <td><b>${esc(m)}</b>${win ? ' <span class="badge b-ok">vítěz</span>' : ''}</td>
+        <td class="mono" style="width:70px;text-align:right">${esc(String(z))}</td>
+      </tr>`;
+    }).join('');
+    body = `
+      <table style="margin:4px 0 10px"><tbody>${radky}</tbody></table>
+      <div style="border-left:2px solid rgba(255,0,255,.4);padding-left:12px;color:#cfd0dc;font-size:13.5px;line-height:1.62">
+        ${esc(j.duvod || '(porotce neuvedl zdůvodnění)')}
+      </div>
+      <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-top:11px">
+        ${tokens(j.usage)} tokenů · ${czk(j.usage && j.usage.cost)} · ${((j.ms || 0) / 1000).toFixed(1)} s
+      </div>`;
+  }
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <span class="badge ${badge[0]}">${badge[1]}</span>
+        <b style="font-size:15px">porotce ${esc(p.judge)}</b>
+      </div>
+    </div>
+    <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">
+      ${run && run.hodnoti_bez_sebe ? 'vlastní odpověď nedostal · ' : ''}dostal: ${mapa}
+    </div>
+    ${body}`;
+}
+
+// ── tabulka ────────────────────────────────────────────────────
+function renderBoard(agg, usable) {
+  $('boardCard').style.display = 'block';
+  $('boardBody').innerHTML = agg.vysledky.map((r) => {
+    const a = run.odpovedi[r.model] || {};
+    const max = Math.max(1, agg.pocet_porotcu);
+    return `<tr${r.poradi === 1 ? ' class="me"' : ''}>
+      <td class="mono" style="color:${r.poradi === 1 ? '#00e5ff' : 'var(--text-tertiary)'};font-weight:700">${r.poradi}</td>
+      <td><b>${esc(r.model)}</b><div class="mono" style="font-size:10.5px;color:var(--text-tertiary)">${esc(r.model_id || '')}</div></td>
+      <td>
+        <div class="bar"><i style="width:${(r.skore / max * 100).toFixed(0)}%"></i></div>
+        <div class="mono" style="font-size:11.5px;color:var(--text-secondary);margin-top:5px">${r.skore.toFixed(2)} / ${max}</div>
+      </td>
+      <td class="mono" style="font-size:15px">${r.vitazstvi}×</td>
+      <td class="mono">${r.prumer_znamek != null ? r.prumer_znamek.toFixed(2) : '—'}</td>
+      <td class="mono" style="font-size:11.5px;color:var(--text-tertiary)">${a.text ? a.text.length + ' znaků' : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── sčítání hlasů ──────────────────────────────────────────────
+function aggregate(usable) {
+  const skore = {}, vyhry = {}, znamky = {};
+  usable.forEach((l) => { skore[l] = 0; vyhry[l] = 0; znamky[l] = []; });
+  let hlasu = 0;
+  Object.entries(run.hodnoceni).forEach(([j, r]) => {
+    if (r.stav !== 'hotovo' || !r.poradi_modelu) return;
+    hlasu++;
+    const n = r.poradi_modelu.length;
+    r.poradi_modelu.forEach((m, i) => { if (skore[m] != null) skore[m] += (n - i) / n; });
+    if (vyhry[r.vitez_model] != null) vyhry[r.vitez_model]++;
+    Object.entries(r.znamky || {}).forEach(([m, v]) => { if (znamky[m]) znamky[m].push(Number(v)); });
+  });
+  const vysledky = usable.map((l) => ({
+    model: l, model_id: run.modely[l], skore: skore[l], vitazstvi: vyhry[l],
+    prumer_znamek: znamky[l].length ? +(znamky[l].reduce((a, b) => a + b, 0) / znamky[l].length).toFixed(2) : null,
+  })).sort((a, b) => b.skore - a.skore || b.vitazstvi - a.vitazstvi || (b.prumer_znamek || 0) - (a.prumer_znamek || 0));
+  vysledky.forEach((r, i) => { r.poradi = i + 1; });
+  return { vysledky, pocet_porotcu: hlasu, vitez: vysledky[0] ? vysledky[0].model : null };
+}
+
+// ── parsing JSON od porotce ────────────────────────────────────
+function parseJudgement(text, letters) {
+  if (!text) return null;
+  const cands = [];
+  const fence = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+  if (fence) cands.push(fence[1]);
+  cands.push(text.trim());
+  const brace = text.match(/\{[\s\S]*\}/);
+  if (brace) cands.push(brace[0]);
+  for (let c of cands) {
+    let obj = null;
+    try { obj = JSON.parse(c); } catch (e) { try { obj = JSON.parse(c.replace(/'/g, '"')); } catch (e2) { continue; } }
+    if (!obj || typeof obj !== 'object') continue;
+    let poradi = obj.poradi || obj['pořadí'];
+    if (!Array.isArray(poradi)) continue;
+    let clean = poradi.map((x) => String(x).trim().toUpperCase().slice(0, 1));
+    if (clean.slice().sort().join('') !== letters.slice().sort().join('')) {
+      const seen = new Set(); const fixed = [];
+      clean.concat(letters).forEach((l) => { if (letters.includes(l) && !seen.has(l)) { seen.add(l); fixed.push(l); } });
+      clean = fixed;
+    }
+    if (!clean.length) continue;
+    const sk = obj.skore || obj['skóre'] || {};
+    const skore = {};
+    if (sk && typeof sk === 'object') Object.keys(sk).forEach((k) => { skore[String(k).trim().toUpperCase().slice(0, 1)] = sk[k]; });
+    return { poradi: clean, vitez: clean[0], skore, duvod: String(obj.duvod || obj['důvod'] || '').trim() };
+  }
+  return null;
+}
+
+// ── pomocné ────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-');
+function step(n) {
+  document.querySelectorAll('#journey .step').forEach((el) => {
+    const s = +el.dataset.s;
+    el.classList.toggle('done', n > 0 && s < n);
+    el.classList.toggle('on', n > 0 && s === n);
+  });
+  if (n > 0) prog(n === 1 ? 4 : n === 2 ? 56 : n === 3 ? 60 : 98, null);
+}
+function prog(pct, txt) {
+  $('prog').style.width = Math.min(100, pct) + '%';
+  if (txt) $('progTxt').textContent = txt;
+}
+let toastT = null;
+function toast(msg) {
+  const old = document.querySelector('.toast'); if (old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  clearTimeout(toastT); toastT = setTimeout(() => el.remove(), 4200);
+}
+$('dl').onclick = () => {
+  if (!run) return;
+  const b = new Blob([JSON.stringify(run, null, 2)], { type: 'application/json' });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = 'llm-arena-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + '.json';
+  a.click(); URL.revokeObjectURL(u);
+  toast('Záznam uložen do Stažených.');
+};
+$('cp').onclick = () => { if (run) navigator.clipboard.writeText(JSON.stringify(run, null, 2)).then(() => toast('JSON zkopírován.')); };
+
+// obnova posledního běhu
+try {
+  const last = localStorage.getItem('llm-arena-last');
+  if (last) {
+    const r = JSON.parse(last);
+    if (r && r.zadani) $('hint').textContent = 'Poslední běh je uložený v prohlížeči — nové zadání ho přepíše.';
+  }
+} catch (e) {}
+if (window.lucide) lucide.createIcons();
+</script>
+</body>
+</html>
