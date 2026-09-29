@@ -16,6 +16,9 @@
 
   // ── hlavička: názvy sloupců přesně jako v Editor exportu ──────────────────
   const HEADER = [].concat(
+    // POZOR: "Account" a "Account name" MUSÍ být v hlavičce, jinak Editor import
+    // odmítne hláškou „chybí požadovaný sloupec účtu". Ověřeno na reálném importu.
+    ['Account', 'Account name'],
     ['Campaign', 'Campaign Type', 'Networks', 'Budget', 'Budget type',
      'EU political ads', 'Standard conversion goals', 'Customer acquisition',
      'Languages', 'Bid Strategy Type', 'Enhanced CPC', 'Target CPA',
@@ -63,7 +66,14 @@
     if (/^česko|^cesko|czech|^cz$/.test(n)) return '2203';
     if (/slovensko|slovak/.test(n)) return '2703';
     return '';
-  }
+    }
+
+    // ID účtu Google Ads: „1234567890" i „123-456-7890" → vždy s pomlčkami
+    function normalizujUcet(v) {
+    const c = String(v == null ? '' : v).replace(/\D/g, '');
+    if (c.length === 10) return c.slice(0, 3) + '-' + c.slice(3, 6) + '-' + c.slice(6);
+    return String(v == null ? '' : v).trim();
+    }
 
   // ── z dat kroků na řádky pro Editor ───────────────────────────────────────
   function toRows(state) {
@@ -195,6 +205,11 @@
       'Country of Phone': ext.telefon.zeme || 'CZ', Source: 'Advertiser',
       'Campaign Status': 'Paused', Status: 'Enabled' });
 
+    // ÚČET — povinné pro každý řádek (Editor bez toho import odmítne)
+    const ucet = normalizujUcet(p.ucet);
+    const ucetNazev = String(p.ucetNazev || '').trim();
+    rows.forEach((r) => { r.Account = ucet; r['Account name'] = ucetNazev; });
+
     return rows;
   }
 
@@ -238,6 +253,12 @@
   function validate(rows) {
     const errors = [], warnings = [], stats = {};
     const seen = {};
+    if (!rows.length) return { errors: ['soubor neobsahuje žádná data'], warnings: [], stats, ok: false };
+    if (!String(rows[0].Account || '').trim()) {
+      errors.push('chybí ID účtu Google Ads — Editor import odmítne hláškou „chybí požadovaný sloupec účtu"');
+    } else if (!/^\d{3}-\d{3}-\d{4}$/.test(String(rows[0].Account).trim())) {
+      warnings.push('ID účtu „' + rows[0].Account + '" není ve tvaru 123-456-7890');
+    }
     rows.forEach((r, i) => {
       const line = i + 2, g = (k) => clean(r[k]);
       const kind = rowKind(r);
@@ -374,11 +395,12 @@
     const rows = toRows(state);
     const report = validate(rows);
     const bytes = toBytes(rows);
-    return { rows, report, bytes, fileName: fileName(state), columns: HEADER.length };
+    return { rows, report, bytes, fileName: fileName(state), columns: HEADER.length,
+      ucet: String((state.params || {}).ucet || '') };
   }
 
   return {
     HEADER, MATCH_TYPES, NEG_TYPES, CAMPAIGN_NEG, LIMITS, STATUSES,
-    toRows, validate, toBytes, text, build, fileName, rowKind, clean,
+    toRows, validate, toBytes, text, build, fileName, rowKind, clean, normalizujUcet,
   };
 }));

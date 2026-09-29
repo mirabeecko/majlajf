@@ -152,6 +152,17 @@
     </div>
     <div id="site-info" class="mt-3"></div>
 
+    <div class="grid sm:grid-cols-2 gap-2 mt-3">
+      <div><span class="lbl">ID účtu Google Ads (povinné)</span>
+        <input id="ucet" class="w-full mt-1.5 px-3 py-2.5" data-p="ucet" placeholder="123-456-7890" spellcheck="false"></div>
+      <div><span class="lbl">Název účtu (nepovinné)</span>
+        <input id="ucetNazev" class="w-full mt-1.5 px-3 py-2.5" data-p="ucetNazev" placeholder="např. Moje firma" spellcheck="false"></div>
+    </div>
+    <div class="text-[11.5px] mt-1.5" style="color:var(--text-tertiary)">
+      ID účtu najdete v Google Ads vpravo nahoře (formát 123-456-7890) nebo v Editoru ve <b>Správci účtů</b>.
+      Bez něj Editor import odmítne hláškou „chybí požadovaný sloupec účtu“ — dostane se na každý řádek.
+    </div>
+
     <details class="mt-4">
       <summary class="sumrow">
         <svg class="arrow w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>
@@ -239,6 +250,7 @@ const PRAZDNY = () => ({
     ton: '', konkurence: '', zakazanaSlova: '', sluzby: '', poznamka: '',
     lokalitaId: '2203', startDate: '', stavKampane: 'Paused',
     stavSestav: 'Paused', stavKlice: 'Paused', stavReklam: 'Paused',
+    ucet: '', ucetNazev: '',
   },
   site: null,
   modely: {},            // stepId -> model
@@ -342,9 +354,15 @@ function renderParams() {
   + '<div><span class="lbl">Stav po importu</span><select class="w-full mt-1.5 px-3 py-2.5" data-p="stavKampane">'
     + ['Paused', 'Enabled'].map((v) => '<option value="' + v + '"' + (S.params.stavKampane === v ? ' selected' : '') + '>'
       + (v === 'Paused' ? 'Pozastaveno (bezpečné)' : 'Aktivní (utrácí!)') + '</option>').join('')
+  + '</select></div>'
+  + '<div><span class="lbl">Stav klíčových slov a reklam</span><select class="w-full mt-1.5 px-3 py-2.5" data-p="stavKlice">'
+    + ['Paused', 'Enabled'].map((v) => '<option value="' + v + '"' + (S.params.stavKlice === v ? ' selected' : '') + '>'
+      + (v === 'Paused' ? 'Pozastaveno (bezpečné)' : 'Aktivní') + '</option>').join('')
   + '</select></div>';
   document.getElementById('url').value = S.url;
   document.getElementById('uprava').value = S.uprava;
+  document.getElementById('ucet').value = S.params.ucet || '';
+  document.getElementById('ucetNazev').value = S.params.ucetNazev || '';
   renderSite();
 }
 
@@ -859,7 +877,11 @@ function prekontroluj() {
 /* ── události (delegace) ────────────────────────────────────────────────── */
 document.addEventListener('input', (e) => {
   const t = e.target;
-  if (t.dataset.p) { S.params[t.dataset.p] = t.value; uloz(); return; }
+  if (t.dataset.p) {
+    S.params[t.dataset.p] = t.value;
+    if (t.dataset.p === 'stavKlice') S.params.stavReklam = t.value;   // držíme obojí v souladu
+    uloz(); return;
+  }
   if (t.id === 'uprava') { S.uprava = t.value; uloz(); return; }
   if (t.id === 'url') { S.url = t.value; return; }
   if (t.dataset.model) { S.modely[t.dataset.model] = t.value; uloz(); return; }
