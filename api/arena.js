@@ -53,19 +53,33 @@ const JUDGE_SYSTEM_TASKS = [
   'Odpovídej POUZE jedním JSON objektem, bez textu okolo, bez markdown bloku.',
 ].join(' ');
 
-function jsonSchema(letters, what, each) {
-  return [
-    'Vrať JSON přesně v tomto tvaru:',
+function jsonSchema(letters, what, each, style) {
+  const core = [
     `{"poradi": [${letters.map((l) => `"${l}"`).join(', ')}],`,
     ` "vitez": "${letters[0]}",`,
-    ` "skore": {${letters.map((l) => `"${l}": 8.5`).join(', ')}},`,
-    ' "duvod": "stručné zdůvodnění česky, 2-4 věty, bez jmen modelů"}',
-    '',
-    'Pravidla: "poradi" = od nejlepší po nejhorší, každé písmeno právě jednou.',
-    `"skore" = 0-10 pro ${each}. "vitez" se musí rovnat prvnímu v "poradi".`,
-    'Hodnoť v češtině, věcně, bez zdvořilostních frází.',
   ];
+  if (style !== 'jen_poradi') {
+    core.push(` "skore": {${letters.map((l) => `"${l}": 8.5`).join(', ')}},`);
+  }
+  core.push(' "duvod": "stručné zdůvodnění česky, 2-4 věty, bez jmen modelů"}');
+
+  const out = ['Vrať JSON přesně v tomto tvaru:', ...core, ''];
+  out.push('Pravidla: "poradi" = od nejlepší po nejhorší, každé písmeno právě jednou.');
+  if (style !== 'jen_poradi') {
+    out.push(`"skore" = 1-10 pro ${each}, kde 10 je nejlepší a 1 nejhorší.`);
+  }
+  if (style === 'znamky_rozptyl') {
+    out.push('Použij CELOU škálu: nejlepší musí dostat aspoň 9 a nejhorší nejvýš 4.',
+             'Vyhýbej se tomu dát všem podobné známky — rozdíly mají být vidět.');
+  }
+  out.push('"vitez" se musí rovnat prvnímu v "poradi".',
+           'Hodnoť v češtině, věcně, bez zdvořilostních frází.');
+  return out;
 }
+
+// styly hodnocení: poradi_znamky (výchozí), znamky_rozptyl (vynucená plná škála), jen_poradi
+const STYLES = ['poradi_znamky', 'znamky_rozptyl', 'jen_poradi'];
+const styleOf = (s) => (STYLES.includes(s) ? s : 'poradi_znamky');
 
 function judgeUserAnswers(spec) {
   return [
@@ -81,7 +95,7 @@ function judgeUserAnswers(spec) {
     'Porovnej odpovědi a rozhodni, která je nejlepší (věcná správnost, užitečnost,',
     'konkrétnost, originalita, dodržení zadání).',
     '',
-    ...jsonSchema(spec.letters, 'odpověď', 'každou odpověď'),
+    ...jsonSchema(spec.letters, 'odpověď', 'každou odpověď', styleOf(spec.style)),
   ].join('\n');
 }
 
@@ -100,7 +114,7 @@ function judgeUserTasks(spec) {
     'Porovnej ZADÁNÍ (ne odpovědi!) a rozhodni, které je nejlepší: které je nejjednoznačnější,',
     'nejkonkrétnější, nejúplnější, nejoriginálnější a povede k nejlepšímu výsledku.',
     '',
-    ...jsonSchema(spec.letters, 'zadání', 'každé zadání'),
+    ...jsonSchema(spec.letters, 'zadání', 'každé zadání', styleOf(spec.style)),
   ].join('\n');
 }
 
@@ -237,11 +251,20 @@ module.exports = async function handler(req, res) {
       service: 'llm-arena',
       info: 'POST {action:"answer"|"judge"|"synthesize"} — proxy na OpenRouter, klíč zůstává na serveru.',
       modely: [...ALLOWED],
-      zadani_pro_porotu: {
-        odpovedi: { system: JUDGE_SYSTEM_ANSWERS, user: judgeUserAnswers({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'] }) },
-        zadani: { system: JUDGE_SYSTEM_TASKS, user: judgeUserTasks({ prompt: '<PŮVODNÍ ZADÁNÍ>', blocks: '<NOVÁ ZADÁNÍ A–D>', letters: ['A', 'B', 'C', 'D'] }) },
-        nove_zadani: { system: SYNTH_SYSTEM, user: synthUser({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'] }) },
-      },
+      styly: STYLES,
+      zadani_pro_porotu: (() => {
+        const varianty = {};
+        STYLES.forEach((s) => {
+          varianty[s] = {
+            odpovedi: { system: JUDGE_SYSTEM_ANSWERS, user: judgeUserAnswers({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'], style: s }) },
+            zadani: { system: JUDGE_SYSTEM_TASKS, user: judgeUserTasks({ prompt: '<PŮVODNÍ ZADÁNÍ>', blocks: '<NOVÁ ZADÁNÍ A–D>', letters: ['A', 'B', 'C', 'D'], style: s }) },
+          };
+        });
+        return {
+          varianty,
+          nove_zadani: { system: SYNTH_SYSTEM, user: synthUser({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'] }) },
+        };
+      })(),
     });
   }
   if (req.method !== 'POST') return reply(405, { ok: false, error: 'použij POST' });
@@ -285,14 +308,15 @@ module.exports = async function handler(req, res) {
     if (letters.length < 2) return reply(400, { ok: false, error: 'chybí písmena anonymních položek' });
     if (!blocks) return reply(400, { ok: false, error: 'chybí anonymní obsah k hodnocení' });
     const mode = body.mode === 'zadani' ? 'zadani' : 'odpovedi';
+    const style = styleOf(body.style);
     const system = mode === 'zadani' ? JUDGE_SYSTEM_TASKS : JUDGE_SYSTEM_ANSWERS;
     const user = mode === 'zadani'
-      ? judgeUserTasks({ prompt: body.prompt, blocks, letters })
-      : judgeUserAnswers({ prompt: body.prompt, blocks, letters });
+      ? judgeUserTasks({ prompt: body.prompt, blocks, letters, style })
+      : judgeUserAnswers({ prompt: body.prompt, blocks, letters, style });
     const out = await callModel(key, model, [{ role: 'system', content: system }, { role: 'user', content: user }],
       0.1, +body.max_tokens || 1200);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
-    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters, mode });
+    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters, mode, style });
   }
 
   if (action === 'synthesize') {

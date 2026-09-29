@@ -151,7 +151,15 @@
           </select>
         </div>
         <div>
-          <div class="lbl" style="margin-bottom:9px">4 — druhé kolo</div>
+          <div class="lbl" style="margin-bottom:9px">4 — styl hodnocení</div>
+          <select id="styleSel" style="padding:9px 12px">
+            <option value="znamky_rozptyl" selected>známky 1-10 s vynucenou plnou škálou (nejlíp se shodnou)</option>
+            <option value="poradi_znamky">pořadí + známky 1-10</option>
+            <option value="jen_poradi">jen pořadí, bez známek</option>
+          </select>
+        </div>
+        <div>
+          <div class="lbl" style="margin-bottom:9px">5 — druhé kolo</div>
           <select id="round2Sel" style="padding:9px 12px">
             <option value="ano" selected>ano — nová zadání + jejich hodnocení</option>
             <option value="ne">ne — jen odpovědi a jejich hodnocení</option>
@@ -160,7 +168,7 @@
       </div>
 
       <div>
-        <div class="lbl" style="margin-bottom:9px">5 — zadání</div>
+        <div class="lbl" style="margin-bottom:9px">6 — zadání</div>
         <textarea id="prompt" rows="4" style="width:100%;padding:14px"
           placeholder="Napiš, co mají modely udělat… (⌘/Ctrl + Enter odešle)"></textarea>
         <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px" id="examples">
@@ -465,11 +473,12 @@ async function start(promptOverride) {
   const maxTok = +$('lenSel').value;
   const bezSebe = $('judgeSel').value === 'bez_sebe';
   const druheKolo = $('round2Sel').value === 'ano';
+  const styl = $('styleSel').value;
 
   run = {
     cas: new Date().toISOString(), zadani: prompt,
     modely: Object.fromEntries(team.map(t => [t.label, t.id])),
-    hodnoti_bez_sebe: bezSebe, druhe_kolo: druheKolo, max_tokens: maxTok,
+    hodnoti_bez_sebe: bezSebe, druhe_kolo: druheKolo, max_tokens: maxTok, styl_hodnoceni: styl,
     odpovedi: {}, hodnoceni: {}, navrhy: {}, hodnoceni_zadani: {}, naklady: {},
   };
 
@@ -525,7 +534,7 @@ async function start(promptOverride) {
     const ts = Date.now();
     try {
       const r = await api({ action: 'judge', mode: 'odpovedi', model: run.modely[p.judge], prompt,
-                            blocks: p.blocks, letters: p.letters, max_tokens: 1200 });
+                            blocks: p.blocks, letters: p.letters, style: styl, max_tokens: 1200 });
       res.ms = Date.now() - ts;
       if (!r.ok) { res.stav = 'chyba'; res.error = r.error; cardJudge(p, 'err', 1); }
       else {
@@ -627,7 +636,7 @@ async function start(promptOverride) {
         const ts = Date.now();
         try {
           const r = await api({ action: 'judge', mode: 'zadani', model: run.modely[p.judge], prompt,
-                                blocks: p.blocks, letters: p.letters, max_tokens: 1200 });
+                                blocks: p.blocks, letters: p.letters, style: styl, max_tokens: 1200 });
           res.ms = Date.now() - ts;
           if (!r.ok) { res.stav = 'chyba'; res.error = r.error; cardJudge(p, 'err', 2); }
           else {
@@ -1034,13 +1043,21 @@ $('rerunTask').onclick = () => {
 };
 
 // ── zadání pro porotu ze serveru ───────────────────────────────
-(async () => {
-  try {
-    const r = await fetch(apiBase + '/api/arena');
-    PROMPTS = (await r.json()).zadani_pro_porotu || null;
-  } catch (e) { PROMPTS = null; }
+const NAZVY_STYLU = {
+  poradi_znamky: 'pořadí + známky 1-10 (základní)',
+  znamky_rozptyl: 'známky 1-10 s vynucenou plnou škálou',
+  jen_poradi: 'jen pořadí, bez známek',
+};
+const POZNAMKY_STYLU = {
+  poradi_znamky: 'Základní varianta: porotce musí určit pořadí a k tomu dát známky.',
+  znamky_rozptyl: 'Měření na 4 porotcích a stejných odpovědích: tahle varianta dopadla nejlíp — shoda na pořadí mezi porotci 0,69, zatímco ostatní varianty 0,53–0,58. Známky se taky víc rozevřely (rozptyl 6,5 místo 2,8), takže přestaly být všechny podobné.',
+  jen_poradi: 'Nejjednodušší — známky se vůbec neposílají, rozhoduje jen pořadí. V měření dopadla stejně dobře jako základní varianta.',
+};
+function renderPrompts() {
   const box = $('promptsBox');
-  if (!PROMPTS) { box.innerHTML = '<div style="color:var(--text-tertiary);font-size:12.5px">nepodařilo se načíst</div>'; return; }
+  const styl = $('styleSel').value;
+  if (!PROMPTS || !PROMPTS.varianty) { box.innerHTML = '<div style="color:var(--text-tertiary);font-size:12.5px">nepodařilo se načíst</div>'; return; }
+  const v = PROMPTS.varianty[styl] || PROMPTS.varianty.poradi_znamky;
   const block = (title, note, p) => `
     <div>
       <div style="font-weight:700;margin-bottom:5px">${esc(title)}</div>
@@ -1051,9 +1068,18 @@ $('rerunTask').onclick = () => {
       <pre class="prompt">${esc(p.user)}</pre>
     </div>`;
   box.innerHTML =
-    block('Porota — hodnocení odpovědí', 'Tohle dostane každý porotce. Písmena a pořadí si určuje prohlížeč, každý porotce jinak.', PROMPTS.odpovedi) +
-    block('Porota — hodnocení nových zadání', 'Druhé kolo: hodnotí se kvalita zadání, ne odpovědí.', PROMPTS.zadani) +
-    block('Tvůrce nového zadání', 'S každým modelem jako autorem nového zadání ve druhém kole.', PROMPTS.nove_zadani);
+    block('Porota — hodnocení odpovědí (' + NAZVY_STYLU[styl] + ')', POZNAMKY_STYLU[styl] + ' Písmena a pořadí určuje prohlížeč, každý porotce jinak.', v.odpovedi) +
+    block('Porota — hodnocení nových zadání', 'Druhé kolo: hodnotí se kvalita zadání, ne odpovědí. Stejný styl hodnocení.', v.zadani) +
+    block('Tvůrce nového zadání', 'S tímhle zadáním pracuje každý model jako autor nového zadání ve druhém kole.', PROMPTS.nove_zadani);
+}
+$('styleSel').onchange = renderPrompts;
+
+(async () => {
+  try {
+    const r = await fetch(apiBase + '/api/arena');
+    PROMPTS = (await r.json()).zadani_pro_porotu || null;
+  } catch (e) { PROMPTS = null; }
+  renderPrompts();
 })();
 
 if (window.lucide) lucide.createIcons();
