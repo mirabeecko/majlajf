@@ -19,8 +19,8 @@
 </script>
 <style>
   :root{
-    --bg-primary:#0a0a0f; --bg-secondary:#111118; --bg-tertiary:#1a1a24;
-    --border:rgba(255,255,255,.06); --text-primary:#f0f0f5; --text-secondary:#9494a8; --text-tertiary:#5a5a6e;
+    --bg-primary:#0a0a0f; --bg-secondary:#111118; --border:rgba(255,255,255,.06);
+    --text-primary:#f0f0f5; --text-secondary:#9494a8; --text-tertiary:#5a5a6e;
     --neon-cyan:#00e5ff; --neon-magenta:#ff00ff; --neon-lime:#39ff14; --neon-amber:#ffb428; --neon-pink:#ff1493;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -29,7 +29,7 @@
   body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     background:radial-gradient(900px 500px at 12% -10%,rgba(0,229,255,.07),transparent 60%),
                radial-gradient(800px 500px at 88% 0%,rgba(255,0,255,.06),transparent 60%)}
-  .wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:28px 20px 90px}
+  .wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:28px 20px 90px}
   .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,0)),var(--bg-secondary);
         border:1px solid var(--border);border-radius:16px}
   .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.03);
@@ -57,6 +57,7 @@
   .b-run{background:rgba(0,229,255,.12);color:#00e5ff}
   .b-ok{background:rgba(57,255,20,.12);color:#39ff14}
   .b-err{background:rgba(255,20,147,.14);color:#ff1493}
+  .b-same{background:rgba(255,180,40,.16);color:#ffb428}
   .journey{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .step{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-tertiary)}
   .step .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.12)}
@@ -64,58 +65,72 @@
   .step.done{color:#39ff14}.step.done .dot{background:#39ff14}
   .win{background:linear-gradient(120deg,rgba(0,229,255,.14),rgba(255,0,255,.12));border:1px solid rgba(0,229,255,.45);
        box-shadow:0 0 60px rgba(0,229,255,.14)}
+  .win2{background:linear-gradient(120deg,rgba(57,255,20,.12),rgba(0,229,255,.10));border:1px solid rgba(57,255,20,.45);
+        box-shadow:0 0 60px rgba(57,255,20,.12)}
   table{width:100%;border-collapse:collapse}
   th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);text-align:left;padding:10px 12px;font-weight:700}
   td{padding:12px;border-top:1px solid var(--border);font-size:14px}
   tr.me td{background:rgba(0,229,255,.06)}
+  td.same{background:rgba(255,180,40,.10);position:relative}
   .bar{height:7px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden}
   .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#00e5ff,#ff00ff)}
   .spin{width:15px;height:15px;border:2px solid rgba(0,229,255,.25);border-top-color:#00e5ff;border-radius:50%;
         display:inline-block;animation:sp .7s linear infinite}
   @keyframes sp{to{transform:rotate(360deg)}}
-  .pulse{animation:pl 1.6s ease-in-out infinite}
-  @keyframes pl{0%,100%{opacity:1}50%{opacity:.45}}
   a{color:#00e5ff;text-decoration:none}
   details summary{cursor:pointer;list-style:none}
   details summary::-webkit-details-marker{display:none}
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#111118;border:1px solid rgba(0,229,255,.4);
          padding:12px 20px;border-radius:12px;font-size:13.5px;z-index:50;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+  .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:7px}
+  .pick label{display:flex;gap:9px;align-items:flex-start;padding:9px 11px;border-radius:11px;background:rgba(255,255,255,.02);
+              border:1px solid var(--border);cursor:pointer;transition:.14s}
+  .pick label:hover{border-color:rgba(0,229,255,.35)}
+  .pick label.on{border-color:rgba(0,229,255,.55);background:rgba(0,229,255,.06)}
+  .pick input{width:15px;height:15px;accent-color:#00e5ff;margin-top:2px;flex:none}
+  .pick .nm{font-size:13px;font-weight:600;line-height:1.25}
+  .pick .id{font-size:10px;color:var(--text-tertiary);font-family:'SF Mono',monospace;word-break:break-all}
+  .pick .pr{font-size:10px;color:var(--text-tertiary)}
+  pre.prompt{white-space:pre-wrap;font-family:'SF Mono',ui-monospace,monospace;font-size:12.5px;line-height:1.6;
+             background:rgba(0,0,0,.45);border:1px solid var(--border);border-radius:12px;padding:14px;color:#d8d9e6;margin:0}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- ── HLAVIČKA ── -->
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:26px">
     <div>
       <div class="lbl" style="margin-bottom:8px">majlajf &nbsp;/&nbsp; experiment</div>
       <h1 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.1">
         LLM <span style="background:linear-gradient(120deg,#00e5ff,#ff00ff);-webkit-background-clip:text;background-clip:text;color:transparent">Arena</span>
       </h1>
-      <p style="margin:10px 0 0;color:var(--text-secondary);font-size:14.5px;max-width:680px;line-height:1.6">
-        Napíšeš jedno zadání. Několik modelů na něj odpoví. Pak si odpovědi vzájemně ohodnotí —
-        <b style="color:#f0f0f5">anonymně</b>, bez jmen, každý porotce v jiném pořadí. Výsledek je reálný: co si modely
-        skutečně napsaly a jak skutečně hlasovaly.
+      <p style="margin:10px 0 0;color:var(--text-secondary);font-size:14.5px;max-width:720px;line-height:1.6">
+        Napíšeš jedno zadání. Modely odpoví. Pak si odpovědi ohodnotí <b style="color:#f0f0f5">anonymně</b>, každý v jiném pořadí.
+        Následně z těch odpovědí každý sestaví <b style="color:#f0f0f5">nové, lepší zadání</b> — a ta se hodnotí znovu naslepo.
+        Vše je reálné: skutečné odpovědi, skutečné hlasování, skutečné ceny.
       </p>
     </div>
     <a href="/" class="pill"><i data-lucide="arrow-left" style="width:14px;height:14px"></i> Zpět na majlajf</a>
   </div>
 
-  <!-- ── OVLÁDÁNÍ ── -->
+  <!-- ══ NASTAVENÍ ══ -->
   <div class="card" style="padding:20px;margin-bottom:18px">
     <div style="display:grid;grid-template-columns:1fr;gap:16px">
 
       <div>
-        <div class="lbl" style="margin-bottom:9px">1 — kdo soutěží</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap" id="presetRow">
-          <button class="pill on" data-preset="flagship">🏆 Vlajkové (GPT-6 Sol, Gemini 3.1 Pro, Grok 4.7, Llama 4)</button>
-          <button class="pill" data-preset="levny">💰 Levné (pár haléřů)</button>
-          <button class="pill" data-preset="sest">🧠 Šest modelů (+ Claude, DeepSeek)</button>
-          <button class="pill" data-preset="vlastni">✏️ Vlastní</button>
+        <div class="lbl" style="margin-bottom:9px">1 — kdo soutěží (zaklikej si kohokoli)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="presetRow">
+          <button class="pill on" data-preset="flagship">🏆 Vlajkové</button>
+          <button class="pill" data-preset="levny">💰 Levné</button>
+          <button class="pill" data-preset="sest">🧠 Šest modelů</button>
+          <button class="pill" data-preset="vse">✅ Všechny</button>
+          <button class="pill" data-preset="zadne">🚫 Vyprázdnit</button>
         </div>
-        <div id="customBox" style="display:none;margin-top:12px">
-          <input id="customModels" class="mono" style="width:100%;padding:12px 14px"
-                 placeholder="Jméno=model-id, Jméno2=model-id2   např. Claude=anthropic/claude-opus-5,Qwen=qwen/qwen3.8-27b">
+        <div id="picker" class="pick"></div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:10px">
+          <span class="mono" style="font-size:12px;color:var(--text-secondary)" id="pickInfo"></span>
+          <input id="extraModels" class="mono" style="flex:1;min-width:240px;padding:9px 12px;font-size:12.5px"
+                 placeholder="navíc vlastní model (Jméno=model-id, odděluj čárkou)">
         </div>
       </div>
 
@@ -135,17 +150,24 @@
             <option value="bez_sebe">všichni, ale nikdo nevidí svou odpověď</option>
           </select>
         </div>
+        <div>
+          <div class="lbl" style="margin-bottom:9px">4 — druhé kolo</div>
+          <select id="round2Sel" style="padding:9px 12px">
+            <option value="ano" selected>ano — nová zadání + jejich hodnocení</option>
+            <option value="ne">ne — jen odpovědi a jejich hodnocení</option>
+          </select>
+        </div>
       </div>
 
       <div>
-        <div class="lbl" style="margin-bottom:9px">4 — zadání</div>
+        <div class="lbl" style="margin-bottom:9px">5 — zadání</div>
         <textarea id="prompt" rows="4" style="width:100%;padding:14px"
           placeholder="Napiš, co mají modely udělat… (⌘/Ctrl + Enter odešle)"></textarea>
         <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px" id="examples">
           <span class="pill" data-ex="Navrhni 5 konkrétních nápadů na příspěvky na Facebook pro českou veterinární kliniku. Ke každému napiš krátký text příspěvku (2-3 věty) a proč funguje.">veterina · FB příspěvky</span>
           <span class="pill" data-ex="Vysvětli laikovi v 5 bodech, jak funguje podvojné účetnictví a proč se výdaj a příjem nerovná nákladu a výnosu.">účetnictví pro laika</span>
+          <span class="pill" data-ex="Navrhni 3 varianty úvodní věty (headline) pro web české veterinární kliniky. U každé napiš, na koho cílí a proč funguje.">headline pro web</span>
           <span class="pill" data-ex="Napiš HTML+CSS jednostránkový web pro řemeslníka (elektrikář) s poptávkovým formulářem. Vrať jen kód.">jednostránkový web</span>
-          <span class="pill" data-ex="Jaké jsou tři největší rizika při prodeji e-shopu a jak se proti nim pojistit? Buď konkrétní.">rizika prodeje e-shopu</span>
         </div>
       </div>
 
@@ -153,28 +175,30 @@
         <button id="go" class="btn btn-main"><i data-lucide="swords" style="width:18px;height:18px"></i> Spustit souboj</button>
         <button id="dl" class="btn btn-ghost" disabled><i data-lucide="download" style="width:14px;height:14px"></i> Stáhnout JSON</button>
         <button id="cp" class="btn btn-ghost" disabled><i data-lucide="clipboard" style="width:14px;height:14px"></i> Kopírovat JSON</button>
-        <span style="color:var(--text-tertiary);font-size:12.5px" id="hint">Běh trvá 30–90 s a stojí řádově centy.</span>
+        <span style="color:var(--text-tertiary);font-size:12.5px" id="hint">Běh trvá 1–4 minuty a stojí řádově desítky centů.</span>
       </div>
     </div>
   </div>
 
-  <!-- ── PRŮBĚH ── -->
+  <!-- ══ PRŮBĚH ══ -->
   <div class="card" id="journeyCard" style="padding:16px 20px;margin-bottom:18px;display:none">
     <div class="journey" id="journey">
       <div class="step" data-s="1"><span class="dot"></span> 1 · odpovědi modelů</div>
       <div class="step" data-s="2"><span class="dot"></span> 2 · anonymizace</div>
-      <div class="step" data-s="3"><span class="dot"></span> 3 · hodnocení naslepo</div>
-      <div class="step" data-s="4"><span class="dot"></span> 4 · výsledek</div>
+      <div class="step" data-s="3"><span class="dot"></span> 3 · hodnocení odpovědí</div>
+      <div class="step" data-s="4"><span class="dot"></span> 4 · nová zadání</div>
+      <div class="step" data-s="5"><span class="dot"></span> 5 · hodnocení zadání</div>
+      <div class="step" data-s="6"><span class="dot"></span> 6 · vítěz</div>
       <div style="flex:1;min-width:120px" class="bar"><i id="prog" style="width:0%"></i></div>
       <span id="progTxt" class="mono" style="font-size:12px;color:var(--text-secondary)"></span>
     </div>
   </div>
 
-  <!-- ── VÍTĚZ ── -->
+  <!-- ══ VÍTĚZ ODPOVĚDÍ ══ -->
   <div class="card win" id="winnerCard" style="padding:24px;margin-bottom:18px;display:none">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
       <div>
-        <div class="lbl" style="margin-bottom:7px">nejlepší podle poroty</div>
+        <div class="lbl" style="margin-bottom:7px">nejlepší odpověď podle poroty</div>
         <div id="winnerName" style="font-size:30px;font-weight:800;letter-spacing:-.02em"></div>
         <div id="winnerSub" style="color:var(--text-secondary);font-size:13.5px;margin-top:6px"></div>
       </div>
@@ -186,36 +210,115 @@
     </div>
   </div>
 
-  <!-- ── ŽEBŘÍČEK ── -->
+  <!-- ══ ŽEBŘÍČEK ODPOVĚDÍ ══ -->
   <div class="card" id="boardCard" style="padding:6px 6px 12px;margin-bottom:18px;display:none;overflow:auto">
+    <div class="lbl" style="padding:14px 12px 0">žebříček odpovědí</div>
     <table>
       <thead><tr>
         <th style="width:46px">#</th><th>model</th><th style="width:130px">skóre</th>
-        <th style="width:80px">výher</th><th style="width:110px">Ø známka</th><th style="width:120px">odpověď</th>
+        <th style="width:70px">výher</th><th style="width:110px">Ø známka</th>
+        <th style="width:120px">Ø srovnaná</th><th style="width:100px">odpověď</th>
       </tr></thead>
       <tbody id="boardBody"></tbody>
     </table>
+    <div style="padding:10px 12px;color:var(--text-tertiary);font-size:11.5px;line-height:1.6">
+      <b style="color:var(--text-secondary)">Skóre</b> = průměrné umístění napříč porotou (1,00 = vždy první).
+      <b style="color:var(--text-secondary)">Ø známka</b> = surové známky, jak je kdo napsal — <b style="color:#ffb428">nejsou mezi porotci srovnatelné</b>,
+      protože každý má jiný metr (jeden dá nejlepší práci 5,5 a jiný 9).
+      <b style="color:var(--text-secondary)">Ø srovnaná</b> = známky přepočítané u každého porotce na jeho vlastní stupnici 0–10, teprve to jde srovnávat.
+      Pozor: přepočet roztahuje rozpětí daného porotce na plnou škálu, takže i malé rozdíly (8,9 vs 9,0) se tím zvýrazní.
+      Kdo rozhoduje o pořadí, je sloupec <b style="color:var(--text-secondary)">skóre</b> — ten stojí jen na umístění, ne na znacích.
+    </div>
   </div>
 
-  <!-- ── ODPOVĚDI ── -->
+  <!-- ══ SHODA POROTY (1. kolo) ══ -->
+  <div class="card" id="consCard" style="padding:18px 20px;margin-bottom:18px;display:none"></div>
+
+  <!-- ══ ODPOVĚDI ══ -->
   <div id="ansSection" style="display:none;margin-bottom:18px">
     <div style="display:flex;align-items:center;gap:10px;margin:0 0 12px">
       <i data-lucide="message-square" style="width:17px;height:17px;color:#00e5ff"></i>
-      <span class="lbl" style="color:var(--text-secondary)">1 · odpovědi modelů (plné znění)</span>
+      <span class="lbl" style="color:var(--text-secondary)">odpovědi modelů (plné znění)</span>
     </div>
     <div id="ansGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px"></div>
   </div>
 
-  <!-- ── HODNOCENÍ ── -->
+  <!-- ══ HODNOCENÍ ODPOVĚDÍ ══ -->
   <div id="judgeSection" style="display:none;margin-bottom:18px">
     <div style="display:flex;align-items:center;gap:10px;margin:0 0 12px">
       <i data-lucide="scale" style="width:17px;height:17px;color:#ff00ff"></i>
-      <span class="lbl" style="color:var(--text-secondary)">3 · jak hodnotil každý porotce (anonymně)</span>
+      <span class="lbl" style="color:var(--text-secondary)">jak hodnotil každý porotce odpovědi (anonymně)</span>
     </div>
     <div id="judgeGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px"></div>
   </div>
 
-  <!-- ── SYROVÁ DATA ── -->
+  <!-- ══ NOVÁ ZADÁNÍ ══ -->
+  <div id="synthSection" style="display:none;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;margin:0 0 6px">
+      <i data-lucide="wand-sparkles" style="width:17px;height:17px;color:#39ff14"></i>
+      <span class="lbl" style="color:var(--text-secondary)">nová zadání — co každý model sestavil z nejlepších odpovědí</span>
+    </div>
+    <div style="color:var(--text-tertiary);font-size:12.5px;margin:0 0 12px">
+      Každý model dostal původní zadání a odpovědi všech ostatních (znovu anonymně, A/B/C…) a měl z nich složit nové zadání, které povede k lepšímu výsledku.
+    </div>
+    <div id="synthGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px"></div>
+  </div>
+
+  <!-- ══ ŽEBŘÍČEK ZADÁNÍ ══ -->
+  <div class="card" id="board2Card" style="padding:6px 6px 12px;margin-bottom:18px;display:none;overflow:auto">
+    <div class="lbl" style="padding:14px 12px 0">žebříček nových zadání</div>
+    <table>
+      <thead><tr>
+        <th style="width:46px">#</th><th>autor zadání</th><th style="width:130px">skóre</th>
+        <th style="width:70px">výher</th><th style="width:110px">Ø známka</th><th style="width:120px">Ø srovnaná</th>
+      </tr></thead>
+      <tbody id="board2Body"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ SHODA POROTY (2. kolo) ══ -->
+  <div class="card" id="cons2Card" style="padding:18px 20px;margin-bottom:18px;display:none"></div>
+
+  <!-- ══ HODNOCENÍ ZADÁNÍ ══ -->
+  <div id="judge2Section" style="display:none;margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:10px;margin:0 0 12px">
+      <i data-lucide="scale" style="width:17px;height:17px;color:#ff00ff"></i>
+      <span class="lbl" style="color:var(--text-secondary)">jak porota hodnotila nová zadání (anonymně)</span>
+    </div>
+    <div id="judge2Grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:14px"></div>
+  </div>
+
+  <!-- ══ VÍTĚZNÉ ZADÁNÍ ══ -->
+  <div class="card win2" id="taskCard" style="padding:22px;margin-bottom:18px;display:none">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+      <div>
+        <div class="lbl" style="margin-bottom:7px">vítězné zadání — plné znění</div>
+        <div id="taskAuthor" style="font-size:20px;font-weight:800"></div>
+        <div id="taskSub" style="color:var(--text-secondary);font-size:13px;margin-top:5px"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="copyTask"><i data-lucide="copy" style="width:14px;height:14px"></i> Kopírovat zadání</button>
+        <button class="btn btn-main" id="rerunTask" style="padding:11px 22px;font-size:14px"><i data-lucide="refresh-cw" style="width:15px;height:15px"></i> Spustit kolo s tímto zadáním</button>
+      </div>
+    </div>
+    <pre class="prompt" id="taskText" style="margin-top:14px;font-size:13.5px"></pre>
+    <div id="taskWhy" style="margin-top:12px;color:#cfd0dc;font-size:13.5px;line-height:1.65;border-left:2px solid rgba(57,255,20,.5);padding-left:12px"></div>
+  </div>
+
+  <!-- ══ JAK SE HODNOTÍ ══ -->
+  <div class="card" style="padding:0;margin-bottom:18px">
+    <details>
+      <summary style="padding:16px 20px;display:flex;align-items:center;gap:10px">
+        <i data-lucide="file-text" style="width:16px;height:16px;color:#ff00ff"></i>
+        <span class="lbl" style="color:var(--text-secondary)">přesné zadání, které dostává porota (a tvůrce nových zadání)</span>
+      </summary>
+      <div id="promptsBox" style="padding:0 20px 20px;display:grid;gap:16px">
+        <div style="color:var(--text-tertiary);font-size:12.5px">načítám ze serveru…</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ══ JSON ══ -->
   <div class="card" id="jsonCard" style="padding:0;margin-bottom:18px;display:none">
     <details>
       <summary style="padding:16px 20px;display:flex;align-items:center;gap:10px">
@@ -230,220 +333,362 @@
 
 <script>
 // ════════════════════════════════════════════════════════════════
-//  LLM ARENA — frontendová logika
-//  Anonymizace, míchání pořadí a sčítání hlasů běží tady v prohlížeči.
-//  Server (api/arena.js) je jen proxy, drží API klíč a volá modely.
+//  LLM ARENA — logika v prohlížeči.
+//  Anonymizace, míchání pořadí, sčítání hlasů a hledání shody běží tady.
+//  Server (api/arena.js) je proxy: drží klíč a volá modely.
 // ════════════════════════════════════════════════════════════════
 
+const CATALOG = [
+  { id:'openai/gpt-6-sol',              label:'GPT-6 Sol',           fam:'OpenAI',    cena:'$2 / $10' },
+  { id:'openai/gpt-6-luna-pro',         label:'GPT-6 Luna Pro',      fam:'OpenAI',    cena:'$0,1 / $0,5' },
+  { id:'openai/gpt-6-luna',             label:'GPT-6 Luna',          fam:'OpenAI',    cena:'$0,1 / $0,5' },
+  { id:'openai/gpt-oss-120b',           label:'GPT-OSS 120B',        fam:'OpenAI',    cena:'$0,1 / $0,5' },
+  { id:'google/gemini-3.1-pro-preview', label:'Gemini 3.1 Pro',      fam:'Google',    cena:'$2 / $12' },
+  { id:'google/gemini-3.8-flash',       label:'Gemini 3.8 Flash',    fam:'Google',    cena:'$0,75 / $3,75' },
+  { id:'google/gemini-3.5-flash',       label:'Gemini 3.5 Flash',    fam:'Google',    cena:'$1,5 / $9' },
+  { id:'google/gemini-2.5-flash-lite',  label:'Gemini 2.5 Lite',     fam:'Google',    cena:'$0,1 / $0,4' },
+  { id:'x-ai/grok-4.7',                 label:'Grok 4.7',            fam:'xAI',       cena:'$1,6 / $4,8' },
+  { id:'x-ai/grok-4.5',                 label:'Grok 4.5',            fam:'xAI',       cena:'$2 / $6' },
+  { id:'x-ai/grok-4.20',                label:'Grok 4.20',           fam:'xAI',       cena:'$1,25 / $2,5' },
+  { id:'meta-llama/llama-4-maverick',   label:'Llama 4 Maverick',    fam:'Meta',      cena:'$0,19 / $0,65' },
+  { id:'meta-llama/llama-4-scout',      label:'Llama 4 Scout',       fam:'Meta',      cena:'$0,1 / $0,3' },
+  { id:'meta-llama/llama-3.3-70b-instruct', label:'Llama 3.3 70B',   fam:'Meta',      cena:'$0,1 / $0,32' },
+  { id:'anthropic/claude-opus-5',       label:'Claude Opus 5',       fam:'Anthropic', cena:'$5 / $25' },
+  { id:'anthropic/claude-sonnet-5',     label:'Claude Sonnet 5',     fam:'Anthropic', cena:'$2 / $10' },
+  { id:'anthropic/claude-haiku-4.5',    label:'Claude Haiku 4.5',    fam:'Anthropic', cena:'$0,5 / $2,5' },
+  { id:'deepseek/deepseek-v4-pro',      label:'DeepSeek V4 Pro',     fam:'DeepSeek',  cena:'$0,5 / $1,5' },
+  { id:'deepseek/deepseek-v4-flash',    label:'DeepSeek V4 Flash',   fam:'DeepSeek',  cena:'$0,1 / $0,3' },
+  { id:'deepseek/deepseek-v3.2',        label:'DeepSeek V3.2',       fam:'DeepSeek',  cena:'$0,3 / $0,9' },
+  { id:'qwen/qwen3.8-27b',              label:'Qwen 3.8 27B',        fam:'Qwen',      cena:'$0,3 / $1,2' },
+  { id:'mistralai/mistral-large-latest',label:'Mistral Large',       fam:'Mistral',   cena:'$2 / $6' },
+];
+
 const PRESETY = {
-  flagship: {
-    ChatGPT: 'openai/gpt-6-sol',
-    Gemini:  'google/gemini-3.1-pro-preview',
-    Grok:    'x-ai/grok-4.7',
-    Llama:   'meta-llama/llama-4-maverick',
-  },
-  levny: {
-    ChatGPT: 'openai/gpt-6-luna-pro',
-    Gemini:  'google/gemini-2.5-flash-lite',
-    Grok:    'x-ai/grok-4.20',
-    Llama:   'meta-llama/llama-4-scout',
-  },
-  sest: {
-    ChatGPT:  'openai/gpt-6-sol',
-    Gemini:   'google/gemini-3.1-pro-preview',
-    Grok:     'x-ai/grok-4.7',
-    Llama:    'meta-llama/llama-4-maverick',
-    Claude:   'anthropic/claude-opus-5',
-    DeepSeek: 'deepseek/deepseek-v4-pro',
-  },
+  flagship: ['openai/gpt-6-sol','google/gemini-3.1-pro-preview','x-ai/grok-4.7','meta-llama/llama-4-maverick'],
+  levny:    ['openai/gpt-6-luna-pro','google/gemini-2.5-flash-lite','x-ai/grok-4.20','meta-llama/llama-4-scout'],
+  sest:     ['openai/gpt-6-sol','google/gemini-3.1-pro-preview','x-ai/grok-4.7','meta-llama/llama-4-maverick','anthropic/claude-opus-5','deepseek/deepseek-v4-pro'],
+  vse:      CATALOG.map(c => c.id),
+  zadne:    [],
 };
 
 const $ = (id) => document.getElementById(id);
 const LETTERS = 'ABCDEFGH';
-const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 const czk = (n) => '$' + (n || 0).toFixed(4);
-const tokens = (u) => (u && (u.prompt_tokens || 0)) + (u && (u.completion_tokens || 0));
-let run = null;
-let busy = false;
+const tokens = (u) => ((u && u.prompt_tokens) || 0) + ((u && u.completion_tokens) || 0);
+const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+let run = null, busy = false, PROMPTS = null;
 
-// ── UI: presety ────────────────────────────────────────────────
-let preset = 'flagship';
-document.querySelectorAll('#presetRow .pill').forEach((b) => {
+// ── výběr modelů zaklikáváním ──────────────────────────────────
+const checked = new Set(PRESETY.flagship);
+function renderPicker() {
+  const fams = [...new Set(CATALOG.map(c => c.fam))];
+  $('picker').innerHTML = fams.map(f => `
+    <div style="grid-column:1/-1;margin:8px 0 2px" class="lbl">${esc(f)}</div>
+    ${CATALOG.filter(c => c.fam === f).map(c => `
+      <label class="${checked.has(c.id) ? 'on' : ''}" data-id="${esc(c.id)}">
+        <input type="checkbox" ${checked.has(c.id) ? 'checked' : ''}>
+        <span><span class="nm">${esc(c.label)}</span><br><span class="id">${esc(c.id)}</span><br><span class="pr">${esc(c.cena)} /M</span></span>
+      </label>`).join('')}`).join('');
+  $('picker').querySelectorAll('label').forEach(l => {
+    l.querySelector('input').onchange = (e) => {
+      const id = l.dataset.id;
+      if (e.target.checked) checked.add(id); else checked.delete(id);
+      l.classList.toggle('on', e.target.checked);
+      pickInfo();
+    };
+  });
+  pickInfo();
+}
+function pickInfo() {
+  const n = checked.size;
+  const fams = [...new Set([...checked].map(id => (CATALOG.find(c => c.id === id) || {}).fam || 'vlastní'))];
+  $('pickInfo').textContent = `vybráno ${n} modelů · rodiny: ${fams.join(', ') || '—'}` +
+    (n > 6 ? ' — přes 6 modelů už je běh drahý a pomalý' : '');
+  $('hint').textContent = n < 2
+    ? 'Vyber aspoň 2 modely.'
+    : `${n} modelů · ${n} odpovědí + ${n}× hodnocení` + ($('round2Sel').value === 'ano' ? ` + ${n} nových zadání a jejich hodnocení` : '') +
+      ` · běh trvá ${Math.max(1, Math.round(n * 0.4))}–${Math.max(3, n * 2)} min · desítky centů.`;
+}
+$('round2Sel').onchange = pickInfo;
+document.querySelectorAll('#presetRow .pill').forEach(b => {
   b.onclick = () => {
-    document.querySelectorAll('#presetRow .pill').forEach((x) => x.classList.remove('on'));
+    document.querySelectorAll('#presetRow .pill').forEach(x => x.classList.remove('on'));
     b.classList.add('on');
-    preset = b.dataset.preset;
-    $('customBox').style.display = preset === 'vlastni' ? 'block' : 'none';
-    if (preset !== 'vlastni') hintModels();
+    checked.clear();
+    PRESETY[b.dataset.preset].forEach(id => checked.add(id));
+    renderPicker();
   };
 });
-document.querySelectorAll('#examples .pill').forEach((b) => {
+document.querySelectorAll('#examples .pill').forEach(b => {
   b.onclick = () => { $('prompt').value = b.dataset.ex; $('prompt').focus(); };
 });
-
-function parseModels() {
-  if (preset !== 'vlastni') return { ...PRESETY[preset] };
-  const out = {};
-  ($('customModels').value || '').split(',').forEach((part) => {
+function roster() {
+  const out = [];
+  checked.forEach(id => {
+    const c = CATALOG.find(x => x.id === id);
+    out.push({ label: c ? c.label : id, id });
+  });
+  ($('extraModels').value || '').split(',').forEach(part => {
     const i = part.indexOf('=');
     if (i > 0) {
-      const k = part.slice(0, i).trim();
-      const v = part.slice(i + 1).trim();
-      if (k && v) out[k] = v;
+      const k = part.slice(0, i).trim(), v = part.slice(i + 1).trim();
+      if (k && v && !out.some(o => o.label === k)) out.push({ label: k, id: v });
     }
   });
   return out;
 }
-function hintModels() {
-  const m = parseModels();
-  $('hint').textContent = `${Object.keys(m).length} modelů v aréně · běh trvá 30–90 s · platí se z kreditu OpenRouteru (~1–20 centů).`;
-}
-hintModels();
+renderPicker();
 
 // ── start ──────────────────────────────────────────────────────
-$('prompt').addEventListener('keydown', (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') $('go').click();
-});
-$('go').onclick = start;
+$('prompt').addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') $('go').click(); });
+$('go').onclick = () => start();
 
-async function start() {
+async function start(promptOverride) {
   if (busy) return;
-  const prompt = $('prompt').value.trim();
+  const prompt = (promptOverride || $('prompt').value || '').trim();
   if (prompt.length < 3) { toast('Napiš prosím zadání.'); return; }
-  const models = parseModels();
-  const labels = Object.keys(models);
-  if (labels.length < 2) { toast('Potřebuju aspoň 2 modely.'); return; }
+  const team = roster();
+  if (team.length < 2) { toast('Vyber aspoň 2 modely.'); return; }
+  if (team.length > 8) { toast('Nejvíc 8 modelů — jinak je běh drahý a dlouhý.'); return; }
 
   busy = true;
-  $('go').disabled = true;
-  $('dl').disabled = true;
-  $('cp').disabled = true;
-  $('journeyCard').style.display = 'block';
-  $('ansSection').style.display = 'block';
-  $('judgeSection').style.display = 'none';
-  $('winnerCard').style.display = 'none';
-  $('boardCard').style.display = 'none';
-  $('jsonCard').style.display = 'none';
-  $('ansGrid').innerHTML = '';
-  $('judgeGrid').innerHTML = '';
+  $('go').disabled = true; $('dl').disabled = true; $('cp').disabled = true;
+  ['journeyCard','ansSection'].forEach(i => $(i).style.display = 'block');
+  ['judgeSection','synthSection','board2Card','consCard','cons2Card','judge2Section','taskCard','winnerCard','boardCard','jsonCard']
+    .forEach(i => $(i).style.display = 'none');
+  $('ansGrid').innerHTML = ''; $('judgeGrid').innerHTML = ''; $('synthGrid').innerHTML = ''; $('judge2Grid').innerHTML = '';
+  $('taskText').textContent = '';
   step(1);
   const t0 = Date.now();
+  const maxTok = +$('lenSel').value;
+  const bezSebe = $('judgeSel').value === 'bez_sebe';
+  const druheKolo = $('round2Sel').value === 'ano';
 
   run = {
-    cas: new Date().toISOString(), zadani: prompt, preset,
-    modely: models, hodnoti_bez_sebe: $('judgeSel').value === 'bez_sebe',
-    max_tokens: +$('lenSel').value,
-    odpovedi: {}, hodnoceni: {}, naklady: {}, trvani_s: 0,
+    cas: new Date().toISOString(), zadani: prompt,
+    modely: Object.fromEntries(team.map(t => [t.label, t.id])),
+    hodnoti_bez_sebe: bezSebe, druhe_kolo: druheKolo, max_tokens: maxTok,
+    odpovedi: {}, hodnoceni: {}, navrhy: {}, hodnoceni_zadani: {}, naklady: {},
   };
-  const maxTok = run.max_tokens;
 
-  // ── FÁZE 1: odpovědi (paralelně) ──
-  labels.forEach((l) => cardAnswer(l, models[l], 'wait'));
+  // ══ 1. ODPOVĚDI ══
+  team.forEach(t => cardAnswer(t.label, t.id, 'wait'));
   let done = 0;
-  await Promise.all(labels.map(async (l) => {
-    const a = run.odpovedi[l] = { model: models[l], stav: 'bezi', text: '', error: '' };
-    cardAnswer(l, models[l], 'run');
+  await Promise.all(team.map(async (t) => {
+    const a = run.odpovedi[t.label] = { model: t.id, stav: 'bezi', text: '', error: '' };
+    cardAnswer(t.label, t.id, 'run');
     const ts = Date.now();
     try {
-      const r = await api({ action: 'answer', model: models[l], prompt, max_tokens: maxTok, temperature: 0.7 });
+      const r = await api({ action: 'answer', model: t.id, prompt, max_tokens: maxTok, temperature: 0.7 });
       a.ms = Date.now() - ts;
-      if (!r.ok) { a.stav = 'chyba'; a.error = r.error || 'neznámá chyba'; cardAnswer(l, models[l], 'err'); }
+      if (!r.ok) { a.stav = 'chyba'; a.error = r.error || 'chyba'; cardAnswer(t.label, t.id, 'err'); }
       else {
-        a.stav = 'hotovo'; a.text = r.text; a.usage = r.usage || {}; a.realny_model = r.model;
+        a.stav = 'hotovo'; a.text = r.text; a.usage = r.usage || {};
         a.truncated = !!r.truncated; a.opakovano = !!r.opakovano;
-        run.naklady['odpoved:' + l] = +(r.usage && r.usage.cost || 0);
-        cardAnswer(l, models[l], 'ok');
+        run.naklady['odpověď:' + t.label] = +((r.usage && r.usage.cost) || 0);
+        cardAnswer(t.label, t.id, 'ok');
       }
-    } catch (e) { a.stav = 'chyba'; a.error = String(e.message || e); cardAnswer(l, models[l], 'err'); }
-    prog(++done / labels.length * 55, `odpovědi ${done}/${labels.length}`);
+    } catch (e) { a.stav = 'chyba'; a.error = String(e.message || e); cardAnswer(t.label, t.id, 'err'); }
+    prog(done++ / team.length * 45, `odpovědi ${done}/${team.length}`);
   }));
 
-  const usable = labels.filter((l) => (run.odpovedi[l].text || '').trim().length > 0);
+  const usable = team.map(t => t.label).filter(l => ((run.odpovedi[l] || {}).text || '').trim().length > 0);
   if (usable.length < 2) {
-    step(0); $('hint').textContent = 'Míň než 2 platné odpovědi — zkus to znovu.';
-    toast('Nepřišly aspoň 2 odpovědi, podívej se na chyby v kartách.'); busy = false; $('go').disabled = false; return;
+    step(0); toast('Nepřišly aspoň 2 odpovědi — mrkni na chyby v kartách.'); busy = false; $('go').disabled = false; return;
   }
 
-  // ── FÁZE 2: anonymizace ──
+  // ══ 2. ANONYMIZACE ══
   step(2);
-  const porotci = usable.slice();
-  const plany = porotci.map((j) => {
-    const pool = run.hodnoti_bez_sebe ? usable.filter((l) => l !== j) : usable.slice();
+  const plany = usable.map(j => {
+    const pool = bezSebe ? usable.filter(l => l !== j) : usable.slice();
     const order = shuffle(pool);
     const mapping = {};
     order.forEach((l, i) => { mapping[LETTERS[i]] = l; });
     const letters = Object.keys(mapping);
-    const blocks = letters.map((lt) => `--- ODPOVĚĎ ${lt} ---\n${run.odpovedi[mapping[lt]].text.trim()}\n`).join('\n');
-    return { judge: j, letterOrder: letters, mapping, blocks, pool: order };
+    const blocks = letters.map(lt => `--- ODPOVĚĎ ${lt} ---\n${run.odpovedi[mapping[lt]].text.trim()}\n`).join('\n');
+    return { judge: j, letters, mapping, blocks };
   });
-  run.anonymizace = plany.map((p) => ({ porotce: p.judge, prirazeni: p.mapping }));
-  await sleep(250);
-  prog(58, 'anonymizováno');
+  run.anonymizace = plany.map(p => ({ porotce: p.judge, prirazeni: p.mapping }));
+  await sleep(200);
+  prog(50, 'anonymizováno');
   $('judgeSection').style.display = 'block';
-  plany.forEach((p) => cardJudge(p, 'wait'));
+  plany.forEach(p => cardJudge(p, 'wait', 1));
 
-  // ── FÁZE 3: hodnocení (paralelně) ──
+  // ══ 3. HODNOCENÍ ODPOVĚDÍ ══
   step(3);
-  $('hint').textContent = 'Porota hodnotí naslepo — každý porotce dostal odpovědi v jiném pořadí pod písmeny.';
   let jd = 0;
   await Promise.all(plany.map(async (p) => {
-    const res = run.hodnoceni[p.judge] = { model: models[p.judge], stav: 'bezi', prirazeni: p.mapping };
-    cardJudge(p, 'run');
+    const res = run.hodnoceni[p.judge] = { model: run.modely[p.judge], stav: 'bezi', prirazeni: p.mapping };
+    cardJudge(p, 'run', 1);
     const ts = Date.now();
     try {
-      const r = await api({ action: 'judge', model: models[p.judge], prompt, blocks: p.blocks, letters: p.letterOrder, max_tokens: 1200 });
+      const r = await api({ action: 'judge', mode: 'odpovedi', model: run.modely[p.judge], prompt,
+                            blocks: p.blocks, letters: p.letters, max_tokens: 1200 });
       res.ms = Date.now() - ts;
-      if (!r.ok) { res.stav = 'chyba'; res.error = r.error || 'chyba'; cardJudge(p, 'err'); }
+      if (!r.ok) { res.stav = 'chyba'; res.error = r.error; cardJudge(p, 'err', 1); }
       else {
-        run.naklady['porota:' + p.judge] = +(r.usage && r.usage.cost || 0);
-        const parsed = parseJudgement(r.text, p.letterOrder);
+        run.naklady['porota:' + p.judge] = +((r.usage && r.usage.cost) || 0);
+        const parsed = parseJudgement(r.text, p.letters);
         res.raw = r.text;
-        if (!parsed) { res.stav = 'chyba'; res.error = 'odpověď porotce se nedala přečíst jako JSON'; cardJudge(p, 'err', r.text); }
+        if (!parsed) { res.stav = 'chyba'; res.error = 'JSON se nedal přečíst'; cardJudge(p, 'err', 1, r.text); }
         else {
           res.stav = 'hotovo';
           res.poradi_pismen = parsed.poradi;
-          res.poradi_modelu = parsed.poradi.map((lt) => p.mapping[lt]);
+          res.poradi_modelu = parsed.poradi.map(lt => p.mapping[lt]);
           res.vitez_pismeno = parsed.vitez;
           res.vitez_model = p.mapping[parsed.vitez];
           res.znamky = {};
-          Object.keys(parsed.skore || {}).forEach((lt) => { if (p.mapping[lt]) res.znamky[p.mapping[lt]] = parsed.skore[lt]; });
+          Object.keys(parsed.skore || {}).forEach(lt => { if (p.mapping[lt]) res.znamky[p.mapping[lt]] = Number(parsed.skore[lt]); });
           res.duvod = parsed.duvod;
-          cardJudge(p, 'ok');
+          cardJudge(p, 'ok', 1);
         }
       }
-    } catch (e) { res.stav = 'chyba'; res.error = String(e.message || e); cardJudge(p, 'err'); }
-    prog(60 + (++jd / plany.length) * 38, `hodnocení ${jd}/${plany.length}`);
+    } catch (e) { res.stav = 'chyba'; res.error = String(e.message || e); cardJudge(p, 'err', 1); }
+    prog(50 + (++jd / plany.length) * 20, `hodnocení odpovědí ${jd}/${plany.length}`);
   }));
 
-  // ── FÁZE 4: sčítání ──
-  step(4);
-  run.vysledek = aggregate(usable);
-  renderBoard(run.vysledek, usable);
+  run.vysledek = aggregate(run.hodnoceni, usable);
+  run.shoda = consensus(run.hodnoceni, usable);
+  renderBoard(run.vysledek, usable, 1);
+  renderConsensus(run.shoda, usable, 1, run.vysledek);
+  fillJudgeBadges(run.hodnoceni, run.shoda, 1);
+  const w1 = run.vysledek.vysledky[0];
+  $('winnerCard').style.display = 'block';
+  $('winnerName').textContent = w1 ? w1.model : '—';
+  $('winnerSub').textContent = w1
+    ? `skóre ${w1.skore.toFixed(2)} · ${w1.vitazstvi}× vítězství z ${run.vysledek.pocet_porotcu} hlasů · Ø známka ${fmt(w1.prumer_znamek)} · Ø srovnaná ${fmt(w1.prumer_srovnany)}`
+    : 'porota nedala dohromady výsledek';
+
+  // ══ 4.–6. DRUHÉ KOLO ══
+  if (druheKolo) {
+    step(4);
+    $('synthSection').style.display = 'block';
+    const plany2 = usable.map(l => {
+      const pool = bezSebe ? usable.filter(x => x !== l) : usable.slice();
+      const order = shuffle(pool);
+      const mapping = {};
+      order.forEach((x, i) => { mapping[LETTERS[i]] = x; });
+      const letters = Object.keys(mapping);
+      const blocks = letters.map(lt => `--- ODPOVĚĎ ${lt} ---\n${run.odpovedi[mapping[lt]].text.trim()}\n`).join('\n');
+      return { author: l, letters, mapping, blocks };
+    });
+    run.anonymizace2 = plany2.map(p => ({ tvurce: p.author, prirazeni: p.mapping }));
+    plany2.forEach(p => cardSynth(p, 'wait'));
+    let sd = 0;
+    await Promise.all(plany2.map(async (p) => {
+      const res = run.navrhy[p.author] = { stav: 'bezi' };
+      cardSynth(p, 'run');
+      const ts = Date.now();
+      try {
+        const r = await api({ action: 'synthesize', model: run.modely[p.author], prompt,
+                              blocks: p.blocks, letters: p.letters, max_tokens: 1400 });
+        res.ms = Date.now() - ts;
+        if (!r.ok) { res.stav = 'chyba'; res.error = r.error; cardSynth(p, 'err'); }
+        else {
+          run.naklady['nové zadání:' + p.author] = +((r.usage && r.usage.cost) || 0);
+          res.raw = r.text; res.usage = r.usage || {};
+          const parsed = parseSynthesis(r.text);
+          if (parsed && (parsed.nove_zadani || '').trim().length > 20) {
+            res.stav = 'hotovo';
+            res.zadani = parsed.nove_zadani.trim();
+            res.vychazi_z = (parsed.vychazi_z || []).join(', ');
+            res.proc = parsed.proc_je_lepsi || '';
+            cardSynth(p, 'ok');
+          } else {
+            res.stav = 'hotovo'; res.zadani = r.text.trim(); res.proc = '(model nevrátil JSON, použil jsem jeho text jako zadání)';
+            cardSynth(p, 'ok');
+          }
+        }
+      } catch (e) { res.stav = 'chyba'; res.error = String(e.message || e); cardSynth(p, 'err'); }
+      prog(72 + (++sd / plany2.length) * 12, `nová zadání ${sd}/${plany2.length}`);
+    }));
+
+    const sUsable = usable.filter(l => ((run.navrhy[l] || {}).zadani || '').trim().length > 20);
+    if (sUsable.length >= 2) {
+      step(5);
+      $('judge2Section').style.display = 'block';
+      const plany3 = sUsable.map(j => {
+        const pool = bezSebe ? sUsable.filter(x => x !== j) : sUsable.slice();
+        const order = shuffle(pool);
+        const mapping = {};
+        order.forEach((x, i) => { mapping[LETTERS[i]] = x; });
+        const letters = Object.keys(mapping);
+        const blocks = letters.map(lt => `--- ZADÁNÍ ${lt} ---\n${run.navrhy[mapping[lt]].zadani}\n`).join('\n');
+        return { judge: j, letters, mapping, blocks };
+      });
+      run.anonymizace3 = plany3.map(p => ({ porotce: p.judge, prirazeni: p.mapping }));
+      plany3.forEach(p => cardJudge({ ...p, judge: p.judge }, 'wait', 2));
+      let jd2 = 0;
+      await Promise.all(plany3.map(async (p) => {
+        const res = run.hodnoceni_zadani[p.judge] = { model: run.modely[p.judge], stav: 'bezi', prirazeni: p.mapping };
+        cardJudge(p, 'run', 2);
+        const ts = Date.now();
+        try {
+          const r = await api({ action: 'judge', mode: 'zadani', model: run.modely[p.judge], prompt,
+                                blocks: p.blocks, letters: p.letters, max_tokens: 1200 });
+          res.ms = Date.now() - ts;
+          if (!r.ok) { res.stav = 'chyba'; res.error = r.error; cardJudge(p, 'err', 2); }
+          else {
+            run.naklady['porota zadání:' + p.judge] = +((r.usage && r.usage.cost) || 0);
+            const parsed = parseJudgement(r.text, p.letters);
+            res.raw = r.text;
+            if (!parsed) { res.stav = 'chyba'; res.error = 'JSON se nedal přečíst'; cardJudge(p, 'err', 2, r.text); }
+            else {
+              res.stav = 'hotovo';
+              res.poradi_pismen = parsed.poradi;
+              res.poradi_modelu = parsed.poradi.map(lt => p.mapping[lt]);
+              res.vitez_model = p.mapping[parsed.vitez];
+              res.znamky = {};
+              Object.keys(parsed.skore || {}).forEach(lt => { if (p.mapping[lt]) res.znamky[p.mapping[lt]] = Number(parsed.skore[lt]); });
+              res.duvod = parsed.duvod;
+              cardJudge(p, 'ok', 2);
+            }
+          }
+        } catch (e) { res.stav = 'chyba'; res.error = String(e.message || e); cardJudge(p, 'err', 2); }
+        prog(84 + (++jd2 / plany3.length) * 13, `hodnocení zadání ${jd2}/${plany3.length}`);
+      }));
+
+      run.vysledek2 = aggregate(run.hodnoceni_zadani, sUsable);
+      run.shoda2 = consensus(run.hodnoceni_zadani, sUsable);
+      renderBoard(run.vysledek2, sUsable, 2);
+      renderConsensus(run.shoda2, sUsable, 2, run.vysledek2);
+      fillJudgeBadges(run.hodnoceni_zadani, run.shoda2, 2);
+      const w2 = run.vysledek2.vysledky[0];
+      if (w2) {
+        run.vitez_zadani = { autor: w2.model, zadani: run.navrhy[w2.model].zadani, proc: run.navrhy[w2.model].proc };
+        $('taskCard').style.display = 'block';
+        $('taskAuthor').textContent = 'autor: ' + w2.model;
+        $('taskSub').textContent = `skóre ${w2.skore.toFixed(2)} · ${w2.vitazstvi}× vítězství z ${run.vysledek2.pocet_porotcu} hlasů · Ø známka ${fmt(w2.prumer_znamek)} · Ø srovnaná ${fmt(w2.prumer_srovnany)}`;
+        $('taskText').textContent = run.vitez_zadani.zadani;
+        $('taskWhy').textContent = run.vitez_zadani.proc || '';
+      }
+    } else {
+      $('judge2Section').style.display = 'block';
+      $('judge2Grid').innerHTML = '<div class="card" style="padding:16px;color:#ff1493">Nepodařilo se získat aspoň 2 nová zadání, druhé kolo se nehodnotilo.</div>';
+    }
+  }
+
+  // ══ DOKONČENÍ ══
+  step(6);
   const total = Object.values(run.naklady).reduce((a, b) => a + b, 0);
   run.naklady_celkem = total;
   run.trvani_s = Math.round((Date.now() - t0) / 1000);
-  $('winnerCard').style.display = 'block';
-  const w = run.vysledek.vysledky[0];
-  $('winnerName').textContent = w ? w.model : '—';
-  $('winnerSub').textContent = w
-    ? `skóre ${w.skore.toFixed(2)} · ${w.vitazstvi}× vítězství z ${run.vysledek.pocet_porotcu} hlasů · Ø známka ${w.prumer_znamek != null ? w.prumer_znamek.toFixed(2) : '—'} · běh ${run.trvani_s} s`
-    : 'porota nedala dohromady výsledek';
   $('costTotal').textContent = czk(total);
-  $('costDetail').innerHTML = Object.keys(run.naklady).length
-    ? Object.entries(run.naklady).map(([k, v]) => `${esc(k)} ${czk(v)}`).join('<br>') : '—';
-
+  $('costDetail').innerHTML = Object.entries(run.naklady).map(([k, v]) => `${esc(k)} ${czk(v)}`).join('<br>') || '—';
   $('jsonBox').textContent = JSON.stringify(run, null, 2);
   $('jsonCard').style.display = 'block';
   $('dl').disabled = false; $('cp').disabled = false;
   try { localStorage.setItem('llm-arena-last', JSON.stringify(run)); } catch (e) {}
   prog(100, `hotovo za ${run.trvani_s} s`);
-  $('hint').textContent = `Hotovo. Nejlepší: ${w ? w.model : '—'} · cena ${czk(total)} · ${run.trvani_s} s. Můžeš zadat další zadání.`;
-  toast(`Hotovo — vyhrál ${w ? w.model : '—'}.`);
+  $('hint').textContent = `Hotovo · cena ${czk(total)} · ${run.trvani_s} s. Klidně zadej další.`;
+  toast(`Hotovo · ${czk(total)} · ${run.trvani_s} s`);
   busy = false; $('go').disabled = false;
-  $('winnerCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  ($('taskCard').style.display === 'block' ? $('taskCard') : $('winnerCard')).scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// ── volání API ─────────────────────────────────────────────────
+// ── API ────────────────────────────────────────────────────────
 let apiBase = '';
 try {
   if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -451,12 +696,9 @@ try {
     apiBase = p || 'http://127.0.0.1:8788';
   }
 } catch (e) {}
-
 async function api(payload) {
   const r = await fetch(apiBase + '/api/arena', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
   });
   let j = null;
   try { j = await r.json(); } catch (e) {}
@@ -468,33 +710,23 @@ async function api(payload) {
 function cardAnswer(label, mid, state) {
   const id = 'ans-' + slug(label);
   let el = $(id);
-  if (!el) {
-    el = document.createElement('div');
-    el.id = id;
-    el.className = 'card';
-    el.style.padding = '16px 18px';
-    $('ansGrid').appendChild(el);
-  }
+  if (!el) { el = document.createElement('div'); el.id = id; el.className = 'card'; el.style.padding = '16px 18px'; $('ansGrid').appendChild(el); }
   const a = (run && run.odpovedi[label]) || {};
-  const badge = { wait: ['b-wait', 'čeká'], run: ['b-run', 'odpovídá…'], ok: ['b-ok', 'hotovo'], err: ['b-err', 'chyba'] }[state];
+  const b = { wait:['b-wait','čeká'], run:['b-run','odpovídá…'], ok:['b-ok','hotovo'], err:['b-err','chyba'] }[state];
   el.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:9px;min-width:0">
-        <span class="badge ${badge[0]}">${badge[1]}</span>
-        <b style="font-size:15px">${esc(label)}</b>
+        <span class="badge ${b[0]}">${b[1]}</span><b style="font-size:15px">${esc(label)}</b>
       </div>
       <span class="mono" style="font-size:10.5px;color:var(--text-tertiary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(mid)}</span>
     </div>
     ${state === 'wait' || state === 'run' ? `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> model píše…</div>` : ''}
     ${state === 'err' ? `<div style="color:#ff1493;font-size:13px;line-height:1.6">${esc(a.error || 'chyba')}</div>` : ''}
     ${state === 'ok' ? `
-      ${a.truncated ? `<div style="background:rgba(255,180,40,.1);border:1px solid rgba(255,180,40,.35);color:#ffb428;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">
-        Pozor: modelu došel rozpočet tokenů, odpověď je uříznutá. Zkus zvolit delší odpovědi.</div>` : ''}
+      ${a.truncated ? `<div style="background:rgba(255,180,40,.1);border:1px solid rgba(255,180,40,.35);color:#ffb428;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">Pozor: modelu došel rozpočet tokenů, odpověď je uříznutá.</div>` : ''}
       <div class="ans collapsed" id="txt-${slug(label)}">${esc(a.text)}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;gap:10px;flex-wrap:wrap">
-        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">
-          ${a.text.length} znaků · ${tokens(a.usage)} tokenů · ${czk(a.usage && a.usage.cost)} · ${((a.ms || 0) / 1000).toFixed(1)} s${a.opakovano ? ' · na druhý pokus' : ''}
-        </span>
+        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">${a.text.length} znaků · ${tokens(a.usage)} tokenů · ${czk(a.usage && a.usage.cost)} · ${((a.ms||0)/1000).toFixed(1)} s${a.opakovano ? ' · na druhý pokus' : ''}</span>
         <span style="display:flex;gap:7px">
           <button class="btn btn-ghost" style="padding:6px 12px" onclick="toggleTxt('${slug(label)}')">rozbalit</button>
           <button class="btn btn-ghost" style="padding:6px 12px" onclick="copyTxt('${slug(label)}')">kopírovat</button>
@@ -502,184 +734,328 @@ function cardAnswer(label, mid, state) {
       </div>` : ''}`;
 }
 function toggleTxt(s) {
-  const el = $('txt-' + s);
-  el.classList.toggle('collapsed');
+  const el = $('txt-' + s); el.classList.toggle('collapsed');
   el.parentElement.querySelector('button').textContent = el.classList.contains('collapsed') ? 'rozbalit' : 'sbalit';
 }
-function copyTxt(s) {
-  const el = $('txt-' + s);
-  navigator.clipboard.writeText(el.innerText).then(() => toast('Odpověď zkopírována.'));
+function copyTxt(s) { navigator.clipboard.writeText($('txt-' + s).innerText).then(() => toast('Zkopírováno.')); }
+
+// ── karty nových zadání ────────────────────────────────────────
+function cardSynth(p, state) {
+  const id = 'syn-' + slug(p.author);
+  let el = $(id);
+  if (!el) { el = document.createElement('div'); el.id = id; el.className = 'card'; el.style.padding = '16px 18px'; $('synthGrid').appendChild(el); }
+  const s = (run && run.navrhy[p.author]) || {};
+  const b = { wait:['b-wait','čeká'], run:['b-run','skládá zadání…'], ok:['b-ok','hotovo'], err:['b-err','chyba'] }[state];
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:9px"><span class="badge ${b[0]}">${b[1]}</span><b style="font-size:15px">${esc(p.author)}</b></div>
+      <span class="mono" style="font-size:10.5px;color:var(--text-tertiary)">${esc((run && run.modely[p.author]) || '')}</span>
+    </div>
+    <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">dostal odpovědi: ${Object.entries(p.mapping).map(([lt,m]) => lt+'='+esc(m)).join(' · ')}</div>
+    ${state === 'wait' || state === 'run' ? `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> hledá nejlepší prvky…</div>` : ''}
+    ${state === 'err' ? `<div style="color:#ff1493;font-size:13px">${esc(s.error || 'chyba')}</div>` : ''}
+    ${state === 'ok' ? `
+      <div class="ans" style="max-height:280px;overflow:auto;border-left:2px solid rgba(57,255,20,.4);padding-left:12px">${esc(s.zadani || '')}</div>
+      ${s.proc ? `<div style="margin-top:11px;color:#cfd0dc;font-size:13px;line-height:1.6"><b style="color:#39ff14">Co převzal a přidal:</b> ${esc(s.proc)}</div>` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;gap:10px;flex-wrap:wrap">
+        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">${s.vychazi_z ? 'čerpá z: ' + esc(s.vychazi_z) + ' · ' : ''}${tokens(s.usage)} tokenů · ${czk(s.usage && s.usage.cost)} · ${((s.ms||0)/1000).toFixed(1)} s</span>
+        <button class="btn btn-ghost" style="padding:6px 12px" onclick="navigator.clipboard.writeText(run.navrhy['${esc(p.author)}'].zadani).then(()=>toast('Zadání zkopírováno.'))">kopírovat zadání</button>
+      </div>` : ''}`;
 }
 
-// ── karty poroty ───────────────────────────────────────────────
-function cardJudge(p, state, rawText) {
-  const id = 'jdg-' + slug(p.judge);
+// ── karty poroty (kolo 1 = odpovědi, kolo 2 = zadání) ──────────
+function cardJudge(p, state, kolo, rawText) {
+  const src = kolo === 2 ? 'hodnoceni_zadani' : 'hodnoceni';
+  const id = (kolo === 2 ? 'jd2-' : 'jdg-') + slug(p.judge);
   let el = $(id);
-  if (!el) {
-    el = document.createElement('div');
-    el.id = id;
-    el.className = 'card';
-    el.style.padding = '16px 18px';
-    $('judgeGrid').appendChild(el);
-  }
-  const j = (run && run.hodnoceni[p.judge]) || {};
-  const badge = { wait: ['b-wait', 'čeká'], run: ['b-run', 'hodnotí…'], ok: ['b-ok', 'hotovo'], err: ['b-err', 'chyba'] }[state];
+  const grid = kolo === 2 ? 'judge2Grid' : 'judgeGrid';
+  if (!el) { el = document.createElement('div'); el.id = id; el.className = 'card'; el.style.padding = '16px 18px'; $(grid).appendChild(el); }
+  const j = (run && run[src][p.judge]) || {};
+  const b = { wait:['b-wait','čeká'], run:['b-run', kolo === 2 ? 'hodnotí zadání…' : 'hodnotí…'], ok:['b-ok','hotovo'], err:['b-err','chyba'] }[state];
   const mapa = Object.entries(p.mapping).map(([lt, m]) => `${lt}=${esc(m)}`).join(' · ');
   let body = '';
-  if (state === 'wait' || state === 'run') body = `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> čte ${p.letterOrder.length} anonymních odpovědí…</div>`;
+  if (state === 'wait' || state === 'run') body = `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> čte ${p.letters.length} anonymních položek…</div>`;
   if (state === 'err') body = `<div style="color:#ff1493;font-size:13px;line-height:1.6">${esc(j.error || 'chyba')}${rawText ? `<pre class="mono" style="font-size:11px;white-space:pre-wrap;color:#8a8a9c;margin-top:8px">${esc(rawText.slice(0, 600))}</pre>` : ''}</div>`;
   if (state === 'ok') {
-    const radky = j.poradi_modelu.map((m, i) => {
+    const shoda = ((run && (kolo === 2 ? run.shoda2 : run.shoda)) || {}).pojmy || {};
+    const rows = j.poradi_modelu.map((m, i) => {
       const lt = j.poradi_pismen[i];
-      const z = j.znamky[m] != null ? j.znamky[m] : '—';
+      const z = j.znamky[m] != null ? j.znamky[m] : null;
+      const sameGrade = z != null && (shoda.totozne_znamky || []).some(x => x.model === m && x.hodnota === z && x.judge !== p.judge);
+      const sameOrder = (shoda.stejne_poradi || []).some(g => g.judges.includes(p.judge) && g.judges.length > 1);
       const win = m === j.vitez_model;
       return `<tr${win ? ' class="me"' : ''}>
         <td style="width:34px;color:var(--text-tertiary)" class="mono">${i + 1}.</td>
         <td class="mono" style="width:44px;color:var(--text-secondary)">${esc(lt)}</td>
-        <td><b>${esc(m)}</b>${win ? ' <span class="badge b-ok">vítěz</span>' : ''}</td>
-        <td class="mono" style="width:70px;text-align:right">${esc(String(z))}</td>
+        <td><b>${esc(m)}</b>${win ? ' <span class="badge b-ok">vítěz</span>' : ''}${sameGrade ? ' <span class="badge b-same">stejná známka</span>' : ''}</td>
+        <td class="mono ${sameGrade ? 'same' : ''}" style="width:86px;text-align:right">${z != null ? z : '—'}</td>
       </tr>`;
     }).join('');
-    body = `
-      <table style="margin:4px 0 10px"><tbody>${radky}</tbody></table>
-      <div style="border-left:2px solid rgba(255,0,255,.4);padding-left:12px;color:#cfd0dc;font-size:13.5px;line-height:1.62">
-        ${esc(j.duvod || '(porotce neuvedl zdůvodnění)')}
-      </div>
-      <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-top:11px">
-        ${tokens(j.usage)} tokenů · ${czk(j.usage && j.usage.cost)} · ${((j.ms || 0) / 1000).toFixed(1)} s
-      </div>`;
+    body = `<table style="margin:4px 0 10px"><tbody>${rows}</tbody></table>
+      <div style="border-left:2px solid rgba(255,0,255,.4);padding-left:12px;color:#cfd0dc;font-size:13.5px;line-height:1.62">${esc(j.duvod || '(bez zdůvodnění)')}</div>
+      <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-top:11px">${tokens(j.usage)} tokenů · ${czk(j.usage && j.usage.cost)} · ${((j.ms||0)/1000).toFixed(1)} s</div>`;
   }
   el.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px">
-      <div style="display:flex;align-items:center;gap:9px">
-        <span class="badge ${badge[0]}">${badge[1]}</span>
-        <b style="font-size:15px">porotce ${esc(p.judge)}</b>
-      </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:9px"><span class="badge ${b[0]}">${b[1]}</span><b style="font-size:15px">porotce ${esc(p.judge)}</b></div>
+      <span id="shoda-${kolo}-${slug(p.judge)}"></span>
     </div>
-    <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">
-      ${run && run.hodnoti_bez_sebe ? 'vlastní odpověď nedostal · ' : ''}dostal: ${mapa}
-    </div>
+    <div class="mono" style="font-size:11px;color:var(--text-tertiary);margin-bottom:10px">${run && run.hodnoti_bez_sebe ? 'vlastní práci neviděl · ' : ''}dostal: ${mapa}</div>
     ${body}`;
 }
 
+// ── odznaky shody ──────────────────────────────────────────────
+function fillJudgeBadges(judgements, cons, kolo) {
+  (cons.pojmy.stejne_poradi || []).forEach(g => {
+    if (g.judges.length < 2) return;
+    g.judges.forEach(j => {
+      const el = $('shoda-' + kolo + '-' + slug(j));
+      if (!el) return;
+      el.innerHTML += `<span class="badge b-same" title="stejné pořadí jako ${esc(g.judges.filter(x => x !== j).join(', '))}">shodné pořadí s ${esc(g.judges.filter(x => x !== j).join(', '))}</span> `;
+    });
+  });
+  (cons.pojmy.stejny_vitez || []).forEach(g => {
+    if (g.judges.length < 2) return;
+    g.judges.forEach(j => {
+      const el = $('shoda-' + kolo + '-' + slug(j));
+      if (el && !el.innerHTML.includes('shodné pořadí')) {
+        el.innerHTML += `<span class="badge b-same" title="stejný vítěz jako ${esc(g.judges.filter(x => x !== j).join(', '))}">shodný vítěz: ${esc(g.vitez)}</span> `;
+      }
+    });
+  });
+}
+
 // ── tabulka ────────────────────────────────────────────────────
-function renderBoard(agg, usable) {
-  $('boardCard').style.display = 'block';
-  $('boardBody').innerHTML = agg.vysledky.map((r) => {
-    const a = run.odpovedi[r.model] || {};
+function renderBoard(agg, usable, kolo) {
+  $(kolo === 2 ? 'board2Card' : 'boardCard').style.display = 'block';
+  $(kolo === 2 ? 'board2Body' : 'boardBody').innerHTML = agg.vysledky.map(r => {
+    const a = kolo === 2 ? null : (run.odpovedi[r.model] || {});
     const max = Math.max(1, agg.pocet_porotcu);
     return `<tr${r.poradi === 1 ? ' class="me"' : ''}>
       <td class="mono" style="color:${r.poradi === 1 ? '#00e5ff' : 'var(--text-tertiary)'};font-weight:700">${r.poradi}</td>
       <td><b>${esc(r.model)}</b><div class="mono" style="font-size:10.5px;color:var(--text-tertiary)">${esc(r.model_id || '')}</div></td>
-      <td>
-        <div class="bar"><i style="width:${(r.skore / max * 100).toFixed(0)}%"></i></div>
-        <div class="mono" style="font-size:11.5px;color:var(--text-secondary);margin-top:5px">${r.skore.toFixed(2)} / ${max}</div>
-      </td>
+      <td><div class="bar"><i style="width:${(r.skore / max * 100).toFixed(0)}%"></i></div>
+        <div class="mono" style="font-size:11.5px;color:var(--text-secondary);margin-top:5px">${r.skore.toFixed(2)} / ${max}</div></td>
       <td class="mono" style="font-size:15px">${r.vitazstvi}×</td>
-      <td class="mono">${r.prumer_znamek != null ? r.prumer_znamek.toFixed(2) : '—'}</td>
-      <td class="mono" style="font-size:11.5px;color:var(--text-tertiary)">${a.text ? a.text.length + ' znaků' : '—'}</td>
+      <td class="mono">${fmt(r.prumer_znamek)}</td>
+      <td class="mono" style="color:#39ff14">${fmt(r.prumer_srovnany)}</td>
+      ${kolo === 2 ? '' : `<td class="mono" style="font-size:11.5px;color:var(--text-tertiary)">${a.text ? a.text.length + ' znaků' : '—'}</td>`}
     </tr>`;
   }).join('');
 }
+const fmt = (n) => (n == null ? '—' : Number(n).toFixed(2));
 
-// ── sčítání hlasů ──────────────────────────────────────────────
-function aggregate(usable) {
-  const skore = {}, vyhry = {}, znamky = {};
-  usable.forEach((l) => { skore[l] = 0; vyhry[l] = 0; znamky[l] = []; });
+// ── shoda poroty ───────────────────────────────────────────────
+function renderConsensus(c, usable, kolo, agg) {
+  const el = $(kolo === 2 ? 'cons2Card' : 'consCard');
+  el.style.display = 'block';
+  const vitez = c.vitez;
+  const jednomyslne = c.jednomyslne;
+  const radky = [];
+  if (vitez) {
+    radky.push(`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+      <span class="badge ${jednomyslne ? 'b-same' : 'b-ok'}">${jednomyslne ? 'jednomyslně' : 'většinově'}</span>
+      <b style="font-size:17px">${esc(vitez.model)}</b>
+      <span style="color:var(--text-secondary);font-size:13.5px">— dostal ${vitez.hlasy} z ${c.hlasu} hlasů${jednomyslne ? ' (celá porota se shodla)' : ''}</span></div>`);
+  }
+  const gr = (c.pojmy.stejne_poradi || []).filter(g => g.judges.length > 1);
+  if (gr.length) {
+    radky.push(`<div style="margin-bottom:10px"><span class="lbl">totožné pořadí u více porotců</span><div style="margin-top:7px;display:grid;gap:6px">${
+      gr.map(g => `<div style="font-size:13.5px"><span class="badge b-same">${g.judges.length}×</span> ${esc(g.judges.join(' + '))} → <span class="mono" style="color:#ffb428">${esc(g.poradi.join(' > '))}</span></div>`).join('')
+    }</div></div>`);
+  } else {
+    radky.push(`<div style="color:var(--text-tertiary);font-size:13px;margin-bottom:10px">Nikdo neměl úplně totožné pořadí — porota se lišila v detailech.</div>`);
+  }
+  const gr2 = (c.pojmy.stejny_vitez || []).filter(g => g.judges.length > 1);
+  if (gr2.length) {
+    radky.push(`<div style="margin-bottom:10px"><span class="lbl">totožný vítěz u více porotců</span><div style="margin-top:7px;display:grid;gap:6px">${
+      gr2.map(g => `<div style="font-size:13.5px"><span class="badge b-same">${g.judges.length}×</span> ${esc(g.judges.join(' + '))} → <b>${esc(g.vitez)}</b></div>`).join('')
+    }</div></div>`);
+  }
+  const tg = c.pojmy.totozne_znamky || [];
+  if (tg.length) {
+    radky.push(`<div><span class="lbl">totožné známky od více porotců</span><div style="margin-top:7px;display:grid;gap:6px">${
+      tg.map(x => `<div style="font-size:13.5px"><span class="badge b-same">${x.pocet}×</span> známka <b class="mono">${x.hodnota}</b> pro <b>${esc(x.model)}</b> — ${esc(x.judgee.join(', '))}</div>`).join('')
+    }</div></div>`);
+  }
+  // matice shody dvojic (shodné pořadí)
+  const jud = Object.keys(kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni).filter(j => (kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni)[j].stav === 'hotovo');
+  let matice = '';
+  if (jud.length > 1) {
+    matice = `<div style="margin-top:14px"><span class="lbl">kdo se s kým shodl na pořadí</span>
+      <table style="margin-top:7px"><thead><tr><th></th>${jud.map(j => `<th>${esc(j)}</th>`).join('')}</tr></thead><tbody>${
+      jud.map(a => `<tr><td style="font-size:12px">${esc(a)}</td>${jud.map(b => {
+        if (a === b) return '<td style="color:var(--text-tertiary)">–</td>';
+        const sa = JSON.stringify((kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni)[a].poradi_modelu);
+        const sb = JSON.stringify((kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni)[b].poradi_modelu);
+        const va = (kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni)[a].vitez_model;
+        const vb = (kolo === 2 ? run.hodnoceni_zadani : run.hodnoceni)[b].vitez_model;
+        if (sa === sb) return '<td><span class="badge b-same">shoda</span></td>';
+        if (va === vb) return '<td><span class="badge b-ok">vítěz</span></td>';
+        return '<td style="color:var(--text-tertiary);font-size:12px">jiné</td>';
+      }).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+  el.innerHTML = `<div class="lbl" style="margin-bottom:12px">shoda poroty${kolo === 2 ? ' — hodnocení zadání' : ' — hodnocení odpovědí'}</div>${radky.join('')}${matice}`;
+}
+
+// ── sčítání hlasů (skóre + známky surové i srovnané) ───────────
+function aggregate(judgements, usable) {
+  const skore = {}, vyhry = {}, znamky = {}, srovnane = {};
+  usable.forEach(l => { skore[l] = 0; vyhry[l] = 0; znamky[l] = []; srovnane[l] = []; });
   let hlasu = 0;
-  Object.entries(run.hodnoceni).forEach(([j, r]) => {
+  Object.values(judgements).forEach(r => {
     if (r.stav !== 'hotovo' || !r.poradi_modelu) return;
     hlasu++;
     const n = r.poradi_modelu.length;
     r.poradi_modelu.forEach((m, i) => { if (skore[m] != null) skore[m] += (n - i) / n; });
     if (vyhry[r.vitez_model] != null) vyhry[r.vitez_model]++;
-    Object.entries(r.znamky || {}).forEach(([m, v]) => { if (znamky[m]) znamky[m].push(Number(v)); });
+    // srovnání známek UVNITŘ porotce (min-max na 0–10), aby šly poroty sečíst
+    const vals = Object.entries(r.znamky || {}).filter(([m, v]) => znamky[m] && Number.isFinite(+v));
+    const nums = vals.map(([, v]) => +v);
+    const lo = Math.min(...nums), hi = Math.max(...nums);
+    vals.forEach(([m, v]) => {
+      znamky[m].push(+v);
+      srovnane[m].push(hi === lo ? 5 : (+v - lo) / (hi - lo) * 10);
+    });
   });
-  const vysledky = usable.map((l) => ({
+  const avg = (a) => (a.length ? +(a.reduce((x, y) => x + y, 0) / a.length).toFixed(2) : null);
+  const vysledky = usable.map(l => ({
     model: l, model_id: run.modely[l], skore: skore[l], vitazstvi: vyhry[l],
-    prumer_znamek: znamky[l].length ? +(znamky[l].reduce((a, b) => a + b, 0) / znamky[l].length).toFixed(2) : null,
-  })).sort((a, b) => b.skore - a.skore || b.vitazstvi - a.vitazstvi || (b.prumer_znamek || 0) - (a.prumer_znamek || 0));
+    prumer_znamek: avg(znamky[l]), prumer_srovnany: avg(srovnane[l]),
+  })).sort((a, b) => b.skore - a.skore || b.vitazstvi - a.vitazstvi || (b.prumer_srovnany || 0) - (a.prumer_srovnany || 0));
   vysledky.forEach((r, i) => { r.poradi = i + 1; });
   return { vysledky, pocet_porotcu: hlasu, vitez: vysledky[0] ? vysledky[0].model : null };
 }
 
-// ── parsing JSON od porotce ────────────────────────────────────
-function parseJudgement(text, letters) {
+// ── shoda mezi porotci ─────────────────────────────────────────
+function consensus(judgements, usable) {
+  const hot = Object.entries(judgements).filter(([, r]) => r.stav === 'hotovo' && r.poradi_modelu);
+  const hlasu = hot.length;
+  const poVitezi = {};
+  hot.forEach(([j, r]) => { (poVitezi[r.vitez_model] = poVitezi[r.vitez_model] || []).push(j); });
+  const vitez = Object.entries(poVitezi).sort((a, b) => b[1].length - a[1].length)[0];
+  const poPoradi = {};
+  hot.forEach(([j, r]) => { const k = r.poradi_modelu.join(' > '); (poPoradi[k] = poPoradi[k] || []).push(j); });
+  // totožné známky: stejná hodnota u stejné položky od 2+ porotců
+  const map = {};
+  hot.forEach(([j, r]) => Object.entries(r.znamky || {}).forEach(([m, v]) => {
+    const k = m + '|' + v; (map[k] = map[k] || []).push(j);
+  }));
+  const totozne = Object.entries(map).filter(([, js]) => js.length > 1).map(([k, js]) => {
+    const [m, v] = k.split('|');
+    return { model: m, hodnota: +v, pocet: js.length, judgee: js, judge: js[0] };
+  });
+  return {
+    hlasu,
+    vitez: vitez ? { model: vitez[0], hlasy: vitez[1].length, judgee: vitez[1] } : null,
+    jednomyslne: !!(vitez && hlasu > 1 && vitez[1].length === hlasu),
+    pojmy: {
+      stejny_vitez: Object.entries(poVitezi).map(([v, js]) => ({ vitez: v, judges: js })),
+      stejne_poradi: Object.entries(poPoradi).map(([p, js]) => ({ poradi: p.split(' > '), judges: js })),
+      totozne_znamky: totozne,
+    },
+  };
+}
+
+// ── parsery ────────────────────────────────────────────────────
+function extractJson(text) {
   if (!text) return null;
   const cands = [];
-  const fence = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
-  if (fence) cands.push(fence[1]);
+  const f = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (f) cands.push(f[1]);
   cands.push(text.trim());
-  const brace = text.match(/\{[\s\S]*\}/);
-  if (brace) cands.push(brace[0]);
+  const b = text.match(/\{[\s\S]*\}/);
+  if (b) cands.push(b[0]);
   for (let c of cands) {
-    let obj = null;
-    try { obj = JSON.parse(c); } catch (e) { try { obj = JSON.parse(c.replace(/'/g, '"')); } catch (e2) { continue; } }
-    if (!obj || typeof obj !== 'object') continue;
-    let poradi = obj.poradi || obj['pořadí'];
-    if (!Array.isArray(poradi)) continue;
-    let clean = poradi.map((x) => String(x).trim().toUpperCase().slice(0, 1));
-    if (clean.slice().sort().join('') !== letters.slice().sort().join('')) {
-      const seen = new Set(); const fixed = [];
-      clean.concat(letters).forEach((l) => { if (letters.includes(l) && !seen.has(l)) { seen.add(l); fixed.push(l); } });
-      clean = fixed;
-    }
-    if (!clean.length) continue;
-    const sk = obj.skore || obj['skóre'] || {};
-    const skore = {};
-    if (sk && typeof sk === 'object') Object.keys(sk).forEach((k) => { skore[String(k).trim().toUpperCase().slice(0, 1)] = sk[k]; });
-    return { poradi: clean, vitez: clean[0], skore, duvod: String(obj.duvod || obj['důvod'] || '').trim() };
+    try { const o = JSON.parse(c); if (o && typeof o === 'object') return o; } catch (e) {}
+    try { const o = JSON.parse(c.replace(/,\s*([}\]])/g, '$1').replace(/'/g, '"')); if (o && typeof o === 'object') return o; } catch (e) {}
   }
   return null;
 }
+function parseJudgement(text, letters) {
+  const obj = extractJson(text);
+  if (!obj) return null;
+  let poradi = obj.poradi || obj['pořadí'];
+  if (!Array.isArray(poradi)) return null;
+  let clean = poradi.map(x => String(x).trim().toUpperCase().slice(0, 1));
+  if (clean.slice().sort().join('') !== letters.slice().sort().join('')) {
+    const seen = new Set(); const fixed = [];
+    clean.concat(letters).forEach(l => { if (letters.includes(l) && !seen.has(l)) { seen.add(l); fixed.push(l); } });
+    clean = fixed;
+  }
+  if (!clean.length) return null;
+  const sk = obj.skore || obj['skóre'] || {};
+  const skore = {};
+  if (sk && typeof sk === 'object') Object.keys(sk).forEach(k => { skore[String(k).trim().toUpperCase().slice(0, 1)] = sk[k]; });
+  return { poradi: clean, vitez: clean[0], skore, duvod: String(obj.duvod || obj['důvod'] || '').trim() };
+}
+function parseSynthesis(text) {
+  const obj = extractJson(text);
+  if (!obj) return null;
+  return {
+    nove_zadani: String(obj.nove_zadani || obj.nove_zadání || obj.zadani || '').trim(),
+    vychazi_z: Array.isArray(obj.vychazi_z) ? obj.vychazi_z.map(String) : (obj.vychazi_z ? [String(obj.vychazi_z)] : []),
+    proc_je_lepsi: String(obj.proc_je_lepsi || obj['proc_je_lepsi'] || obj.proc || obj['důvod'] || '').trim(),
+  };
+}
 
 // ── pomocné ────────────────────────────────────────────────────
-function shuffle(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-');
+function shuffle(a) { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; }
 function step(n) {
-  document.querySelectorAll('#journey .step').forEach((el) => {
+  document.querySelectorAll('#journey .step').forEach(el => {
     const s = +el.dataset.s;
     el.classList.toggle('done', n > 0 && s < n);
     el.classList.toggle('on', n > 0 && s === n);
   });
-  if (n > 0) prog(n === 1 ? 4 : n === 2 ? 56 : n === 3 ? 60 : 98, null);
+  if (n > 0) prog([0, 6, 48, 52, 70, 82, 99][n] || 0, null);
 }
-function prog(pct, txt) {
-  $('prog').style.width = Math.min(100, pct) + '%';
-  if (txt) $('progTxt').textContent = txt;
-}
+function prog(pct, txt) { $('prog').style.width = Math.min(100, pct) + '%'; if (txt) $('progTxt').textContent = txt; }
 let toastT = null;
 function toast(msg) {
   const old = document.querySelector('.toast'); if (old) old.remove();
-  const el = document.createElement('div');
-  el.className = 'toast'; el.textContent = msg;
-  document.body.appendChild(el);
-  clearTimeout(toastT); toastT = setTimeout(() => el.remove(), 4200);
+  const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el); clearTimeout(toastT); toastT = setTimeout(() => el.remove(), 4500);
 }
 $('dl').onclick = () => {
   if (!run) return;
   const b = new Blob([JSON.stringify(run, null, 2)], { type: 'application/json' });
-  const u = URL.createObjectURL(b);
-  const a = document.createElement('a');
+  const u = URL.createObjectURL(b); const a = document.createElement('a');
   a.href = u; a.download = 'llm-arena-' + new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19) + '.json';
-  a.click(); URL.revokeObjectURL(u);
-  toast('Záznam uložen do Stažených.');
+  a.click(); URL.revokeObjectURL(u); toast('Uloženo do Stažených.');
 };
 $('cp').onclick = () => { if (run) navigator.clipboard.writeText(JSON.stringify(run, null, 2)).then(() => toast('JSON zkopírován.')); };
+$('copyTask').onclick = () => { const t = $('taskText').textContent; if (t) navigator.clipboard.writeText(t).then(() => toast('Vítězné zadání zkopírováno.')); };
+$('rerunTask').onclick = () => {
+  const t = $('taskText').textContent;
+  if (!t) return;
+  $('prompt').value = t;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(() => start(t), 400);
+};
 
-// obnova posledního běhu
-try {
-  const last = localStorage.getItem('llm-arena-last');
-  if (last) {
-    const r = JSON.parse(last);
-    if (r && r.zadani) $('hint').textContent = 'Poslední běh je uložený v prohlížeči — nové zadání ho přepíše.';
-  }
-} catch (e) {}
+// ── zadání pro porotu ze serveru ───────────────────────────────
+(async () => {
+  try {
+    const r = await fetch(apiBase + '/api/arena');
+    PROMPTS = (await r.json()).zadani_pro_porotu || null;
+  } catch (e) { PROMPTS = null; }
+  const box = $('promptsBox');
+  if (!PROMPTS) { box.innerHTML = '<div style="color:var(--text-tertiary);font-size:12.5px">nepodařilo se načíst</div>'; return; }
+  const block = (title, note, p) => `
+    <div>
+      <div style="font-weight:700;margin-bottom:5px">${esc(title)}</div>
+      <div style="color:var(--text-tertiary);font-size:12.5px;margin-bottom:8px">${esc(note)}</div>
+      <div class="lbl" style="margin-bottom:4px">system</div>
+      <pre class="prompt">${esc(p.system)}</pre>
+      <div class="lbl" style="margin:10px 0 4px">zpráva pro model</div>
+      <pre class="prompt">${esc(p.user)}</pre>
+    </div>`;
+  box.innerHTML =
+    block('Porota — hodnocení odpovědí', 'Tohle dostane každý porotce. Písmena a pořadí si určuje prohlížeč, každý porotce jinak.', PROMPTS.odpovedi) +
+    block('Porota — hodnocení nových zadání', 'Druhé kolo: hodnotí se kvalita zadání, ne odpovědí.', PROMPTS.zadani) +
+    block('Tvůrce nového zadání', 'S každým modelem jako autorem nového zadání ve druhém kole.', PROMPTS.nove_zadani);
+})();
+
 if (window.lucide) lucide.createIcons();
 </script>
 </body>

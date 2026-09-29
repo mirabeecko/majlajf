@@ -1,36 +1,33 @@
 // LLM Arena — serverless proxy na OpenRouter (Vercel Node function)
 // Drží API klíč na serveru (env OPENROUTER_API_KEY), klient ho nikdy nevidí.
-// Dva režimy:
-//   {action:"answer", ...} → jedna odpověď jednoho modelu
-//   {action:"judge",  ...} → jedno anonymní hodnocení jednoho porotce
-// Klient skládá celý průběh (anonymizace probíhá v prohlížeči).
+// Režimy:
+//   {action:"answer"}     → odpověď jednoho modelu na původní zadání
+//   {action:"judge"}      → anonymní hodnocení (mode: "odpovedi" | "zadani")
+//   {action:"synthesize"} → model z odpovědí sestaví NOVÉ, lepší zadání
+// Anonymizaci, míchání pořadí a sčítání hlasů dělá prohlížeč.
 
 const OPENROUTER = 'https://openrouter.ai/api/v1/chat/completions';
 
-// ── whitelist modelů (aby se přes endpoint nedalo volat cokoliv drahého) ──
+// ── whitelist modelů ──
 const ALLOWED = new Set([
-  // vlajkové
   'openai/gpt-6-sol', 'openai/gpt-6-luna', 'openai/gpt-6-luna-pro', 'openai/gpt-5.6-sol',
   'google/gemini-3.1-pro-preview', 'google/gemini-3.8-flash', 'google/gemini-3.5-flash',
   'google/gemini-2.5-flash-lite', 'google/gemini-2.5-flash',
   'x-ai/grok-4.7', 'x-ai/grok-4.20', 'x-ai/grok-4.3', 'x-ai/grok-4.5',
   'meta-llama/llama-4-maverick', 'meta-llama/llama-4-scout', 'meta-llama/llama-3.3-70b-instruct',
-  // porota navíc
   'anthropic/claude-opus-5', 'anthropic/claude-sonnet-5', 'anthropic/claude-haiku-4.5',
   'deepseek/deepseek-v4-pro', 'deepseek/deepseek-v4-flash', 'deepseek/deepseek-v3.2',
   'qwen/qwen3.8-27b', 'mistralai/mistral-large-latest', 'openai/gpt-oss-120b',
 ]);
 
 const LIMITS = {
-  maxTokensCap: 4000,      // strop pro jeden call
-  maxPromptChars: 12000,   // zadání
-  maxBlocksChars: 60000,   // anonymní odpovědi pro porotce
-  timeoutMs: 130000,       // 130 s na jeden call (funkce má strop 300 s)
-  retryTimeoutMs: 130000,  // jeden pokus navíc, když model nestihne odpovědět
+  maxTokensCap: 4000,
+  maxPromptChars: 12000,
+  maxBlocksChars: 60000,
+  timeoutMs: 130000,
+  retryTimeoutMs: 130000,
 };
 
-// Modely, které si „ukusují" rozvahové tokeny — mají nárok na větší rozpočet,
-// jinak se viditelná odpověď uřízne v půlce věty.
 const THINKING = /gemini-3|gpt-6|gpt-5\.6|grok-4\.7|grok-4\.5|claude-opus-5|deepseek-v4-pro|deepseek-r1/;
 
 function budgetFor(model, maxTokens) {
@@ -38,37 +35,107 @@ function budgetFor(model, maxTokens) {
   return Math.min(want, LIMITS.maxTokensCap);
 }
 
-const JUDGE_SYSTEM = [
+// ════════════════════════════════════════════════════════════
+//  ZADÁNÍ PRO POROTU — tady je celá „známkovací" logika
+//  (stránka si tyto texty tahá přes GET /api/arena a zobrazuje je)
+// ════════════════════════════════════════════════════════════
+
+const JUDGE_SYSTEM_ANSWERS = [
   'Jsi přísný, nestranný hodnotitel. Neznáš autory odpovědí a nesmíš hádat, kdo je napsal.',
   'Hodnotíš pouze věcnou správnost, užitečnost, konkrétnost, originalitu a dodržení zadání.',
   'Odpovídej POUZE jedním JSON objektem, bez textu okolo, bez markdown bloku.',
 ].join(' ');
 
-function judgeUser(spec) {
-  const letters = spec.letters.join(', ');
+const JUDGE_SYSTEM_TASKS = [
+  'Jsi přísný, nestranný hodnotitel zadání (promptů). Neznáš autory a nesmíš hádat, kdo je napsal.',
+  'Hodnotíš kvalitu SAMOTNÉHO ZADÁNÍ: jednoznačnost, konkrétnost, úplnost, originalitu',
+  'a to, jak dobře povede k vynikajícímu výsledku. Nehodnotíš odpovědi, jen zadání.',
+  'Odpovídej POUZE jedním JSON objektem, bez textu okolo, bez markdown bloku.',
+].join(' ');
+
+function jsonSchema(letters, what, each) {
+  return [
+    'Vrať JSON přesně v tomto tvaru:',
+    `{"poradi": [${letters.map((l) => `"${l}"`).join(', ')}],`,
+    ` "vitez": "${letters[0]}",`,
+    ` "skore": {${letters.map((l) => `"${l}": 8.5`).join(', ')}},`,
+    ' "duvod": "stručné zdůvodnění česky, 2-4 věty, bez jmen modelů"}',
+    '',
+    'Pravidla: "poradi" = od nejlepší po nejhorší, každé písmeno právě jednou.',
+    `"skore" = 0-10 pro ${each}. "vitez" se musí rovnat prvnímu v "poradi".`,
+    'Hodnoť v češtině, věcně, bez zdvořilostních frází.',
+  ];
+}
+
+function judgeUserAnswers(spec) {
   return [
     'ZADÁNÍ, které dostali autoři:',
     '<zadani>',
     String(spec.prompt || '').slice(0, 8000),
     '</zadani>',
     '',
-    'Následují anonymizované odpovědi různých AI modelů:',
+    'Následují anonymizované ODPOVĚDI různých AI modelů:',
     '',
     String(spec.blocks || '').slice(0, LIMITS.maxBlocksChars),
     '',
-    'Porovnej je a rozhodni, která je nejlepší. Vrať JSON přesně v tomto tvaru:',
-    `{"poradi": [${spec.letters.map((l) => `"${l}"`).join(', ')}],`,
-    ` "vitez": "${spec.letters[0]}",`,
-    ` "skore": {${spec.letters.map((l) => `"${l}": 8.5`).join(', ')}},`,
-    ' "duvod": "stručné zdůvodnění česky, 2-4 věty, bez jmen modelů"}',
+    'Porovnej odpovědi a rozhodni, která je nejlepší (věcná správnost, užitečnost,',
+    'konkrétnost, originalita, dodržení zadání).',
     '',
-    'Pravidla: "poradi" = od nejlepší po nejhorší, každé písmeno právě jednou.',
-    '"skore" = 0-10 za každou odpověď. "vitez" se musí rovnat prvnímu v "poradi".',
-    'Hodnoť v češtině, věcně, bez zdvořilostních frází.',
+    ...jsonSchema(spec.letters, 'odpověď', 'každou odpověď'),
   ].join('\n');
 }
 
-// ── velmi jednoduchý rate limit (per instance, na přežití stačí) ──
+function judgeUserTasks(spec) {
+  return [
+    'PŮVODNÍ ZADÁNÍ, ze kterého autoři vycházeli:',
+    '<zadani>',
+    String(spec.prompt || '').slice(0, 8000),
+    '</zadani>',
+    '',
+    'Následují anonymizovaná NOVÁ ZADÁNÍ, která různí autoři sestavili tak,',
+    'aby vedla k ještě lepšímu výsledku:',
+    '',
+    String(spec.blocks || '').slice(0, LIMITS.maxBlocksChars),
+    '',
+    'Porovnej ZADÁNÍ (ne odpovědi!) a rozhodni, které je nejlepší: které je nejjednoznačnější,',
+    'nejkonkrétnější, nejúplnější, nejoriginálnější a povede k nejlepšímu výsledku.',
+    '',
+    ...jsonSchema(spec.letters, 'zadání', 'každé zadání'),
+  ].join('\n');
+}
+
+const SYNTH_SYSTEM = [
+  'Jsi špičkový tvůrce zadání (prompt engineer).',
+  'Dostaneš původní zadání a anonymizované odpovědi několika AI modelů.',
+  'Vezmi z nich to nejlepší — nápady, strukturu, detaily, silné formulace —',
+  'a sestav JEDNO NOVÉ ZADÁNÍ, které povede k ještě lepšímu výsledku, než jaký vznikl dřív.',
+  'Nové zadání musí být konkrétní, jednoznačné, úplné a přímo použitelné.',
+  'Neopisuj jednu odpověď — skládej to nejlepší z více zdrojů a přidej, co všem chybělo.',
+  'Odpovídej POUZE jedním JSON objektem, bez textu okolo, bez markdown bloku.',
+].join(' ');
+
+function synthUser(spec) {
+  return [
+    'PŮVODNÍ ZADÁNÍ:',
+    '<zadani>',
+    String(spec.prompt || '').slice(0, 8000),
+    '</zadani>',
+    '',
+    'Anonymizované odpovědi různých modelů:',
+    '',
+    String(spec.blocks || '').slice(0, LIMITS.maxBlocksChars),
+    '',
+    'Sestav z toho nejlepšího nové zadání. Vrať JSON přesně v tomto tvaru:',
+    '{"nove_zadani": "plné znění nového zadání, česky, připravené ke zkopírování",',
+    ` "vychazi_z": [${spec.letters.map((l) => `"${l}"`).join(', ')}],`,
+    ' "proc_je_lepsi": "2-4 věty, co jsi převzal a co jsi přidal"}}',
+    '',
+    'Pravidla: "vychazi_z" = písmena odpovědí, ze kterých jsi čerpal (jedno i více).',
+    'Zadání piš v češtině, bez oslovení hodnotitele, bez vysvětlivek v jeho textu.',
+  ].join('\n');
+}
+
+// ── jednoduchý rate limit ──
 const hits = new Map();
 function rateLimited(ip) {
   const now = Date.now();
@@ -77,7 +144,7 @@ function rateLimited(ip) {
   rec.n += 1;
   hits.set(ip, rec);
   if (hits.size > 2000) hits.clear();
-  return rec.n > 400;   // 400 callů / hodinu / IP
+  return rec.n > 400;
 }
 
 async function callModel(key, model, messages, temperature, maxTokens) {
@@ -138,7 +205,6 @@ async function callModel(key, model, messages, temperature, maxTokens) {
   };
 
   let out = await once(LIMITS.timeoutMs);
-  // jeden pokus navíc: model nestihl odpovědět nebo selhalo dočasně
   if (out.error && (out.retryable || out.timeout)) {
     const second = await once(LIMITS.retryTimeoutMs);
     if (!second.error) { second.opakovano = true; out = second; }
@@ -169,13 +235,17 @@ module.exports = async function handler(req, res) {
     return reply(200, {
       ok: true,
       service: 'llm-arena',
-      info: 'POST {action:"answer"|"judge"} — proxy na OpenRouter, klíč zůstává na serveru.',
+      info: 'POST {action:"answer"|"judge"|"synthesize"} — proxy na OpenRouter, klíč zůstává na serveru.',
       modely: [...ALLOWED],
+      zadani_pro_porotu: {
+        odpovedi: { system: JUDGE_SYSTEM_ANSWERS, user: judgeUserAnswers({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'] }) },
+        zadani: { system: JUDGE_SYSTEM_TASKS, user: judgeUserTasks({ prompt: '<PŮVODNÍ ZADÁNÍ>', blocks: '<NOVÁ ZADÁNÍ A–D>', letters: ['A', 'B', 'C', 'D'] }) },
+        nove_zadani: { system: SYNTH_SYSTEM, user: synthUser({ prompt: '<ZADÁNÍ>', blocks: '<ODPOVĚDI A–D>', letters: ['A', 'B', 'C', 'D'] }) },
+      },
     });
   }
   if (req.method !== 'POST') return reply(405, { ok: false, error: 'použij POST' });
 
-  // ── ochrana: přijímáme jen požadavky z naší stránky (nebo z lokálu) ──
   const origin = req.headers.origin || '';
   const okOrigin = !origin || [
     /^https:\/\/majlajf\.vercel\.app$/,
@@ -183,6 +253,7 @@ module.exports = async function handler(req, res) {
     /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
   ].some((re) => re.test(origin));
   if (!okOrigin) return reply(403, { ok: false, error: 'volání je povoleno jen ze stránky LLM Arena' });
+
   const key = process.env.OPENROUTER_API_KEY;
   if (!key) return reply(500, { ok: false, error: 'chybí OPENROUTER_API_KEY v prostředí serveru' });
 
@@ -192,36 +263,48 @@ module.exports = async function handler(req, res) {
   const body = await readBody(req);
   const action = body.action;
   const model = String(body.model || '');
+  if (!ALLOWED.has(model)) return reply(400, { ok: false, error: `model "${model}" není v povoleném seznamu` });
+
+  const letters = Array.isArray(body.letters) ? body.letters.slice(0, 8).map((l) => String(l).slice(0, 1)) : [];
+  const blocks = String(body.blocks || '');
 
   if (action === 'answer') {
-    if (!ALLOWED.has(model)) return reply(400, { ok: false, error: `model "${model}" není v povoleném seznamu` });
     const prompt = String(body.prompt || '').slice(0, LIMITS.maxPromptChars);
     if (prompt.trim().length < 3) return reply(400, { ok: false, error: 'zadání je moc krátké' });
     const messages = [];
     if (body.system) messages.push({ role: 'system', content: String(body.system).slice(0, 4000) });
     messages.push({ role: 'user', content: prompt });
     const out = await callModel(key, model, messages,
-      Number.isFinite(+body.temperature) ? +body.temperature : 0.7,
-      +body.max_tokens || 900);
+      Number.isFinite(+body.temperature) ? +body.temperature : 0.7, +body.max_tokens || 900);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
-    return reply(200, {
-      ok: true, text: out.text, usage: out.usage, model: out.model,
-      truncated: !!out.truncated, opakovano: !!out.opakovano,
-    });
+    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model,
+      truncated: !!out.truncated, opakovano: !!out.opakovano });
   }
 
   if (action === 'judge') {
-    if (!ALLOWED.has(model)) return reply(400, { ok: false, error: `model "${model}" není v povoleném seznamu` });
-    const letters = Array.isArray(body.letters) ? body.letters.slice(0, 8).map((l) => String(l).slice(0, 1)) : [];
-    if (letters.length < 2) return reply(400, { ok: false, error: 'chybí písmena anonymních odpovědí' });
-    if (!body.blocks) return reply(400, { ok: false, error: 'chybí anonymní odpovědi' });
+    if (letters.length < 2) return reply(400, { ok: false, error: 'chybí písmena anonymních položek' });
+    if (!blocks) return reply(400, { ok: false, error: 'chybí anonymní obsah k hodnocení' });
+    const mode = body.mode === 'zadani' ? 'zadani' : 'odpovedi';
+    const system = mode === 'zadani' ? JUDGE_SYSTEM_TASKS : JUDGE_SYSTEM_ANSWERS;
+    const user = mode === 'zadani'
+      ? judgeUserTasks({ prompt: body.prompt, blocks, letters })
+      : judgeUserAnswers({ prompt: body.prompt, blocks, letters });
+    const out = await callModel(key, model, [{ role: 'system', content: system }, { role: 'user', content: user }],
+      0.1, +body.max_tokens || 1200);
+    if (out.error) return reply(200, { ok: false, error: out.error, model });
+    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters, mode });
+  }
+
+  if (action === 'synthesize') {
+    if (letters.length < 1) return reply(400, { ok: false, error: 'chybí písmena odpovědí' });
+    if (!blocks) return reply(400, { ok: false, error: 'chybí odpovědi, ze kterých má vzniknout zadání' });
     const out = await callModel(key, model, [
-      { role: 'system', content: JUDGE_SYSTEM },
-      { role: 'user', content: judgeUser({ prompt: body.prompt, blocks: body.blocks, letters }) },
-    ], 0.1, +body.max_tokens || 1200);
+      { role: 'system', content: SYNTH_SYSTEM },
+      { role: 'user', content: synthUser({ prompt: body.prompt, blocks, letters }) },
+    ], 0.4, +body.max_tokens || 1200);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
     return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters });
   }
 
-  return reply(400, { ok: false, error: 'neznámá akce — použij "answer" nebo "judge"' });
+  return reply(400, { ok: false, error: 'neznámá akce — použij "answer", "judge" nebo "synthesize"' });
 };
