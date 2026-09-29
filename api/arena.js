@@ -21,14 +21,19 @@ const ALLOWED = new Set([
 ]);
 
 const LIMITS = {
-  maxTokensCap: 4000,
+  maxTokensCap: 16000,     // strop pro jeden call (stačí i na dlouhou odpověď + rozvahu)
   maxPromptChars: 12000,
   maxBlocksChars: 60000,
   timeoutMs: 130000,
   retryTimeoutMs: 130000,
 };
 
-const THINKING = /gemini-3|gpt-6|gpt-5\.6|grok-4\.7|grok-4\.5|claude-opus-5|deepseek-v4-pro|deepseek-r1/;
+const THINKING = /gemini-3|gpt-6|gpt-5\.6|grok-4\.7|grok-4\.5|claude-opus-5|claude-sonnet-5|deepseek-v4-pro|deepseek-r1/;
+
+// Rozvahové modely si ukusují velkou část rozpočtu na „přemýšlení", a pak se jim
+// viditelná odpověď uřízne. Měřeno: s effort=low dá stejný model 7× delší odpověď
+// za stejné peníze (Gemini 142 → 1031 znaků, Claude 637 → 2147 znaků na 1200 tokenech).
+const REASONING = { effort: 'low' };
 
 function budgetFor(model, maxTokens) {
   const want = THINKING.test(model) ? maxTokens * 3 : maxTokens;
@@ -162,15 +167,19 @@ function rateLimited(ip) {
 }
 
 async function callModel(key, model, messages, temperature, maxTokens) {
-  const body = {
-    model,
-    messages,
-    temperature,
-    max_tokens: budgetFor(model, maxTokens),
-    usage: { include: true },
-  };
+  const isThinking = THINKING.test(model);
+  let budget = budgetFor(model, maxTokens);
+  let last = null;
 
-  const once = async (timeout) => {
+  const once = async (timeout, mt) => {
+    const body = {
+      model,
+      messages,
+      temperature,
+      max_tokens: mt,
+      usage: { include: true },
+    };
+    if (isThinking) body.reasoning = REASONING;
     const ac = new AbortController();
     const timer = setTimeout(() => ac.abort(), timeout);
     try {
@@ -202,6 +211,7 @@ async function callModel(key, model, messages, temperature, maxTokens) {
         usage: data.usage || {},
         model: data.model || model,
         truncated: ch[0].finish_reason === 'length',
+        budget: mt,
       };
     } catch (e) {
       const name = (e && e.name) || 'Error';
@@ -218,12 +228,22 @@ async function callModel(key, model, messages, temperature, maxTokens) {
     }
   };
 
-  let out = await once(LIMITS.timeoutMs);
-  if (out.error && (out.retryable || out.timeout)) {
-    const second = await once(LIMITS.retryTimeoutMs);
-    if (!second.error) { second.opakovano = true; out = second; }
+  for (let i = 0; i < 5; i++) {
+    last = await once(i === 0 ? LIMITS.timeoutMs : LIMITS.retryTimeoutMs, budget);
+
+    // modelu došel rozpočet -> zkus to znovu s dvojnásobkem (až do stropu)
+    if (!last.error && last.truncated && budget < LIMITS.maxTokensCap) {
+      const pred = budget;
+      budget = Math.min(LIMITS.maxTokensCap, budget * 2);
+      last.zvyseno = budget;
+      last.predchozi = pred;
+      continue;
+    }
+    // timeout nebo dočasná chyba -> jeden pokus navíc
+    if (last.error && (last.retryable || last.timeout) && i < 2) continue;
+    return last;
   }
-  return out;
+  return last || { error: 'model neodpověděl' };
 }
 
 function readBody(req) {
@@ -301,7 +321,8 @@ module.exports = async function handler(req, res) {
       Number.isFinite(+body.temperature) ? +body.temperature : 0.7, +body.max_tokens || 900);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
     return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model,
-      truncated: !!out.truncated, opakovano: !!out.opakovano });
+      truncated: !!out.truncated, zvyseno: out.zvyseno || 0,
+      rozpocet: budgetFor(model, +body.max_tokens || 900) });
   }
 
   if (action === 'judge') {
@@ -316,7 +337,8 @@ module.exports = async function handler(req, res) {
     const out = await callModel(key, model, [{ role: 'system', content: system }, { role: 'user', content: user }],
       0.1, +body.max_tokens || 1200);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
-    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters, mode, style });
+    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters, mode, style,
+      truncated: !!out.truncated, zvyseno: out.zvyseno || 0 });
   }
 
   if (action === 'synthesize') {
@@ -327,7 +349,8 @@ module.exports = async function handler(req, res) {
       { role: 'user', content: synthUser({ prompt: body.prompt, blocks, letters }) },
     ], 0.4, +body.max_tokens || 1200);
     if (out.error) return reply(200, { ok: false, error: out.error, model });
-    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters });
+    return reply(200, { ok: true, text: out.text, usage: out.usage, model: out.model, letters,
+      truncated: !!out.truncated, zvyseno: out.zvyseno || 0 });
   }
 
   return reply(400, { ok: false, error: 'neznámá akce — použij "answer", "judge" nebo "synthesize"' });

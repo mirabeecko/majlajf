@@ -138,9 +138,10 @@
         <div>
           <div class="lbl" style="margin-bottom:9px">2 — délka odpovědí</div>
           <select id="lenSel" style="padding:9px 12px">
-            <option value="700">krátké (~700 tokenů)</option>
-            <option value="1200" selected>střední (~1200 tokenů)</option>
-            <option value="2200">dlouhé (~2200 tokenů)</option>
+            <option value="700">krátké (do ~700 tokenů odpovědi)</option>
+            <option value="1200" selected>střední (do ~1200 tokenů odpovědi)</option>
+            <option value="2200">dlouhé (do ~2200 tokenů odpovědi)</option>
+            <option value="4000">velmi dlouhé (do ~4000 tokenů odpovědi)</option>
           </select>
         </div>
         <div>
@@ -495,7 +496,7 @@ async function start(promptOverride) {
       if (!r.ok) { a.stav = 'chyba'; a.error = r.error || 'chyba'; cardAnswer(t.label, t.id, 'err'); }
       else {
         a.stav = 'hotovo'; a.text = r.text; a.usage = r.usage || {};
-        a.truncated = !!r.truncated; a.opakovano = !!r.opakovano;
+        a.truncated = !!r.truncated; a.zvyseno = r.zvyseno || 0; a.rozpocet = r.rozpocet || 0;
         run.naklady['odpověď:' + t.label] = +((r.usage && r.usage.cost) || 0);
         cardAnswer(t.label, t.id, 'ok');
       }
@@ -732,10 +733,13 @@ function cardAnswer(label, mid, state) {
     ${state === 'wait' || state === 'run' ? `<div style="display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:13px"><span class="spin"></span> model píše…</div>` : ''}
     ${state === 'err' ? `<div style="color:#ff1493;font-size:13px;line-height:1.6">${esc(a.error || 'chyba')}</div>` : ''}
     ${state === 'ok' ? `
-      ${a.truncated ? `<div style="background:rgba(255,180,40,.1);border:1px solid rgba(255,180,40,.35);color:#ffb428;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">Pozor: modelu došel rozpočet tokenů, odpověď je uříznutá.</div>` : ''}
+      ${a.zvyseno ? `<div style="background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.3);color:#39ff14;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">
+        Modelu došel rozpočet tokenů, běh mu ho sám zvedl na ${a.zvyseno.toLocaleString('cs')} a odpověď dodělal — text níž je kompletní.</div>` : ''}
+      ${a.truncated ? `<div style="background:rgba(255,180,40,.1);border:1px solid rgba(255,180,40,.35);color:#ffb428;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-bottom:10px">
+        Pozor: ani navýšený rozpočet nestačil, tahle odpověď je uříznutá. Zkus zvolit delší odpovědi.</div>` : ''}
       <div class="ans collapsed" id="txt-${slug(label)}">${esc(a.text)}</div>
       <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px;gap:10px;flex-wrap:wrap">
-        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">${a.text.length} znaků · ${tokens(a.usage)} tokenů · ${czk(a.usage && a.usage.cost)} · ${((a.ms||0)/1000).toFixed(1)} s${a.opakovano ? ' · na druhý pokus' : ''}</span>
+        <span class="mono" style="font-size:11px;color:var(--text-tertiary)">${a.text.length} znaků · ${tokens(a.usage)} tokenů · ${czk(a.usage && a.usage.cost)} · ${((a.ms||0)/1000).toFixed(1)} s${a.rozpocet ? ' · rozpočet ' + a.rozpocet.toLocaleString('cs') + ' tok.' : ''}</span>
         <span style="display:flex;gap:7px">
           <button class="btn btn-ghost" style="padding:6px 12px" onclick="toggleTxt('${slug(label)}')">rozbalit</button>
           <button class="btn btn-ghost" style="padding:6px 12px" onclick="copyTxt('${slug(label)}')">kopírovat</button>
