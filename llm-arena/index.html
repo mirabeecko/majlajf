@@ -1005,10 +1005,17 @@ function parseJudgement(text, letters) {
 function parseSynthesis(text) {
   const obj = extractJson(text);
   if (!obj) return null;
+  let nova = String(obj.nove_zadani || obj['nove_zadání'] || '').trim();
+  // model občas vrátí jen obalený JSON v textu — vytáhneme hodnotu i tak
+  if (!nova) {
+    const m = String(text || '').match(/"nove_zadani"\s*:\s*"([\s\S]*?)"\s*(?:,\s*"|})/);
+    if (m) nova = m[1].replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\').trim();
+  }
+  if (!nova) nova = String(obj.zadani || '').trim();
   return {
-    nove_zadani: String(obj.nove_zadani || obj.nove_zadání || obj.zadani || '').trim(),
+    nove_zadani: nova,
     vychazi_z: Array.isArray(obj.vychazi_z) ? obj.vychazi_z.map(String) : (obj.vychazi_z ? [String(obj.vychazi_z)] : []),
-    proc_je_lepsi: String(obj.proc_je_lepsi || obj['proc_je_lepsi'] || obj.proc || obj['důvod'] || '').trim(),
+    proc_je_lepsi: String(obj.proc_je_lepsi || obj.proc || obj['důvod'] || '').trim(),
   };
 }
 
