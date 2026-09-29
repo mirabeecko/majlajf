@@ -188,6 +188,7 @@
     <div id="out-report" class="my-3"></div>
     <div class="flex gap-2 flex-wrap items-center">
       <button class="btn btn-main" id="btn-build">VYGENEROVAT DATA PRO IMPORT DO GOOGLE ADS EDITOR</button>
+      <button class="btn btn-go" id="btn-dl" style="display:none">⬇ Stáhnout soubor pro Google Ads Editor</button>
       <button class="btn btn-ghost" id="btn-csv" style="display:none">Stáhnout i jako UTF-8 (pro kontrolu v Excelu)</button>
       <button class="btn btn-ghost" id="btn-report" style="display:none">Zkopírovat report</button>
     </div>
@@ -590,7 +591,9 @@ function tabulka(klic, titulek, sloupce, cesta, volby, cestaEdit, typKontrola) {
 /* ── report výstupu ─────────────────────────────────────────────────────── */
 function renderReport() {
   const box = document.getElementById('out-report');
-  if (!S.hotovo) { box.innerHTML = ''; document.getElementById('btn-csv').style.display = 'none'; document.getElementById('btn-report').style.display = 'none'; return; }
+  if (!S.hotovo) { box.innerHTML = ''; document.getElementById('btn-csv').style.display = 'none';
+    document.getElementById('btn-report').style.display = 'none';
+    document.getElementById('btn-dl').style.display = 'none'; return; }
   const r = S.hotovo.report;
   const radky = Object.entries(r.stats).map(([k, v]) =>
     '<span class="chip">' + esc({ campaign: 'kampaně', location: 'lokality', adgroup: 'sestavy', keyword: 'klíčová slova', negative: 'negativa v sestavě', negative_campaign: 'kampaňová negativa', ad: 'reklamy', sitelink: 'sitelinky', callout: 'callouty', snippet: 'snippety', call: 'telefon', audience: 'publika' }[k] || k) + ': <b>' + v + '</b></span>').join('');
@@ -605,6 +608,7 @@ function renderReport() {
         + r.warnings.slice(0, 40).map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul></details>' : '');
   document.getElementById('btn-csv').style.display = 'inline-flex';
   document.getElementById('btn-report').style.display = 'inline-flex';
+  document.getElementById('btn-dl').style.display = 'inline-flex';
 }
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -817,6 +821,8 @@ function vygeneruj() {
   toast(S.hotovo.report.errors.length
     ? 'Vygenerováno, ale soubor má ' + S.hotovo.report.errors.length + ' chyb — viz seznam níže.'
     : 'Hotovo: ' + (S.hotovo.bytes.length / 1024).toFixed(1) + ' kB, 0 chyb. Můžete stáhnout.');
+  // bez chyb rovnou stáhneme — uživatel klikl na "vygenerovat data pro import"
+  if (!S.hotovo.report.errors.length) stahni(S.hotovo, false);
   document.getElementById('out').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -902,6 +908,7 @@ document.addEventListener('click', async (e) => {
   if (t.id === 'btn-site') { await nactiWeb(); return; }
   if (t.id === 'btn-build') { vygeneruj(); return; }
   if (t.id === 'btn-csv') { if (!S.hotovo) vygeneruj(); stahni(S.hotovo, true); return; }
+  if (t.id === 'btn-dl') { if (!S.hotovo) { vygeneruj(); return; } stahni(S.hotovo, false); return; }
   if (t.id === 'btn-report') {
     const r = S.hotovo.report;
     const txt = 'PPC Generator — report\nSoubor: ' + S.hotovo.fileName + '\nSloupců: ' + S.hotovo.columns
