@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="640" height="640" role="img" aria-label="AIRBAG KOMÁRKA — znak, jednobarevná verze">
+  <title>Znak AIRBAG KOMÁRKA — jednobarevná verze (pro tisk, gravírování, razítko)</title>
+  <!-- Jednobarevná (mono) verze znaku: plochy jsou řešeny obrysem, aby fungovala na světlém podkladu. -->
+  <g fill="none" stroke="currentColor" stroke-width="26" stroke-linejoin="round" stroke-linecap="round" style="color:#080B12">
+    <!-- nájezdová hrana -->
+    <path d="M56 548 L56 492 L150 414 L150 548"/>
+    <!-- airbag -->
+    <path d="M196 548 L196 490 L534 402 L534 548"/>
+    <!-- trajektorie -->
+    <path d="M150 414 C 210 216, 396 172, 470 408"/>
+    <!-- dopad -->
+    <path d="M508 372 l30 -22"/>
+    <path d="M516 414 l34 -4"/>
+    <path d="M488 340 l10 -34"/>
+  </g>
+  <circle cx="322" cy="206" r="34" fill="currentColor" style="color:#080B12"/>
+</svg>

@@ -19,6 +19,11 @@
       "source": "/ppc-generator",
       "destination": "/ppc-generator/",
       "permanent": true
+    },
+    {
+      "source": "/airbag-komarka-kampan",
+      "destination": "/airbag-komarka-kampan/",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -41,6 +46,10 @@
     {
       "source": "/ppc-generator/:path*",
       "destination": "/ppc-generator/index.html"
+    },
+    {
+      "source": "/airbag-komarka-kampan/:path*",
+      "destination": "/airbag-komarka-kampan/index.html"
     }
   ],
   "functions": {

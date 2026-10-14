@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 400" width="1240" height="400" role="img" aria-label="AIRBAG KOMÁRKA">
+  <title>AIRBAG KOMÁRKA — logotyp</title>
+  <defs>
+    <linearGradient id="lbag" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#1DE9B6"/>
+      <stop offset="0.55" stop-color="#C8FF3D"/>
+      <stop offset="1" stop-color="#EFFF6B"/>
+    </linearGradient>
+    <linearGradient id="lfly" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#35E0F0"/>
+      <stop offset="0.5" stop-color="#C8FF3D"/>
+      <stop offset="1" stop-color="#FF2E93"/>
+    </linearGradient>
+    <linearGradient id="lrd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF7AB8"/>
+      <stop offset="1" stop-color="#FF2E93"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="400" fill="#080B12"/>
+
+  <!-- ZNAK (zmenšený) -->
+  <g transform="translate(24,20) scale(0.56)">
+    <rect x="0" y="0" width="640" height="640" rx="112" fill="#0E1420"/>
+    <path d="M112 356 C 190 170, 386 140, 528 262" fill="none" stroke="url(#lfly)" stroke-width="16" stroke-linecap="round"/>
+    <circle cx="352" cy="164" r="32" fill="url(#lrd)"/>
+    <path d="M329 164 l15 -15 l15 15 l-15 15 z" fill="#080B12" opacity="0.62"/>
+    <path d="M100 540 L100 458 C 100 424 130 412 186 406 L486 360 C 522 355 524 370 524 392 L524 540 Z" fill="url(#lbag)"/>
+    <path d="M146 480 L470 408" stroke="#080B12" stroke-width="13" stroke-linecap="round" opacity="0.26"/>
+    <path d="M128 516 L502 436" stroke="#080B12" stroke-width="11" stroke-linecap="round" opacity="0.16"/>
+    <path d="M232 406 L232 540" stroke="#080B12" stroke-width="9" opacity="0.15"/>
+    <path d="M330 386 L330 540" stroke="#080B12" stroke-width="9" opacity="0.15"/>
+    <path d="M432 368 L432 540" stroke="#080B12" stroke-width="9" opacity="0.15"/>
+    <path d="M72 540 L72 474 L100 458 L100 540 Z" fill="#35E0F0"/>
+    <g stroke="#FF2E93" stroke-width="10" stroke-linecap="round">
+      <path d="M556 224 l28 -24"/><path d="M566 266 l32 -4"/><path d="M540 188 l12 -32"/>
+    </g>
+  </g>
+
+  <!-- WORDMARK -->
+  <g font-family="'Space Grotesk','Helvetica Neue',Helvetica,Arial,sans-serif" text-anchor="start">
+    <text x="408" y="176" font-size="112" font-weight="700" letter-spacing="-1" fill="#F6F8FC">AIRBAG</text>
+    <text x="408" y="284" font-size="112" font-weight="500" letter-spacing="4" fill="#C8FF3D">KOMÁRKA</text>
+    <text x="412" y="336" font-size="34" font-weight="500" letter-spacing="7" fill="#96A3B8">SKÁKEJ BEZ RIZIKA</text>
+  </g>
+</svg>

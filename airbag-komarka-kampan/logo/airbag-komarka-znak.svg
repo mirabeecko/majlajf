@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width="640" height="640" role="img" aria-label="AIRBAG KOMÁRKA — znak">
+  <title>Znak AIRBAG KOMÁRKA</title>
+  <defs>
+    <linearGradient id="bag" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#14C8A0"/>
+      <stop offset="0.5" stop-color="#C8FF3D"/>
+      <stop offset="1" stop-color="#EFFF6B"/>
+    </linearGradient>
+    <linearGradient id="fly" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#35E0F0"/>
+      <stop offset="0.55" stop-color="#C8FF3D"/>
+      <stop offset="1" stop-color="#FF2E93"/>
+    </linearGradient>
+    <linearGradient id="kicker" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#35E0F0"/>
+      <stop offset="1" stop-color="#7FE9FF"/>
+    </linearGradient>
+    <linearGradient id="rd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF8CC0"/>
+      <stop offset="1" stop-color="#FF2E93"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="640" height="640" rx="116" fill="#080B12"/>
+
+  <!-- nájezdová hrana (kicker) -->
+  <path d="M56 548 L56 492 L150 414 L150 548 Z" fill="url(#kicker)"/>
+  <path d="M84 548 L84 500 L150 448" stroke="#080B12" stroke-width="9" opacity="0.2" fill="none"/>
+
+  <!-- airbag: boční profil (roste doprava) -->
+  <path d="M196 548 L196 490 L534 402 L534 548 Z" fill="url(#bag)"/>
+  <path d="M214 512 L516 434" stroke="#080B12" stroke-width="12" stroke-linecap="round" opacity="0.22"/>
+  <path d="M214 540 L516 462" stroke="#080B12" stroke-width="10" stroke-linecap="round" opacity="0.14"/>
+  <path d="M300 548 L300 466" stroke="#080B12" stroke-width="9" opacity="0.16"/>
+  <path d="M390 548 L390 443" stroke="#080B12" stroke-width="9" opacity="0.16"/>
+  <path d="M470 548 L470 423" stroke="#080B12" stroke-width="9" opacity="0.16"/>
+
+  <!-- trajektorie letu: z hrany kickeru přes apex do matrace -->
+  <path d="M150 414 C 210 216, 396 172, 470 408" fill="none" stroke="url(#fly)" stroke-width="17"
+        stroke-linecap="round"/>
+  <path d="M150 414 C 210 216, 396 172, 470 408" fill="none" stroke="#080B12" stroke-width="5"
+        stroke-linecap="round" opacity="0.28"/>
+
+  <!-- jezdec v apexu -->
+  <circle cx="322" cy="206" r="32" fill="url(#rd)"/>
+  <path d="M299 206 l15 -15 l15 15 l-15 15 z" fill="#080B12" opacity="0.6"/>
+
+  <!-- dopad / impuls -->
+  <g stroke="#FF2E93" stroke-width="11" stroke-linecap="round">
+    <path d="M508 372 l30 -22"/>
+    <path d="M516 414 l34 -4"/>
+    <path d="M488 340 l10 -34"/>
+  </g>
+</svg>

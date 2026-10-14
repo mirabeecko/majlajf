@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prompt pro úpravu app.tjkrupka.cz | AIRBAG KOMÁRKA — Tělovýchovná jednota Krupka, z.s.</title>
+<meta name="description" content="Zadání pro vývojáře: obecný modul akcí a informování členů v aplikaci app.tjkrupka.cz, první použití AIRBAG KOMÁRKA.">
+<link rel="icon" href="logo/airbag-komarka-znak-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --ink:#070A11; --ink2:#0D1320; --card:#121A29; --card2:#16203200; --bd:#22304A;
+  --tx:#E8EDF6; --dim:#98A6BC; --lime:#C8FF3D; --pink:#FF2E93; --cyan:#35E0F0;
+  --amber:#FFB020; --green:#37E39B; --red:#FF5C6C;
+  --r:16px; --mx:1180px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:132px}
+body{background:var(--ink);color:var(--tx);font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;
+  line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+   radial-gradient(60% 45% at 8% 2%, rgba(200,255,61,.10), transparent 60%),
+   radial-gradient(55% 40% at 100% 12%, rgba(255,46,147,.10), transparent 62%),
+   radial-gradient(50% 45% at 60% 100%, rgba(53,224,240,.07), transparent 65%);}
+.wrap{max-width:var(--mx);margin:0 auto;padding:0 22px;position:relative;z-index:1}
+a{color:var(--lime);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+h1,h2,h3,h4{line-height:1.16;letter-spacing:-.5px}
+section{padding:64px 0 8px}
+.mono{font-variant-numeric:tabular-nums}
+
+/* ---------- horní lišta ---------- */
+.topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(7,10,17,.94),rgba(7,10,17,.72));
+  border-bottom:1px solid rgba(34,48,74,.7)}
+.topbar .in{max-width:var(--mx);margin:0 auto;padding:10px 22px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:-.3px}
+.brand img{width:38px;height:38px}
+.brand small{display:block;font-weight:500;font-size:10.5px;letter-spacing:1.6px;color:var(--dim);text-transform:uppercase}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;
+  border:1px solid var(--bd);background:rgba(18,26,41,.8);color:var(--tx);white-space:nowrap}
+.pill.lime{border-color:rgba(200,255,61,.45);color:var(--lime);background:rgba(200,255,61,.08)}
+.pill.pink{border-color:rgba(255,46,147,.45);color:#FF7FC0;background:rgba(255,46,147,.08)}
+.pill svg{width:14px;height:14px}
+nav.sub{max-width:var(--mx);margin:0 auto;padding:8px 22px 10px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav.sub::-webkit-scrollbar{display:none}
+nav.sub a{font-size:12.5px;font-weight:600;color:var(--dim);padding:6px 12px;border-radius:999px;white-space:nowrap;
+  border:1px solid transparent;transition:.18s}
+nav.sub a:hover{color:var(--tx);background:rgba(255,255,255,.05);text-decoration:none}
+nav.sub a.on{color:#0B0F16;background:var(--lime);border-color:var(--lime)}
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--lime),var(--cyan),var(--pink));width:0;z-index:60}
+
+/* ---------- hero ---------- */
+.hero{padding:52px 0 18px}
+.kicker{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;letter-spacing:2.2px;
+  text-transform:uppercase;color:var(--lime);border:1px solid rgba(200,255,61,.35);background:rgba(200,255,61,.07);
+  padding:7px 14px;border-radius:999px}
+h1.big{font-size:clamp(40px,8.2vw,86px);font-weight:700;margin:20px 0 6px;letter-spacing:-2.5px}
+h1.big span{background:linear-gradient(96deg,var(--lime) 8%,#EFFF6B 34%,var(--cyan) 66%,var(--pink) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.claim{font-size:clamp(19px,2.5vw,27px);font-weight:700;color:var(--pink);letter-spacing:3px;text-transform:uppercase}
+.lead{max-width:820px;margin:16px 0 0;color:#CBD5E3;font-size:16.5px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 4px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 20px;border-radius:12px;font-weight:700;font-size:14px;
+  border:1px solid var(--bd);background:rgba(18,26,41,.9);color:var(--tx);transition:.18s;cursor:pointer}
+.btn:hover{transform:translateY(-2px);text-decoration:none;border-color:var(--lime)}
+.btn.p{background:linear-gradient(120deg,var(--lime),#A8E82C);color:#0A0E15;border-color:transparent}
+.btn.g{background:linear-gradient(120deg,var(--pink),#D6217C);color:#fff;border-color:transparent}
+.btn svg{width:17px;height:17px}
+
+/* ---------- karty, mřížky ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))}
+.card{background:linear-gradient(160deg,var(--card),#0F1624);border:1px solid var(--bd);border-radius:var(--r);padding:20px;position:relative;overflow:hidden}
+.card.hov{transition:.22s}
+.card.hov:hover{transform:translateY(-3px);border-color:rgba(200,255,61,.5);box-shadow:0 18px 44px -24px rgba(0,0,0,.9)}
+.card h3{font-size:16.5px;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.card h3 svg{width:18px;height:18px;color:var(--lime);flex:0 0 auto}
+.kpi{background:linear-gradient(160deg,#131C2C,#0E1522);border:1px solid var(--bd);border-radius:var(--r);padding:17px}
+.kpi .l{font-size:10.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--dim);font-weight:600;display:flex;gap:7px;align-items:center}
+.kpi .v{font-size:25px;font-weight:700;margin-top:9px;letter-spacing:-.8px}
+.kpi .n{font-size:11.5px;color:var(--dim);margin-top:5px}
+.lime{color:var(--lime)} .pink{color:var(--pink)} .cyan{color:var(--cyan)} .amber{color:var(--amber)}
+.green{color:var(--green)} .red{color:var(--red)} .dimtxt{color:var(--dim)}
+
+/* ---------- nadpisy sekcí ---------- */
+h2.sec{font-size:clamp(25px,3.6vw,37px);font-weight:700;letter-spacing:-1.1px;margin-bottom:6px;display:flex;align-items:center;gap:13px}
+h2.sec .num{font-size:13px;font-weight:700;color:#0B0F16;background:var(--lime);border-radius:8px;padding:4px 9px;letter-spacing:1px}
+h2.sec svg{width:30px;height:30px;color:var(--lime)}
+.secsub{color:var(--dim);font-size:14.5px;max-width:900px;margin-bottom:22px}
+h3.sub{font-size:19px;margin:34px 0 12px;display:flex;align-items:center;gap:9px}
+h3.sub svg{width:19px;height:19px;color:var(--cyan)}
+h4.mini{font-size:13.5px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin:20px 0 9px}
+
+/* ---------- tabulky ---------- */
+.tbl{width:100%;overflow-x:auto;border:1px solid var(--bd);border-radius:var(--r);background:#0E1522}
+table{width:100%;border-collapse:collapse;font-size:13.2px;min-width:520px}
+th{text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:700;
+  padding:11px 12px;border-bottom:1px solid var(--bd);position:sticky;top:0;background:#101828}
+td{padding:9px 12px;border-bottom:1px solid rgba(34,48,74,.55);vertical-align:top}
+tbody tr:hover{background:rgba(200,255,61,.04)}
+tr:last-child td{border-bottom:none}
+td.r,th.r{text-align:right}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+tr.sum td{font-weight:700;background:rgba(200,255,61,.07);color:var(--lime)}
+tr.win td{background:rgba(255,46,147,.07)}
+.badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;border:1px solid var(--bd);color:var(--dim)}
+.badge.ok{color:var(--green);border-color:rgba(55,227,155,.4);background:rgba(55,227,155,.09)}
+.badge.no{color:var(--red);border-color:rgba(255,92,108,.4);background:rgba(255,92,108,.09)}
+.badge.mid{color:var(--amber);border-color:rgba(255,176,32,.4);background:rgba(255,176,32,.09)}
+.badge.lime{color:#0B0F16;background:var(--lime);border-color:var(--lime)}
+
+/* ---------- callouty ---------- */
+.note,.ok,.warn,.bad{border-radius:14px;padding:15px 17px;font-size:13.6px;margin:14px 0;border:1px solid;display:flex;gap:12px}
+.note{background:rgba(53,224,240,.07);border-color:rgba(53,224,240,.3)}
+.ok{background:rgba(55,227,155,.07);border-color:rgba(55,227,155,.3)}
+.warn{background:rgba(255,176,32,.07);border-color:rgba(255,176,32,.32)}
+.bad{background:rgba(255,92,108,.07);border-color:rgba(255,92,108,.32)}
+.note svg,.ok svg,.warn svg,.bad svg{width:19px;height:19px;flex:0 0 auto;margin-top:2px}
+.note svg{color:var(--cyan)} .ok svg{color:var(--green)} .warn svg{color:var(--amber)} .bad svg{color:var(--red)}
+.note b,.ok b,.warn b,.bad b{color:#fff}
+
+/* ---------- texty / copy bloky ---------- */
+.copy{background:#0B1220;border:1px dashed rgba(34,48,74,.95);border-radius:12px;padding:15px 17px;font-size:13.6px;
+  white-space:pre-wrap;line-height:1.66;color:#DCE4F0;position:relative}
+.copy.q{font-style:normal}
+.slog{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(34,48,74,.45);font-size:14px}
+.slog:last-child{border-bottom:none}
+.slog .n{font-size:11px;color:var(--dim);font-weight:700;min-width:22px;padding-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--pink);border:1px solid rgba(255,46,147,.35);background:rgba(255,46,147,.08);
+  padding:1px 7px;border-radius:6px;white-space:nowrap}
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13.8px}
+ul.clean li{display:flex;gap:10px;align-items:flex-start}
+ul.clean li svg{width:16px;height:16px;margin-top:3px;flex:0 0 auto;color:var(--lime)}
+ul.clean li.x svg{color:var(--red)}
+ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px;font-size:13.8px}
+ol.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
+ol.steps li::before{content:counter(s);font-size:12px;font-weight:700;color:#0B0F16;background:var(--lime);
+  min-width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+
+/* ---------- obrázky / galerie ---------- */
+.gal{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(255px,1fr))}
+figure{background:#0E1522;border:1px solid var(--bd);border-radius:14px;padding:12px}
+figure img{border-radius:9px;border:1px solid rgba(34,48,74,.7)}
+figcaption{font-size:11.8px;color:var(--dim);margin-top:9px;display:flex;gap:7px;align-items:flex-start}
+figcaption svg{width:14px;height:14px;color:var(--cyan);flex:0 0 auto;margin-top:2px}
+figcaption b{color:var(--tx)}
+.shot{border:1px solid var(--bd);border-radius:14px;overflow:hidden;background:#0E1522}
+.shot .bar{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#0B1220;border-bottom:1px solid var(--bd);font-size:11.5px;color:var(--dim)}
+.shot .bar i{width:9px;height:9px;border-radius:50%;background:#2A3A55;display:block}
+
+/* ---------- grafy ---------- */
+.chart{background:#0D1421;border:1px solid var(--bd);border-radius:var(--r);padding:18px}
+.chart h4{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin-bottom:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.8px;color:var(--dim);margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+svg .axis{stroke:rgba(34,48,74,.9);stroke-width:1}
+svg text{fill:#98A6BC;font-size:11px;font-family:'Space Grotesk',sans-serif}
+svg text.hi{fill:#E8EDF6;font-weight:700}
+
+/* ---------- patička ---------- */
+footer{margin-top:72px;border-top:1px solid var(--bd);padding:34px 0 60px;color:var(--dim);font-size:12.6px}
+footer h4{color:var(--tx);font-size:14px;margin-bottom:9px}
+.small{font-size:11.8px;color:var(--dim)}
+hr.sep{border:none;border-top:1px solid rgba(34,48,74,.7);margin:34px 0}
+
+/* ---------- animace ---------- */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .6s cubic-bezier(.2,.7,.3,1),transform .6s cubic-bezier(.2,.7,.3,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+@media(max-width:640px){
+  h1.big{letter-spacing:-1.4px}
+  section{padding:44px 0 6px}
+  .topbar .in{padding:8px 14px}
+  nav.sub{padding:6px 14px 8px}
+  .wrap{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="logo/airbag-komarka-znak-bez-podkladu-1024.png" alt="AIRBAG KOMÁRKA">
+      <span>AIRBAG KOMÁRKA<small>Tělovýchovná jednota Krupka, z.s. · kampaň na klíč</small></span>
+    </a>
+    <div class="tb-right">
+      <span class="pill lime"><i data-lucide="terminal"></i> Prompt pro aplikaci</span>
+      <span class="pill pink"><i data-lucide="lock"></i> Připraveno · nespouštěno</span>
+    </div>
+  </div>
+  <nav class="sub" id="subnav">
+    <a href="index.html">← Zpět na kampaň</a>
+    <a href="#s1">Cíl</a>
+    <a href="#s2">Kontext</a>
+    <a href="#s3">Pravidla</a>
+    <a href="#s4">Balíčky P1–P8</a>
+    <a href="#s5">Akceptace</a>
+    <a href="#s6">Co nedělat</a>
+    <a href="#s7">Dodání</a>
+    <a href="#s8">Mimo DEV</a>
+  </nav>
+</header>
+
+<main class="wrap" id="top">
+
+<section class="hero">
+  <span class="kicker"><i data-lucide="zap" style="width:14px;height:14px"></i> Zadání pro vývojáře · 23. 9. 2026 · verze 1.0</span>
+  <h1 class="big">PROMPT <span>APP.TJKRUPKA.CZ</span></h1>
+  <div class="claim">Akce jako data, ne jako kód</div>
+  <p class="lead">ZADÁNÍ PRO VÝVOJÁŘE / AI AGENTA — úprava aplikace app.tjkrupka.cz</p>
+  <div class="cta-row">
+    <button class="btn p" id="copy-btn" type="button"><i data-lucide="copy"></i> Zkopírovat celý prompt</button>
+    <a class="btn" href="prompt-app-tjkrupka.md" download><i data-lucide="download"></i> Stáhnout jako .md</a>
+    <a class="btn g" href="index.html#registrace"><i data-lucide="arrow-left"></i> Požadavky na aplikaci v kampani</a>
+  </div>
+  <div class="note rv" style="margin-top:18px"><i data-lucide="info"></i><div>
+    Tento text je <b>zadání pro vývojáře / AI agenta</b>, který upraví členskou aplikaci TJ Krupka.
+    Aplikace <b>není jen pro tuto akci</b> — musí umět pojmout jakoukoli další akci spolku a informovat členy o dělení
+    v oddělené sekci <a href="#s4">P3</a>. Soulad s kampaní je popsán v balíčcích <b>P1–P8</b>, měřitelná kritéria v <a href="#s5">sekci 5</a>.
+  </div></div>
+</section>
+
+<section id="s1"><h2 class="sec"><span class="num">01</span><i data-lucide="target"></i> CO PO TOBĚ CHCEME — JEDNOU VĚTOU</h2>
+<p>Uprav členskou aplikaci TJ Krupka tak, aby se v ní daly <b>pořádat a propagovat libovolné akce spolku</b> (nejen tato jedna) a aby <b>informovala členy o událostech</b> — a tuto schopnost poprvé nasaď na akci AIRBAG KOMÁRKA.</p>
+<p>Dvě roviny zadání, obě povinné:</p>
+<ul class="clean"><li><i data-lucide="check"></i><span><b>ROVINA A — GENERICKÁ (hlavní):</b> aplikace dostane obecný, datově řízený modul akcí + modul informování členů. Akce je <b>data v databázi, ne kód</b>. Kdokoli z vedení spolku založí další akci (MTB závod, soustředění, brigádu, vánoční sraz) bez zásahu programátora.</span></li><li><i data-lucide="check"></i><span><b>ROVINA B — KONKRÉTNÍ (první použití):</b> akce AIRBAG KOMÁRKA musí být v aplikaci připravená tak, aby člověk přicházející z Facebooku a z webu akce skončil <b>jedním klikem v registraci</b> a na místě prošel bez improvizace.</span></li></ul>
+<p><b>Zakázané řešení:</b> „udělám stránku pro AIRBAG KOMÁRKU natvrdo" — jméno akce, termín ani ceny nesmí být v kódu. Když to uděláš natvrdo, zadání je nesplněné, i kdyby akce fungovala.</p>
+</section><section id="s2"><h2 class="sec"><span class="num">02</span><i data-lucide="database"></i> OVĚŘENÝ KONTEXT (změřeno 23. 9. 2026, ne odhad)</h2>
+<p>Toto je reálný stav, na kterém budeš pracovat. Nepředělávej, co funguje; doplň, co chybí v logice ROVINY A.</p>
+<p><b>Technologie</b></p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Backend: Node.js (&gt;= 18) + Express 4, <code>server.js</code>, <code>src/app.js</code>, <code>src/routes.js</code>, <code>api/index.js</code> (Vercel serverless entry).</span></li><li><i data-lucide="check"></i><span>Databáze: dva drivery — <code>src/db-postgres.js</code> (produkce, Supabase) a <code>src/db-sqlite.js</code> (lokální vývoj/testy, <code>data/airbag.db</code>, <code>better-sqlite3</code>). Schéma: <code>src/schema.sql</code> (sqlite) a <code>supabase/schema.sql</code> + <code>supabase/schema-app.sql</code> (Postgres), migrace v <code>supabase/migrations/</code>.</span></li><li><i data-lucide="check"></i><span>Frontend: vanilla JS, hash router, soubory <code>public/js/app.js</code>, <code>views-public.js</code>, <code>views-member.js</code>, <code>views-admin.js</code>, <code>api.js</code>, <code>ui.js</code>, PWA (<code>public/sw.js</code>, <code>manifest.json</code>), Capacitor obaly <code>android/</code> + <code>ios/</code>.</span></li><li><i data-lucide="check"></i><span>Platby: Stripe (<code>src/payments.js</code>), v produkci ostrý režim (<code>paymentGateway: "stripe-live"</code>).</span></li><li><i data-lucide="check"></i><span>E-maily: <code>src/mailer.js</code> (SMTP / stub), v aplikaci je „dev outbox" (<code>GET /api/outbox</code>).</span></li><li><i data-lucide="check"></i><span>Nasazení: Vercel (<code>vercel.json</code>, rewrites → <code>/api/index</code>), vlastní doména <code>app.tjkrupka.cz</code> (WEDOS CNAME). Postup v <code>DEPLOYMENT.md</code>.</span></li><li><i data-lucide="check"></i><span>Testy: <code>npm test</code> → <code>tests/api.test.js</code> (end-to-end, spouští server na portu 4310, vždy test mode bez reálného Stripe klíče).</span></li></ul>
+<p><b>Co v aplikaci UŽ JE (funguje, ověřeno přes veřejné API)</b></p>
+<ul class="clean"><li><i data-lucide="check"></i><span><code>GET /api/events</code> — veřejný seznam akcí: <code>title</code>, <code>description</code>, <code>startsAt</code>, <code>endsAt</code>, <code>location</code>, <code>capacity</code>, <code>signupDeadline</code>, <code>signupCount</code>, <code>spotsLeft</code>, <code>facilityName</code>. Reálně vrací 3 akce (26. 9., 30. 9. a 7.–8. 10. 2026).</span></li><li><i data-lucide="check"></i><span><code>POST /api/events/:id/signup</code> a <code>DELETE /api/events/:id/signup</code> — přihlášení/odhlášení, jen pro člena ve stavu <code>active</code>, hlídá kapacitu, <code>signupDeadline</code> a začátek akce. Chyby: <code>NEJSTE_CLENEM</code>, <code>UZAVRENO</code>, <code>ZACALO</code>, <code>PLNO</code>, <code>PRIHLASEN</code>.</span></li><li><i data-lucide="check"></i><span>Tabulky <code>events</code>, <code>event_signups</code>, <code>notifications</code>, <code>consents</code>, <code>products</code>, <code>product_variants</code>, <code>entitlements</code>, <code>members</code>, <code>facilities</code>.</span></li><li><i data-lucide="check"></i><span>UI pro akce <b>existuje</b> (<code>viewEvents()</code> v <code>public/js/views-member.js</code>), ale <b>je vypnuté</b> — v <code>public/js/app.js</code> je řádek s route <code>#/akce</code> zakomentovaný s poznámkou „Akce spolku jsou momentálně SKRYTÉ z UI (backend a testy připravené)".</span></li><li><i data-lucide="check"></i><span>Souhlasy s verzí a otiskem dokumentu (<code>GET /api/docs</code>, <code>GET /api/consent-groups</code>, auditní stopa), QR členská karta (<code>GET /api/card</code>), kontrola karty dozorem (<code>POST /api/check-card</code>), notifikace (<code>GET /api/notifications</code>).</span></li><li><i data-lucide="check"></i><span>Katalog: <code>GET /api/products</code> → mimo jiné produkt <code>airbag_day</code> = „Jednorázový vstup — AIRBAG", jednotka <code>den</code>, platnost vstupu <b>4 hodiny</b>, cena pro veřejnost <b>600 Kč</b>, má členskou variantu (300 Kč).</span></li></ul>
+<p><b>Co v aplikaci CHYBÍ nebo je rozbité (tohle je předmět práce)</b></p>
+<ol class="steps"><li><b>Akce jsou skryté z UI</b> — route <code>#/akce</code> je zakomentovaná, do navigace se nedostane.</li><li><b>Akce nemají stránku ani obsah</b> — jen jednořádkový popis; chybí perex, delší popis, obrázek, místo srazu, program, FAQ, kontakt, odkaz na web akce.</li><li><b>Akce nemají termíny/bloky</b> — <code>events</code> má jeden <code>starts_at</code>/<code>ends_at</code> a jednu kapacitu. Nelze udělat „dopolední blok 20 míst + odpolední blok 20 míst".</li><li><b>Ceny jsou rozejité</b> — <code>GET /api/config</code> vrací <code>dailyPriceHost: 300</code>, <code>dailyPriceMember: 150</code> (zdroj: tabulka <code>member_types</code>), ale produkt <code>airbag_day</code> má 600 / 300 Kč. Dva zdroje pravdy = zákazník vidí jinou cenu než na plakátu.</li><li><b>Ceny nejdou vázat na termín</b> — <code>product_variants</code> umí <code>active_from</code> / <code>active_until</code>, ale nikde se nepoužívá pro „cena platná jen v den akce".</li><li><b>Neexistuje žádné „informování členů o událostech"</b> — není tabulka ani obrazovka pro novinky/oznámení; <code>notifications</code> je jen per-člen důsledek události v účtu, ne redakční kanál.</li><li><b>Neexistuje zdroj registrace</b> (odkud člověk přišel: FB / reklama / plakát / škola) — bez toho nelze vyhodnotit kampaň.</li><li><b>Drobnost k opravě:</b> <code>GET /api/events</code> vrací <code>signupCount</code> jako <b>string</b> (<code>"0"</code>), ne číslo → v UI se to projeví v porovnáních a součtech. Normalizuj na číslo (a doplň test).</li><li><b>Chybí export a offline režim pro den akce</b> — papírový seznam přihlášených a kontrola QR karet bez signálu (v areálu na Komárce je slabý signál).</li></ol>
+</section><section id="s3"><h2 class="sec"><span class="num">03</span><i data-lucide="shield-alert"></i> NEPŘEKROČITELNÁ PRAVIDLA</h2>
+<ol class="steps"><li><b>Akce = data, ne kód.</b> Žádné jméno akce, datum, cena ani text nesmí být zapsané v JS/HTML/šabloně. Vše z databáze přes API. Kontrolní test: založ druhou testovací akci jen daty a UI ji vykreslí bez změny jediného řádku kódu.</li><li><b>Nic nespouštěj.</b> Žádné publikování, žádné rozesílání e-mailů skutečným členům, žádná změna produkčních cen, žádný <code>git push</code> do <code>main</code>, žádné <code>vercel --prod</code>. Pracuješ na větvi, výsledek je k odsouhlasení.</li><li><b>Žádná změna Stripe.</b> Platební logika (<code>src/payments.js</code>) se nemění, mění se jen to, co se platí (produkty, varianty, ceny jako data).</li><li><b>Žádné credentials v kódu ani v dokumentaci.</b> Pouze <code>.env</code> / Vercel env (<code>.env</code> je v <code>.gitignore</code>).</li><li><b>Žádná osobní data v logu ani v repu.</b> Testy a seedy používají vymyšlené osoby.</li><li><b>Nepřepisuj architekturu.</b> Žádný nový framework, žádný build krok navíc, žádná nová služba. Drž vanilla JS + Express + stávající DB vrstvu a design systém.</li><li><b>Zpětná kompatibilita.</b> Stávající endpointy (<code>/api/config</code>, <code>/api/products</code>, <code>/api/me</code>, <code>/api/card</code>, <code>/api/check-card</code>…) nesmí změnit tvar odpovědi, který už někdo čte. Nové věci přidávej, staré nemaž.</li><li><b>Migrace pro oba drivery.</b> Každá změna schématu musí být v <code>src/schema.sql</code> (sqlite), v <code>supabase/</code> (Postgres) i jako spustitelná migrace v <code>supabase/migrations/2026xxxx_*.sql</code>. Seed musí být <b>idempotentní</b> (upsert, ne insert naslepo) — běží při startu na Vercelu.</li><li><b>Vše česky v UI.</b> Kód a komentáře česky (stávající styl), UI texty česky, bez anglicismů, kde existuje český výraz.</li><li><b>Přístupnost a design.</b> Drž stávající tmavý design systém a komponenty (<code>card</code>, <code>btn</code>, <code>tag</code>, <code>alert</code>, <code>event-card</code>, <code>ico()</code>), mobil na prvním místě (přes mobil se registruje 90 % lidí), ovladatelné jednou rukou, bez hover-only interakcí.</li><li><b>Testy.</b> Každý nový endpoint a každé nové pravidlo má test v <code>tests/api.test.js</code>. <code>npm test</code> musí být zelené (dnes 103/103) — počet rozšiř, ne snižuj. Testy nesmí sahat na reálný Stripe ani na produkční DB.</li></ol>
+</section><section id="s4"><h2 class="sec"><span class="num">04</span><i data-lucide="package"></i> PRACOVNÍ BALÍČKY</h2>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P1 — Zprovoznit a zveřejnit modul akcí</h3>
+<p><b>Co:</b> Odkomentovat route <code>#/akce</code> v <code>public/js/app.js</code>, doplnit ji do navigace (hlavní menu + mobilní „Více") a rozšířit <code>viewEvents()</code> na veřejný přehled: nejbližší akce nahoře, řazení podle data, filtr „jen akce, na které se dá přihlásit", zobrazení obsazenosti a stavu (volno / plno / přihlašování uzavřeno / proběhlo).</p>
+<p><b>Kde:</b> <code>public/js/app.js</code>, <code>public/js/views-member.js</code>, <code>public/js/views-public.js</code> (veřejná část bez přihlášení), <code>src/routes.js</code> (GET <code>/events</code>).</p>
+<p><b>Akceptační kritérium:</b> Nepřihlášený návštěvník otevře <code>app.tjkrupka.cz</code> → klikne na „Akce" → vidí seznam akcí s datem, místem, obsazeností a tlačítkem „Přihlásit se" (které ho pošle na přihlášení). Žádná akce se v UI nezobrazí, pokud má v DB <code>status = draft</code>.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P2 — Akce jako plnohodnotná stránka (obsah + termíny)</h3>
+<p><b>Co:</b> Rozšířit datový model akce tak, aby se dala vypsat jako stránka, a přidat termíny (bloky):</p>
+<ul class="clean"><li><i data-lucide="check"></i><span><code>events</code>: doplnit <code>slug</code> (unikátní, pro odkaz a sdílení), <code>perex</code>, <code>description_long</code>, <code>cover_image</code>, <code>place_name</code>, <code>place_note</code> (jak se dostat), <code>external_url</code> (web akce / FB událost), <code>contact_name</code>, <code>contact_phone</code>, <code>contact_email</code>, <code>faq</code> (JSON pole otázka/odpověď), <code>required_doc_keys</code> (JSON, které souhlasy akce vyžaduje), <code>published_at</code>, <code>status</code> (<code>draft|published|cancelled|finished</code>), <code>updated_at</code>.</span></li><li><i data-lucide="check"></i><span>Nová tabulka <code>event_slots</code> (termíny/bloky): <code>id</code>, <code>event_id</code>, <code>label</code> (např. „Blok 1 — Škola skoku"), <code>starts_at</code>, <code>ends_at</code>, <code>capacity</code>, <code>price_czk</code> (nullable = cena akce), <code>sort_order</code>, <code>active</code>.</span></li><li><i data-lucide="check"></i><span>Nová tabulka <code>event_signups</code> rozšířit o <code>slot_id</code> (nullable) — při přihlášení volitelně vybrat blok.</span></li><li><i data-lucide="check"></i><span>API: <code>GET /api/events</code> (seznam, veřejný), <code>GET /api/events/:slug</code> (detail včetně slotů, FAQ, obsazenosti po slotech), <code>POST /api/events/:id/signup</code> rozšířit o volitelný <code>slotId</code> s kontrolou kapacity <b>bloku</b>.</span></li><li><i data-lucide="check"></i><span>UI: nová obrazovka <code>#/akce/:slug</code> — hero s obrázkem a termínem, program, bloky s obsazeností, „co si vzít", FAQ, kontakt, dvě CTA („Přihlásit se" a „Web akce").</span></li><li><i data-lucide="check"></i><span>Admin: správa akcí v <code>#/superadmin</code> (vytvořit/upravit/publikovat akci, přidat bloky, kapacity, ceny, obrázek, FAQ). Akci musí založit <b>člověk z vedení přes UI</b>, ne programátor přes SQL.</span></li></ul>
+<p><b>Akceptační kritérium:</b> Akce založená pouze přes admin UI (bez jediného řádku v kódu) se zobrazí ve veřejném seznamu i na vlastní stránce, včetně bloků s kapacitou, a přihlášení do plného bloku vrátí <code>PLNO</code> s českou hláškou; přihlášení do bloku s volnou kapacitou zvýší <code>signupCount</code> <b>daného bloku</b>.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P3 — Informování členů o událostech (novinky / oznámení)</h3>
+<p><b>Co:</b> Redakční kanál, kterým spolek informuje členy i veřejnost o dění — nezávislý na tom, zda si člověk něco koupil.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Nová tabulka <code>announcements</code>: <code>id</code>, <code>title</code>, <code>body</code> (markdown), <code>severity</code> (<code>info|warn|critical</code>), <code>audience</code> (<code>public|members|event</code>), <code>event_id</code> (nullable), <code>pinned</code>, <code>published_at</code>, <code>expires_at</code>, <code>created_by</code>.</span></li><li><i data-lucide="check"></i><span>API: <code>GET /api/news</code> (veřejně jen <code>public</code> a neexpirované; člen navíc <code>members</code>), <code>GET /api/news/:id</code>, admin CRUD <code>POST/PATCH/DELETE /api/superadmin/news</code>.</span></li><li><i data-lucide="check"></i><span>Notifikace: při publikování oznámení s <code>audience = members</code> vytvořit záznam v <code>notifications</code> pro všechny aktivní členy (idempotentně — opakované publikování nesmí vyrobit duplikáty) a volitelně rozeslat e-mailem přes stávající <code>src/mailer.js</code>. <b>E-mail reálným členům se v tomto zadání NEROZESÍLÁ</b> — implementuj cestu, ale nech ji za vypínačem (<code>NEWS_EMAIL_ENABLED=false</code>) a otestuj ji jen na dev outboxu.</span></li><li><i data-lucide="check"></i><span>UI: obrazovka <code>#/novinky</code> (seznam + detail), na úvodní stránce dlaždice „Poslední oznámení" s maximálně 3 položkami, oznámení s <code>severity = critical</code> se zobrazí jako pruh nad obsahem.</span></li><li><i data-lucide="check"></i><span>Akce ↔ oznámení: každá publikovaná akce umí zobrazit svá oznámení (např. „kvůli větru se odpolední blok ruší").</span></li></ul>
+<p><b>Akceptační kritérium:</b> Publikované oznámení pro členy se objeví v <code>#/novinky</code> a v dlaždici na úvodu; nepřihlášený uživatel vidí jen <code>public</code> oznámení; druhé publikování téhož oznámení nevytvoří duplicitní notifikace; <code>critical</code> oznámení je vidět bez rozkliknutí.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P4 — Jedna pravda o cenách + ceny pro den akce</h3>
+<p><b>Co:</b> Odstranit rozpor mezi <code>GET /api/config</code> (<code>dailyPriceHost: 300</code>, <code>dailyPriceMember: 150</code>) a produktem <code>airbag_day</code> (600 / 300 Kč) a umožnit cenu vázanou na termín.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Jeden zdroj pravdy: ceny vždy z <code>products</code> + <code>product_variants</code> (případně <code>event_slots.price_czk</code>); <code>GET /api/config</code> ať vrací totéž, co vidí uživatel v ceníku, nebo pole označ jako „odvozené" a odvoď je z produktu.</span></li><li><i data-lucide="check"></i><span><code>product_variants</code> umět <code>event_id</code> (nullable) — varianta platná jen pro konkrétní akci (např. „cena v den akce").</span></li><li><i data-lucide="check"></i><span><b>Ceny podle rozhodnutí majitele (23. 9. 2026):</b> člen TJ Krupka <b>300 Kč</b>, nečlen <b>600 Kč</b> — a <b>dítě i mládež platí stejně jako dospělí</b> (žádná sleva podle věku). <b>Rodinný balíček se nezavádí.</b> Model <code>audience</code> (<code>MEMBER|PUBLIC</code>) na to stačí; <code>age_type</code> (<code>ANY|ADULT|MINOR</code>) použij jen pro <b>kontrolu a souhlasy</b> (dítě do 15 let pouze s doprovodem zákonného zástupce, do 18 let s jeho písemným souhlasem), <b>ne pro výpočet ceny</b>.</span></li><li><i data-lucide="check"></i><span>Varianta „cena v den akce“ (člen 250 / nečlen 450 Kč) je <b>podmíněná</b>: nasaď ji jen, pokud ji majitel výslovně schválí. Bez schválení se neimplementuje (rozpočet 23. 9. 2026 počítá s běžnými cenami 300 / 600 Kč).</span></li><li><i data-lucide="check"></i><span>UI: ceník akce na stránce akce (<code>#/akce/:slug</code>) i v registraci; vždy s poznámkou, do kdy cena platí.</span></li></ul>
+<p><b>Akceptační kritérium:</b> Na jednom místě (stránka akce, registrace, <code>GET /api/config</code>, <code>/api/products</code>) jsou <b>shodné</b> ceny; test porovná všechny čtyři zdroje a selže při jakémkoli rozporu. Varianta „den akce" se přestane nabízet po <code>active_until</code>.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P5 — Zdroj registrace (měření kampaně)</h3>
+<p><b>Co:</b> Uložit, odkud člověk přišel — jediné měřitelné kritérium kampaně.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Registrace (<code>POST /api/register</code>) a přihlášení na akci přijímají <code>source</code> (např. <code>fb-event</code>, <code>fb-ads</code>, <code>web-airbag</code>, <code>plakat</code>, <code>skola</code>, <code>qrcode</code>, <code>direct</code>) + volitelně <code>utm_*</code>. Uložit k členovi/registraci (<code>members.reg_source</code>, <code>members.reg_utm</code>).</span></li><li><i data-lucide="check"></i><span>Odkazy v kampani nesou parametr (<code>?source=fb-event</code>), aplikace si ho zapamatuje i při prokliku na registraci.</span></li><li><i data-lucide="check"></i><span>Admin: přehled v <code>#/superadmin</code> — počty podle zdroje, případně export.</span></li></ul>
+<p><b>Akceptační kritérium:</b> Registrace otevřená s <code>?source=fb-event</code> má v DB <code>reg_source = "fb-event"</code>; přehled v adminu zobrazí počty podle zdrojů; chybějící parametr je <code>direct</code> (ne prázdný string).</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P6 — Den akce: kontrola na místě a export</h3>
+<p><b>Co:</b> Aby akce prošla bez improvizace, i když v areálu není signál.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span><b>Export přihlášených</b> pro akci (a pro jednotlivý blok) — CSV (jméno, příjmení, členské číslo, blok, stav platby, zdroj) a tisknutelná verze (PDF/HTML pro tiskárnu) v adminu.</span></li><li><i data-lucide="check"></i><span><b>Offline kontrola QR karet:</b> obrazovka pro dozor (<code>#/admin</code>) musí fungovat z cache, když vypadne signál — kontrola karty se uloží do fronty v <code>localStorage</code> a odešle se, jakmile je spojení; UI jasně ukáže „Nesynchronizováno: N záznamů".</span></li><li><i data-lucide="check"></i><span>U ukončené akce (<code>status = finished</code>) nejde přihlásit; seznam přihlášených zůstává dostupný pro vyhodnocení.</span></li></ul>
+<p><b>Akceptační kritérium:</b> S vypnutou sítí (DevTools → offline) obrazovka dozoru naskenuje QR kartu, zapíše ji do fronty a po obnovení spojení se záznam synchronizuje bez duplikátu; export přihlášených obsahuje právě tolik řádků, kolik je <code>signupCount</code> v API.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P7 — Připomínka 24 hodin před akcí</h3>
+<p><b>Co:</b> Snížit počet lidí, kteří se zaregistrují a nedorazí.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Oznámení/notifikace + e-mail 24 hodin před <code>starts_at</code> s QR členskou kartou, časem a místem srazu, co si vzít a odkazem na web akce.</span></li><li><i data-lucide="check"></i><span>Idempotence: jednomu členovi na jednu akci maximálně jedna připomínka (i když se úloha spustí víckrát).</span></li><li><i data-lucide="check"></i><span>Spouštění: stávající mechanismus aplikace (cron čistě nad DB, kompatibilní s Vercel — např. <code>api/cron-reminders.js</code> + <code>vercel.json</code> <code>crons</code>), plus možnost spustit ručně z adminu pro test.</span></li></ul>
+<p><b>Akceptační kritérium:</b> Test nasimuluje akci začínající za 24 hodin → vznikne právě jedna připomínka; druhé spuštění téže úlohy nevytvoří druhou; pro akci, která už začala, se nevytvoří žádná.</p>
+<h3 class="sub"><i data-lucide="chevron-right"></i> P8 — Stránka akce v aplikaci + proklik na web akce (AIRBAG KOMÁRKA)</h3>
+<p><b>Co:</b> Aplikace je konec trychtýře. Člověk z Facebooku jde na web akce a odtud <b>jedním klikem</b> do registrace v aplikaci; kdo přijde do aplikace napřed, musí vidět akci a dostat se na web akce.</p>
+<ul class="clean"><li><i data-lucide="check"></i><span>Pro akci AIRBAG KOMÁRKA připravit (jako data, přes admin UI / idempotentní seed) záznam akce se dvěma bloky, kapacitou 20 na blok, ceníkem, FAQ, kontaktem, obrázkem a odkazem na web akce.</span></li><li><i data-lucide="check"></i><span>Dvě CTA na stránce akce: <b>„Registrovat se"</b> (registrace v aplikaci) a <b>„Web akce"</b> (<code>external_url</code>).</span></li><li><i data-lucide="check"></i><span>Kdo není člen, musí vidět, že se dá zaregistrovat i tak (jednorázový vstup) — s jasným vysvětlením rozdílu člen / nečlen.</span></li></ul>
+<p><b>Akceptační kritérium:</b> Z webu akce vede odkaz na <code>app.tjkrupka.cz/#/akce/airbag-komarka</code> a ze stránky akce zpět na web akce; obě CTA jsou funkční na mobilu; v nepřihlášeném stavu je vidět cena pro veřejnost.</p>
+</section><section id="s5"><h2 class="sec"><span class="num">05</span><i data-lucide="list-checks"></i> SOUHRNNÁ AKCEPTAČNÍ TABULKA</h2>
+<div class="tbl"><table><thead><tr><th>#</th><th>Co se měří</th><th>Jak se to měří</th><th>Očekávaný výsledek</th></tr></thead><tbody><tr><td>A1</td><td>Data-driven, ne hardcode</td><td>Založit druhou akci pouze daty</td><td>Vykreslí se bez změny kódu</td></tr><tr><td>A2</td><td>Akce viditelné veřejně</td><td>Otevřít <code>#/akce</code> bez přihlášení</td><td>Seznam bez chyby, <code>draft</code> skryté</td></tr><tr><td>A3</td><td>Bloky s kapacitou</td><td>Přihlásit do plného bloku</td><td><code>PLNO</code>, česká hláška, kapacita drží</td></tr><tr><td>A4</td><td>Ceny konzistentní</td><td>Porovnat 4 zdroje cen</td><td>Shodné, jinak test selže</td></tr><tr><td>A5</td><td>Oznámení členům</td><td>Publikovat pro členy</td><td>Vidí člen, nevidí nepřihlášený</td></tr><tr><td>A6</td><td>Idempotence notifikací</td><td>Publikovat dvakrát</td><td>Jedna notifikace na člena</td></tr><tr><td>A7</td><td>Zdroj registrace</td><td>Registrace s <code>?source=fb-event</code></td><td>V DB <code>fb-event</code>, v přehledu započteno</td></tr><tr><td>A8</td><td>Offline kontrola</td><td>Prohlížeč offline + sken QR</td><td>Záznam ve frontě, po připojení synchronizace 1×</td></tr><tr><td>A9</td><td>Export</td><td>Export přihlášených akce</td><td>Řádků = <code>signupCount</code></td></tr><tr><td>A10</td><td>Připomínka 24 h</td><td>Simulace + druhé spuštění</td><td>1 připomínka, ne 2</td></tr><tr><td>A11</td><td>Registrační cesta</td><td>FB → web akce → app</td><td>Jeden klik do registrace, ceny vidět před registrací</td></tr><tr><td>A12</td><td>Testy</td><td><code>npm test</code></td><td>Zelené, počet testů vyšší než 103</td></tr><tr><td>A13</td><td>Migrace</td><td>Čistá DB (sqlite i pg) + seed</td><td>Start bez chyby, seed idempotentní po druhém běhu</td></tr></tbody></table></div>
+</section><section id="s6"><h2 class="sec"><span class="num">06</span><i data-lucide="ban"></i> CO NEDĚLAT (kontrolní seznam)</h2>
+<ul class="clean"><li><i data-lucide="check"></i><span>Nepublikovat, nerozesílat e-maily skutečným členům, neměnit produkční ceny, nepushovat do <code>main</code>, nenasazovat na Vercel.</span></li><li><i data-lucide="check"></i><span>Nezapisovat jméno akce, termín ani cenu do kódu.</span></li><li><i data-lucide="check"></i><span>Nezakládat nový framework, novou službu, druhou databázi ani druhou platební bránu.</span></li><li><i data-lucide="check"></i><span>Neměnit <code>src/payments.js</code> a Stripe nastavení.</span></li><li><i data-lucide="check"></i><span>Nedávat do repa ani do logů credentials ani osobní data.</span></li><li><i data-lucide="check"></i><span>Neničit existující endpointy a jejich tvar odpovědí.</span></li><li><i data-lucide="check"></i><span>Nedělat z administrace SQL konzoli pro programátora — akci musí založit vedení spolku v UI.</span></li></ul>
+</section><section id="s7"><h2 class="sec"><span class="num">07</span><i data-lucide="file-check"></i> CO OD TEBE CHCEME DODAT</h2>
+<ol class="steps"><li><b>Větev</b> s popisným názvem (<code>feat/akce-modul</code> nebo podobně) a commit po balíčcích P1–P8.</li><li><b>Seznam změněných a nových souborů</b> + popis migrací.</li><li><b>Výstup <code>npm test</code></b> (počet testů, všechny zelené) a stručný popis nových testů.</li><li><b>Návod k nasazení</b> krok za krokem (<code>DEPLOYMENT.md</code> styl): migrace, seed akce AIRBAG KOMÁRKA, co je potřeba odsouhlasit před zapnutím.</li><li><b>Sekce „známá omezení a rizika"</b> — co je hotové, co je připravené za vypínačem a co záměrně čeká na rozhodnutí.</li><li><b>Nic z toho nenasazovat</b> — výstup je k revizi a odsouhlasení majitelem.</li></ol>
+</section><section id="s8"><h2 class="sec"><span class="num">08</span><i data-lucide="users"></i> CO NENÍ PRÁCE DEV (neřeš, jen respektuj)</h2>
+<p>Tyto body patří jinam a mohou zablokovat spuštění akce — připrav je jako <b>podmínku zadání</b>, ne jako svůj úkol:</p>
+<ul class="clean"><li><i data-lucide="check"></i><span><b>Právní režim jednorázového vstupu pro veřejnost</b> (členský vs. živnostenský model) — LEGAL.</span></li><li><i data-lucide="check"></i><span><b>Pojištění jednorázové akce pro nečleny</b> (krytí nad rámec pojištění spolku) — LEGAL / pojistitel.</span></li><li><i data-lucide="check"></i><span><b>Odsouhlasení cen a termínu</b> majitelem — OWNER (Tělovýchovná jednota Krupka, z.s.).</span></li><li><i data-lucide="check"></i><span><b>Texty a obsah akce</b> (popis, FAQ, harmonogram, obrázky, plakát, FB) — GROWTH, dodá jako data k akci.</span></li></ul>
+<p>Kdyby některý z těchto bodů měnil zadání (např. veřejnost nesmí kupovat jednorázový vstup), vývojář to neřeší sám — vrací dotaz zadavateli.</p>
+</section>
+
+<section class="cont">
+  <div class="note rv"><i data-lucide="file-text"></i><div>
+    <b>Surový text zadání</b> (ke zkopírování jedním klikem nebo ke stažení):
+    <a class="btn small ghost" href="prompt-app-tjkrupka.md" download>prompt-app-tjkrupka.md</a>
+  </div></div>
+</section>
+
+</main>
+
+<footer class="wrap" style="padding:40px 0 60px;color:var(--dim);font-size:13px">
+  Vygenerováno z <code>prompt-app-tjkrupka.md</code> · Dream_Agents pro Tělovýchovná jednota Krupka, z.s. · nic není publikováno ani odesláno
+</footer>
+
+<script type="text/plain" id="raw-prompt">ZADÁNÍ PRO VÝVOJÁŘE / AI AGENTA — úprava aplikace app.tjkrupka.cz
+
+Repozitář: mirabeecko/app.tjk (lokálně /Users/mb/dev/airbag-projekt/pwa)
+Datum zadání: 23. 9. 2026
+Zadavatel: Tělovýchovná jednota Krupka, z.s. (předseda Miroslav Brožek), přes CHIEFa firmy Dream_Agents
+První reálné použití: akce AIRBAG KOMÁRKA, sobota 17. 10. 2026 (náhrada 18. 10., druhá varianta 7. 11. 2026)
+
+---
+
+# 1) CO PO TOBĚ CHCEME — JEDNOU VĚTOU
+
+Uprav členskou aplikaci TJ Krupka tak, aby se v ní daly **pořádat a propagovat libovolné akce spolku** (nejen tato jedna) a aby **informovala členy o událostech** — a tuto schopnost poprvé nasaď na akci AIRBAG KOMÁRKA.
+
+Dvě roviny zadání, obě povinné:
+
+- **ROVINA A — GENERICKÁ (hlavní):** aplikace dostane obecný, datově řízený modul akcí + modul informování členů. Akce je **data v databázi, ne kód**. Kdokoli z vedení spolku založí další akci (MTB závod, soustředění, brigádu, vánoční sraz) bez zásahu programátora.
+- **ROVINA B — KONKRÉTNÍ (první použití):** akce AIRBAG KOMÁRKA musí být v aplikaci připravená tak, aby člověk přicházející z Facebooku a z webu akce skončil **jedním klikem v registraci** a na místě prošel bez improvizace.
+
+**Zakázané řešení:** „udělám stránku pro AIRBAG KOMÁRKU natvrdo" — jméno akce, termín ani ceny nesmí být v kódu. Když to uděláš natvrdo, zadání je nesplněné, i kdyby akce fungovala.
+
+---
+
+# 2) OVĚŘENÝ KONTEXT (změřeno 23. 9. 2026, ne odhad)
+
+Toto je reálný stav, na kterém budeš pracovat. Nepředělávej, co funguje; doplň, co chybí v logice ROVINY A.
+
+**Technologie**
+- Backend: Node.js (>= 18) + Express 4, `server.js`, `src/app.js`, `src/routes.js`, `api/index.js` (Vercel serverless entry).
+- Databáze: dva drivery — `src/db-postgres.js` (produkce, Supabase) a `src/db-sqlite.js` (lokální vývoj/testy, `data/airbag.db`, `better-sqlite3`). Schéma: `src/schema.sql` (sqlite) a `supabase/schema.sql` + `supabase/schema-app.sql` (Postgres), migrace v `supabase/migrations/`.
+- Frontend: vanilla JS, hash router, soubory `public/js/app.js`, `views-public.js`, `views-member.js`, `views-admin.js`, `api.js`, `ui.js`, PWA (`public/sw.js`, `manifest.json`), Capacitor obaly `android/` + `ios/`.
+- Platby: Stripe (`src/payments.js`), v produkci ostrý režim (`paymentGateway: "stripe-live"`).
+- E-maily: `src/mailer.js` (SMTP / stub), v aplikaci je „dev outbox" (`GET /api/outbox`).
+- Nasazení: Vercel (`vercel.json`, rewrites → `/api/index`), vlastní doména `app.tjkrupka.cz` (WEDOS CNAME). Postup v `DEPLOYMENT.md`.
+- Testy: `npm test` → `tests/api.test.js` (end-to-end, spouští server na portu 4310, vždy test mode bez reálného Stripe klíče).
+
+**Co v aplikaci UŽ JE (funguje, ověřeno přes veřejné API)**
+- `GET /api/events` — veřejný seznam akcí: `title`, `description`, `startsAt`, `endsAt`, `location`, `capacity`, `signupDeadline`, `signupCount`, `spotsLeft`, `facilityName`. Reálně vrací 3 akce (26. 9., 30. 9. a 7.–8. 10. 2026).
+- `POST /api/events/:id/signup` a `DELETE /api/events/:id/signup` — přihlášení/odhlášení, jen pro člena ve stavu `active`, hlídá kapacitu, `signupDeadline` a začátek akce. Chyby: `NEJSTE_CLENEM`, `UZAVRENO`, `ZACALO`, `PLNO`, `PRIHLASEN`.
+- Tabulky `events`, `event_signups`, `notifications`, `consents`, `products`, `product_variants`, `entitlements`, `members`, `facilities`.
+- UI pro akce **existuje** (`viewEvents()` v `public/js/views-member.js`), ale **je vypnuté** — v `public/js/app.js` je řádek s route `#/akce` zakomentovaný s poznámkou „Akce spolku jsou momentálně SKRYTÉ z UI (backend a testy připravené)".
+- Souhlasy s verzí a otiskem dokumentu (`GET /api/docs`, `GET /api/consent-groups`, auditní stopa), QR členská karta (`GET /api/card`), kontrola karty dozorem (`POST /api/check-card`), notifikace (`GET /api/notifications`).
+- Katalog: `GET /api/products` → mimo jiné produkt `airbag_day` = „Jednorázový vstup — AIRBAG", jednotka `den`, platnost vstupu **4 hodiny**, cena pro veřejnost **600 Kč**, má členskou variantu (300 Kč).
+
+**Co v aplikaci CHYBÍ nebo je rozbité (tohle je předmět práce)**
+1. **Akce jsou skryté z UI** — route `#/akce` je zakomentovaná, do navigace se nedostane.
+2. **Akce nemají stránku ani obsah** — jen jednořádkový popis; chybí perex, delší popis, obrázek, místo srazu, program, FAQ, kontakt, odkaz na web akce.
+3. **Akce nemají termíny/bloky** — `events` má jeden `starts_at`/`ends_at` a jednu kapacitu. Nelze udělat „dopolední blok 20 míst + odpolední blok 20 míst".
+4. **Ceny jsou rozejité** — `GET /api/config` vrací `dailyPriceHost: 300`, `dailyPriceMember: 150` (zdroj: tabulka `member_types`), ale produkt `airbag_day` má 600 / 300 Kč. Dva zdroje pravdy = zákazník vidí jinou cenu než na plakátu.
+5. **Ceny nejdou vázat na termín** — `product_variants` umí `active_from` / `active_until`, ale nikde se nepoužívá pro „cena platná jen v den akce".
+6. **Neexistuje žádné „informování členů o událostech"** — není tabulka ani obrazovka pro novinky/oznámení; `notifications` je jen per-člen důsledek události v účtu, ne redakční kanál.
+7. **Neexistuje zdroj registrace** (odkud člověk přišel: FB / reklama / plakát / škola) — bez toho nelze vyhodnotit kampaň.
+8. **Drobnost k opravě:** `GET /api/events` vrací `signupCount` jako **string** (`"0"`), ne číslo → v UI se to projeví v porovnáních a součtech. Normalizuj na číslo (a doplň test).
+9. **Chybí export a offline režim pro den akce** — papírový seznam přihlášených a kontrola QR karet bez signálu (v areálu na Komárce je slabý signál).
+
+---
+
+# 3) NEPŘEKROČITELNÁ PRAVIDLA
+
+1. **Akce = data, ne kód.** Žádné jméno akce, datum, cena ani text nesmí být zapsané v JS/HTML/šabloně. Vše z databáze přes API. Kontrolní test: založ druhou testovací akci jen daty a UI ji vykreslí bez změny jediného řádku kódu.
+2. **Nic nespouštěj.** Žádné publikování, žádné rozesílání e-mailů skutečným členům, žádná změna produkčních cen, žádný `git push` do `main`, žádné `vercel --prod`. Pracuješ na větvi, výsledek je k odsouhlasení.
+3. **Žádná změna Stripe.** Platební logika (`src/payments.js`) se nemění, mění se jen to, co se platí (produkty, varianty, ceny jako data).
+4. **Žádné credentials v kódu ani v dokumentaci.** Pouze `.env` / Vercel env (`.env` je v `.gitignore`).
+5. **Žádná osobní data v logu ani v repu.** Testy a seedy používají vymyšlené osoby.
+6. **Nepřepisuj architekturu.** Žádný nový framework, žádný build krok navíc, žádná nová služba. Drž vanilla JS + Express + stávající DB vrstvu a design systém.
+7. **Zpětná kompatibilita.** Stávající endpointy (`/api/config`, `/api/products`, `/api/me`, `/api/card`, `/api/check-card`…) nesmí změnit tvar odpovědi, který už někdo čte. Nové věci přidávej, staré nemaž.
+8. **Migrace pro oba drivery.** Každá změna schématu musí být v `src/schema.sql` (sqlite), v `supabase/` (Postgres) i jako spustitelná migrace v `supabase/migrations/2026xxxx_*.sql`. Seed musí být **idempotentní** (upsert, ne insert naslepo) — běží při startu na Vercelu.
+9. **Vše česky v UI.** Kód a komentáře česky (stávající styl), UI texty česky, bez anglicismů, kde existuje český výraz.
+10. **Přístupnost a design.** Drž stávající tmavý design systém a komponenty (`card`, `btn`, `tag`, `alert`, `event-card`, `ico()`), mobil na prvním místě (přes mobil se registruje 90 % lidí), ovladatelné jednou rukou, bez hover-only interakcí.
+11. **Testy.** Každý nový endpoint a každé nové pravidlo má test v `tests/api.test.js`. `npm test` musí být zelené (dnes 103/103) — počet rozšiř, ne snižuj. Testy nesmí sahat na reálný Stripe ani na produkční DB.
+
+---
+
+# 4) PRACOVNÍ BALÍČKY
+
+## P1 — Zprovoznit a zveřejnit modul akcí
+
+**Co:** Odkomentovat route `#/akce` v `public/js/app.js`, doplnit ji do navigace (hlavní menu + mobilní „Více") a rozšířit `viewEvents()` na veřejný přehled: nejbližší akce nahoře, řazení podle data, filtr „jen akce, na které se dá přihlásit", zobrazení obsazenosti a stavu (volno / plno / přihlašování uzavřeno / proběhlo).
+
+**Kde:** `public/js/app.js`, `public/js/views-member.js`, `public/js/views-public.js` (veřejná část bez přihlášení), `src/routes.js` (GET `/events`).
+
+**Akceptační kritérium:** Nepřihlášený návštěvník otevře `app.tjkrupka.cz` → klikne na „Akce" → vidí seznam akcí s datem, místem, obsazeností a tlačítkem „Přihlásit se" (které ho pošle na přihlášení). Žádná akce se v UI nezobrazí, pokud má v DB `status = draft`.
+
+## P2 — Akce jako plnohodnotná stránka (obsah + termíny)
+
+**Co:** Rozšířit datový model akce tak, aby se dala vypsat jako stránka, a přidat termíny (bloky):
+
+- `events`: doplnit `slug` (unikátní, pro odkaz a sdílení), `perex`, `description_long`, `cover_image`, `place_name`, `place_note` (jak se dostat), `external_url` (web akce / FB událost), `contact_name`, `contact_phone`, `contact_email`, `faq` (JSON pole otázka/odpověď), `required_doc_keys` (JSON, které souhlasy akce vyžaduje), `published_at`, `status` (`draft|published|cancelled|finished`), `updated_at`.
+- Nová tabulka `event_slots` (termíny/bloky): `id`, `event_id`, `label` (např. „Blok 1 — Škola skoku"), `starts_at`, `ends_at`, `capacity`, `price_czk` (nullable = cena akce), `sort_order`, `active`.
+- Nová tabulka `event_signups` rozšířit o `slot_id` (nullable) — při přihlášení volitelně vybrat blok.
+- API: `GET /api/events` (seznam, veřejný), `GET /api/events/:slug` (detail včetně slotů, FAQ, obsazenosti po slotech), `POST /api/events/:id/signup` rozšířit o volitelný `slotId` s kontrolou kapacity **bloku**.
+- UI: nová obrazovka `#/akce/:slug` — hero s obrázkem a termínem, program, bloky s obsazeností, „co si vzít", FAQ, kontakt, dvě CTA („Přihlásit se" a „Web akce").
+- Admin: správa akcí v `#/superadmin` (vytvořit/upravit/publikovat akci, přidat bloky, kapacity, ceny, obrázek, FAQ). Akci musí založit **člověk z vedení přes UI**, ne programátor přes SQL.
+
+**Akceptační kritérium:** Akce založená pouze přes admin UI (bez jediného řádku v kódu) se zobrazí ve veřejném seznamu i na vlastní stránce, včetně bloků s kapacitou, a přihlášení do plného bloku vrátí `PLNO` s českou hláškou; přihlášení do bloku s volnou kapacitou zvýší `signupCount` **daného bloku**.
+
+## P3 — Informování členů o událostech (novinky / oznámení)
+
+**Co:** Redakční kanál, kterým spolek informuje členy i veřejnost o dění — nezávislý na tom, zda si člověk něco koupil.
+
+- Nová tabulka `announcements`: `id`, `title`, `body` (markdown), `severity` (`info|warn|critical`), `audience` (`public|members|event`), `event_id` (nullable), `pinned`, `published_at`, `expires_at`, `created_by`.
+- API: `GET /api/news` (veřejně jen `public` a neexpirované; člen navíc `members`), `GET /api/news/:id`, admin CRUD `POST/PATCH/DELETE /api/superadmin/news`.
+- Notifikace: při publikování oznámení s `audience = members` vytvořit záznam v `notifications` pro všechny aktivní členy (idempotentně — opakované publikování nesmí vyrobit duplikáty) a volitelně rozeslat e-mailem přes stávající `src/mailer.js`. **E-mail reálným členům se v tomto zadání NEROZESÍLÁ** — implementuj cestu, ale nech ji za vypínačem (`NEWS_EMAIL_ENABLED=false`) a otestuj ji jen na dev outboxu.
+- UI: obrazovka `#/novinky` (seznam + detail), na úvodní stránce dlaždice „Poslední oznámení" s maximálně 3 položkami, oznámení s `severity = critical` se zobrazí jako pruh nad obsahem.
+- Akce ↔ oznámení: každá publikovaná akce umí zobrazit svá oznámení (např. „kvůli větru se odpolední blok ruší").
+
+**Akceptační kritérium:** Publikované oznámení pro členy se objeví v `#/novinky` a v dlaždici na úvodu; nepřihlášený uživatel vidí jen `public` oznámení; druhé publikování téhož oznámení nevytvoří duplicitní notifikace; `critical` oznámení je vidět bez rozkliknutí.
+
+## P4 — Jedna pravda o cenách + ceny pro den akce
+
+**Co:** Odstranit rozpor mezi `GET /api/config` (`dailyPriceHost: 300`, `dailyPriceMember: 150`) a produktem `airbag_day` (600 / 300 Kč) a umožnit cenu vázanou na termín.
+
+- Jeden zdroj pravdy: ceny vždy z `products` + `product_variants` (případně `event_slots.price_czk`); `GET /api/config` ať vrací totéž, co vidí uživatel v ceníku, nebo pole označ jako „odvozené" a odvoď je z produktu.
+- `product_variants` umět `event_id` (nullable) — varianta platná jen pro konkrétní akci (např. „cena v den akce").
+- **Ceny podle rozhodnutí majitele (23. 9. 2026):** člen TJ Krupka **300 Kč**, nečlen **600 Kč** — a **dítě i mládež platí stejně jako dospělí** (žádná sleva podle věku). **Rodinný balíček se nezavádí.** Model `audience` (`MEMBER|PUBLIC`) na to stačí; `age_type` (`ANY|ADULT|MINOR`) použij jen pro **kontrolu a souhlasy** (dítě do 15 let pouze s doprovodem zákonného zástupce, do 18 let s jeho písemným souhlasem), **ne pro výpočet ceny**.
+- Varianta „cena v den akce“ (člen 250 / nečlen 450 Kč) je **podmíněná**: nasaď ji jen, pokud ji majitel výslovně schválí. Bez schválení se neimplementuje (rozpočet 23. 9. 2026 počítá s běžnými cenami 300 / 600 Kč).
+- UI: ceník akce na stránce akce (`#/akce/:slug`) i v registraci; vždy s poznámkou, do kdy cena platí.
+
+**Akceptační kritérium:** Na jednom místě (stránka akce, registrace, `GET /api/config`, `/api/products`) jsou **shodné** ceny; test porovná všechny čtyři zdroje a selže při jakémkoli rozporu. Varianta „den akce" se přestane nabízet po `active_until`.
+
+## P5 — Zdroj registrace (měření kampaně)
+
+**Co:** Uložit, odkud člověk přišel — jediné měřitelné kritérium kampaně.
+
+- Registrace (`POST /api/register`) a přihlášení na akci přijímají `source` (např. `fb-event`, `fb-ads`, `web-airbag`, `plakat`, `skola`, `qrcode`, `direct`) + volitelně `utm_*`. Uložit k členovi/registraci (`members.reg_source`, `members.reg_utm`).
+- Odkazy v kampani nesou parametr (`?source=fb-event`), aplikace si ho zapamatuje i při prokliku na registraci.
+- Admin: přehled v `#/superadmin` — počty podle zdroje, případně export.
+
+**Akceptační kritérium:** Registrace otevřená s `?source=fb-event` má v DB `reg_source = "fb-event"`; přehled v adminu zobrazí počty podle zdrojů; chybějící parametr je `direct` (ne prázdný string).
+
+## P6 — Den akce: kontrola na místě a export
+
+**Co:** Aby akce prošla bez improvizace, i když v areálu není signál.
+
+- **Export přihlášených** pro akci (a pro jednotlivý blok) — CSV (jméno, příjmení, členské číslo, blok, stav platby, zdroj) a tisknutelná verze (PDF/HTML pro tiskárnu) v adminu.
+- **Offline kontrola QR karet:** obrazovka pro dozor (`#/admin`) musí fungovat z cache, když vypadne signál — kontrola karty se uloží do fronty v `localStorage` a odešle se, jakmile je spojení; UI jasně ukáže „Nesynchronizováno: N záznamů".
+- U ukončené akce (`status = finished`) nejde přihlásit; seznam přihlášených zůstává dostupný pro vyhodnocení.
+
+**Akceptační kritérium:** S vypnutou sítí (DevTools → offline) obrazovka dozoru naskenuje QR kartu, zapíše ji do fronty a po obnovení spojení se záznam synchronizuje bez duplikátu; export přihlášených obsahuje právě tolik řádků, kolik je `signupCount` v API.
+
+## P7 — Připomínka 24 hodin před akcí
+
+**Co:** Snížit počet lidí, kteří se zaregistrují a nedorazí.
+
+- Oznámení/notifikace + e-mail 24 hodin před `starts_at` s QR členskou kartou, časem a místem srazu, co si vzít a odkazem na web akce.
+- Idempotence: jednomu členovi na jednu akci maximálně jedna připomínka (i když se úloha spustí víckrát).
+- Spouštění: stávající mechanismus aplikace (cron čistě nad DB, kompatibilní s Vercel — např. `api/cron-reminders.js` + `vercel.json` `crons`), plus možnost spustit ručně z adminu pro test.
+
+**Akceptační kritérium:** Test nasimuluje akci začínající za 24 hodin → vznikne právě jedna připomínka; druhé spuštění téže úlohy nevytvoří druhou; pro akci, která už začala, se nevytvoří žádná.
+
+## P8 — Stránka akce v aplikaci + proklik na web akce (AIRBAG KOMÁRKA)
+
+**Co:** Aplikace je konec trychtýře. Člověk z Facebooku jde na web akce a odtud **jedním klikem** do registrace v aplikaci; kdo přijde do aplikace napřed, musí vidět akci a dostat se na web akce.
+
+- Pro akci AIRBAG KOMÁRKA připravit (jako data, přes admin UI / idempotentní seed) záznam akce se dvěma bloky, kapacitou 20 na blok, ceníkem, FAQ, kontaktem, obrázkem a odkazem na web akce.
+- Dvě CTA na stránce akce: **„Registrovat se"** (registrace v aplikaci) a **„Web akce"** (`external_url`).
+- Kdo není člen, musí vidět, že se dá zaregistrovat i tak (jednorázový vstup) — s jasným vysvětlením rozdílu člen / nečlen.
+
+**Akceptační kritérium:** Z webu akce vede odkaz na `app.tjkrupka.cz/#/akce/airbag-komarka` a ze stránky akce zpět na web akce; obě CTA jsou funkční na mobilu; v nepřihlášeném stavu je vidět cena pro veřejnost.
+
+---
+
+# 5) SOUHRNNÁ AKCEPTAČNÍ TABULKA
+
+| # | Co se měří | Jak se to měří | Očekávaný výsledek |
+|---|---|---|---|
+| A1 | Data-driven, ne hardcode | Založit druhou akci pouze daty | Vykreslí se bez změny kódu |
+| A2 | Akce viditelné veřejně | Otevřít `#/akce` bez přihlášení | Seznam bez chyby, `draft` skryté |
+| A3 | Bloky s kapacitou | Přihlásit do plného bloku | `PLNO`, česká hláška, kapacita drží |
+| A4 | Ceny konzistentní | Porovnat 4 zdroje cen | Shodné, jinak test selže |
+| A5 | Oznámení členům | Publikovat pro členy | Vidí člen, nevidí nepřihlášený |
+| A6 | Idempotence notifikací | Publikovat dvakrát | Jedna notifikace na člena |
+| A7 | Zdroj registrace | Registrace s `?source=fb-event` | V DB `fb-event`, v přehledu započteno |
+| A8 | Offline kontrola | Prohlížeč offline + sken QR | Záznam ve frontě, po připojení synchronizace 1× |
+| A9 | Export | Export přihlášených akce | Řádků = `signupCount` |
+| A10 | Připomínka 24 h | Simulace + druhé spuštění | 1 připomínka, ne 2 |
+| A11 | Registrační cesta | FB → web akce → app | Jeden klik do registrace, ceny vidět před registrací |
+| A12 | Testy | `npm test` | Zelené, počet testů vyšší než 103 |
+| A13 | Migrace | Čistá DB (sqlite i pg) + seed | Start bez chyby, seed idempotentní po druhém běhu |
+
+---
+
+# 6) CO NEDĚLAT (kontrolní seznam)
+
+- Nepublikovat, nerozesílat e-maily skutečným členům, neměnit produkční ceny, nepushovat do `main`, nenasazovat na Vercel.
+- Nezapisovat jméno akce, termín ani cenu do kódu.
+- Nezakládat nový framework, novou službu, druhou databázi ani druhou platební bránu.
+- Neměnit `src/payments.js` a Stripe nastavení.
+- Nedávat do repa ani do logů credentials ani osobní data.
+- Neničit existující endpointy a jejich tvar odpovědí.
+- Nedělat z administrace SQL konzoli pro programátora — akci musí založit vedení spolku v UI.
+
+---
+
+# 7) CO OD TEBE CHCEME DODAT
+
+1. **Větev** s popisným názvem (`feat/akce-modul` nebo podobně) a commit po balíčcích P1–P8.
+2. **Seznam změněných a nových souborů** + popis migrací.
+3. **Výstup `npm test`** (počet testů, všechny zelené) a stručný popis nových testů.
+4. **Návod k nasazení** krok za krokem (`DEPLOYMENT.md` styl): migrace, seed akce AIRBAG KOMÁRKA, co je potřeba odsouhlasit před zapnutím.
+5. **Sekce „známá omezení a rizika"** — co je hotové, co je připravené za vypínačem a co záměrně čeká na rozhodnutí.
+6. **Nic z toho nenasazovat** — výstup je k revizi a odsouhlasení majitelem.
+
+---
+
+# 8) CO NENÍ PRÁCE DEV (neřeš, jen respektuj)
+
+Tyto body patří jinam a mohou zablokovat spuštění akce — připrav je jako **podmínku zadání**, ne jako svůj úkol:
+
+- **Právní režim jednorázového vstupu pro veřejnost** (členský vs. živnostenský model) — LEGAL.
+- **Pojištění jednorázové akce pro nečleny** (krytí nad rámec pojištění spolku) — LEGAL / pojistitel.
+- **Odsouhlasení cen a termínu** majitelem — OWNER (Tělovýchovná jednota Krupka, z.s.).
+- **Texty a obsah akce** (popis, FAQ, harmonogram, obrázky, plakát, FB) — GROWTH, dodá jako data k akci.
+
+Kdyby některý z těchto bodů měnil zadání (např. veřejnost nesmí kupovat jednorázový vstup), vývojář to neřeší sám — vrací dotaz zadavateli.
+</script>
+<script>
+(function () {
+  var btn = document.getElementById('copy-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function () {
+    var txt = document.getElementById('raw-prompt').textContent;
+    var done = function () {
+      var old = btn.innerHTML;
+      btn.innerHTML = 'Zkopírováno ✓';
+      setTimeout(function () { btn.innerHTML = old; if (window.lucide) lucide.createIcons(); }, 2200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function () { fallback(txt, done); });
+    } else { fallback(txt, done); }
+  });
+  function fallback(txt, done) {
+    var ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { alert('Kopírování selhalo — použij odkaz na .md'); }
+    document.body.removeChild(ta);
+  }
+  if (window.lucide) lucide.createIcons();
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.rv').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>
