@@ -24,6 +24,11 @@
       "source": "/airbag-komarka-kampan",
       "destination": "/airbag-komarka-kampan/",
       "permanent": true
+    },
+    {
+      "source": "/ads-engine",
+      "destination": "https://ads.webyprobyznys.cz",
+      "permanent": false
     }
   ],
   "rewrites": [
