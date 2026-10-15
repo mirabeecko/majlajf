@@ -33,6 +33,10 @@
   ],
   "rewrites": [
     {
+      "source": "/login",
+      "destination": "/login.html"
+    },
+    {
       "source": "/mission-control/mc-api/:path*",
       "destination": "/api/mc-api/:path*"
     },
