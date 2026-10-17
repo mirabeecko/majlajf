@@ -1,6 +1,6 @@
 {
   "schema": "majlajf-traffic/v1",
-  "updated_at": "2026-10-16T08:10:46+02:00",
+  "updated_at": "2026-10-17T10:39:36+02:00",
   "windows": {
     "overview_days": 30,
     "short_days": 7
@@ -13,29 +13,22 @@
       "property_id": "547065994",
       "category": "content",
       "overview": {
-        "sessions": 504,
-        "totalUsers": 427,
-        "newUsers": 421,
-        "bounceRate": 0.4861111111111111,
-        "avgSessionDuration": 152.90384676587303,
-        "pageViews": 1182,
+        "sessions": 503,
+        "totalUsers": 426,
+        "newUsers": 423,
+        "bounceRate": 0.4831013916500994,
+        "avgSessionDuration": 153.36813934194834,
+        "pageViews": 1183,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 105,
-        "totalUsers": 96,
-        "pageViews": 193,
+        "sessions": 46,
+        "totalUsers": 45,
+        "pageViews": 85,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 3,
-          "users": 3,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
         {
           "date": "20260917",
           "sessions": 1,
@@ -175,18 +168,25 @@
           "users": 6,
           "pageViews": 6,
           "conversions": 0.0
+        },
+        {
+          "date": "20261016",
+          "sessions": 2,
+          "users": 2,
+          "pageViews": 3,
+          "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Organic Social",
-          "sessions": 321,
-          "users": 297
+          "sessions": 323,
+          "users": 299
         },
         {
           "channel": "Direct",
-          "sessions": 110,
-          "users": 64
+          "sessions": 107,
+          "users": 61
         },
         {
           "channel": "Paid Social",
@@ -211,29 +211,22 @@
       "property_id": "552474189",
       "category": "service",
       "overview": {
-        "sessions": 153,
-        "totalUsers": 133,
-        "newUsers": 134,
-        "bounceRate": 0.49673202614379086,
-        "avgSessionDuration": 114.12079267320262,
-        "pageViews": 330,
+        "sessions": 157,
+        "totalUsers": 137,
+        "newUsers": 140,
+        "bounceRate": 0.4713375796178344,
+        "avgSessionDuration": 116.03922596815285,
+        "pageViews": 343,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 49,
-        "totalUsers": 47,
-        "pageViews": 88,
+        "sessions": 36,
+        "totalUsers": 35,
+        "pageViews": 82,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
         {
           "date": "20260917",
           "sessions": 4,
@@ -434,15 +427,22 @@
           "date": "20261015",
           "sessions": 3,
           "users": 3,
-          "pageViews": 4,
+          "pageViews": 6,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261016",
+          "sessions": 6,
+          "users": 6,
+          "pageViews": 13,
           "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Organic Search",
-          "sessions": 91,
-          "users": 71
+          "sessions": 97,
+          "users": 77
         },
         {
           "channel": "Direct",
@@ -451,8 +451,8 @@
         },
         {
           "channel": "Unassigned",
-          "sessions": 2,
-          "users": 2
+          "sessions": 1,
+          "users": 1
         }
       ]
     },
@@ -649,26 +649,19 @@
         "sessions": 99,
         "totalUsers": 89,
         "newUsers": 88,
-        "bounceRate": 0.7070707070707071,
-        "avgSessionDuration": 50.152288636363636,
-        "pageViews": 183,
+        "bounceRate": 0.696969696969697,
+        "avgSessionDuration": 56.24975939393939,
+        "pageViews": 187,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
         "sessions": 5,
         "totalUsers": 5,
-        "pageViews": 8,
+        "pageViews": 11,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
         {
           "date": "20260918",
           "sessions": 1,
@@ -822,6 +815,13 @@
           "users": 3,
           "pageViews": 5,
           "conversions": 0.0
+        },
+        {
+          "date": "20261016",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 5,
+          "conversions": 0.0
         }
       ],
       "sources": [
@@ -858,29 +858,22 @@
       "property_id": "530284583",
       "category": "leadgen",
       "overview": {
-        "sessions": 37,
-        "totalUsers": 35,
-        "newUsers": 33,
-        "bounceRate": 0.6486486486486487,
-        "avgSessionDuration": 20.092536837837837,
-        "pageViews": 40,
-        "conversions": 6.0,
+        "sessions": 36,
+        "totalUsers": 34,
+        "newUsers": 32,
+        "bounceRate": 0.6666666666666666,
+        "avgSessionDuration": 19.509362694444444,
+        "pageViews": 32,
+        "conversions": 2.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 9,
-        "totalUsers": 9,
-        "pageViews": 7,
+        "sessions": 10,
+        "totalUsers": 10,
+        "pageViews": 8,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 9,
-          "conversions": 4.0
-        },
         {
           "date": "20260917",
           "sessions": 5,
@@ -967,17 +960,17 @@
         },
         {
           "date": "20261016",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 0,
+          "sessions": 3,
+          "users": 3,
+          "pageViews": 1,
           "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 23,
-          "users": 22
+          "sessions": 22,
+          "users": 21
         },
         {
           "channel": "Organic Social",
@@ -1007,138 +1000,17 @@
       ]
     },
     {
-      "domain": "webyprobyznys.cz",
-      "name": "webyprobyznys.cz",
-      "property_id": "552768005",
-      "category": "leadgen",
-      "overview": {
-        "sessions": 36,
-        "totalUsers": 32,
-        "newUsers": 31,
-        "bounceRate": 0.8611111111111112,
-        "avgSessionDuration": 32.101501194444445,
-        "pageViews": 38,
-        "conversions": 6.0,
-        "revenue": 0.0
-      },
-      "last7": {
-        "sessions": 0,
-        "totalUsers": 0,
-        "pageViews": 0,
-        "conversions": 0.0
-      },
-      "daily": [
-        {
-          "date": "20260916",
-          "sessions": 10,
-          "users": 8,
-          "pageViews": 9,
-          "conversions": 1.0
-        },
-        {
-          "date": "20260917",
-          "sessions": 3,
-          "users": 2,
-          "pageViews": 3,
-          "conversions": 2.0
-        },
-        {
-          "date": "20260923",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260927",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260929",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261001",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 1.0
-        },
-        {
-          "date": "20261002",
-          "sessions": 11,
-          "users": 11,
-          "pageViews": 14,
-          "conversions": 2.0
-        },
-        {
-          "date": "20261004",
-          "sessions": 4,
-          "users": 4,
-          "pageViews": 4,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261005",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261006",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 2,
-          "conversions": 0.0
-        }
-      ],
-      "sources": [
-        {
-          "channel": "Direct",
-          "sessions": 31,
-          "users": 29
-        },
-        {
-          "channel": "Referral",
-          "sessions": 2,
-          "users": 1
-        },
-        {
-          "channel": "Organic Search",
-          "sessions": 1,
-          "users": 1
-        },
-        {
-          "channel": "Paid Search",
-          "sessions": 1,
-          "users": 1
-        },
-        {
-          "channel": "Unassigned",
-          "sessions": 1,
-          "users": 1
-        }
-      ]
-    },
-    {
       "domain": "webybudoucnosti.cz",
       "name": "webybudoucnosti.cz",
       "property_id": "552512090",
       "category": "leadgen",
       "overview": {
-        "sessions": 33,
-        "totalUsers": 30,
+        "sessions": 31,
+        "totalUsers": 29,
         "newUsers": 29,
-        "bounceRate": 0.8787878787878788,
-        "avgSessionDuration": 23.44979109090909,
-        "pageViews": 34,
+        "bounceRate": 0.8709677419354839,
+        "avgSessionDuration": 24.686567387096776,
+        "pageViews": 33,
         "conversions": 4.0,
         "revenue": 0.0
       },
@@ -1149,13 +1021,6 @@
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 2,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
         {
           "date": "20260917",
           "sessions": 3,
@@ -1279,8 +1144,107 @@
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 33,
-          "users": 30
+          "sessions": 31,
+          "users": 29
+        }
+      ]
+    },
+    {
+      "domain": "webyprobyznys.cz",
+      "name": "webyprobyznys.cz",
+      "property_id": "552768005",
+      "category": "leadgen",
+      "overview": {
+        "sessions": 26,
+        "totalUsers": 24,
+        "newUsers": 24,
+        "bounceRate": 0.8461538461538461,
+        "avgSessionDuration": 38.42417684615385,
+        "pageViews": 29,
+        "conversions": 5.0,
+        "revenue": 0.0
+      },
+      "last7": {
+        "sessions": 0,
+        "totalUsers": 0,
+        "pageViews": 0,
+        "conversions": 0.0
+      },
+      "daily": [
+        {
+          "date": "20260917",
+          "sessions": 3,
+          "users": 2,
+          "pageViews": 3,
+          "conversions": 2.0
+        },
+        {
+          "date": "20260923",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20260927",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20260929",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261001",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 1.0
+        },
+        {
+          "date": "20261002",
+          "sessions": 11,
+          "users": 11,
+          "pageViews": 14,
+          "conversions": 2.0
+        },
+        {
+          "date": "20261004",
+          "sessions": 4,
+          "users": 4,
+          "pageViews": 4,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261005",
+          "sessions": 2,
+          "users": 2,
+          "pageViews": 2,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261006",
+          "sessions": 2,
+          "users": 2,
+          "pageViews": 2,
+          "conversions": 0.0
+        }
+      ],
+      "sources": [
+        {
+          "channel": "Direct",
+          "sessions": 25,
+          "users": 23
+        },
+        {
+          "channel": "Organic Search",
+          "sessions": 1,
+          "users": 1
         }
       ]
     },
@@ -1290,29 +1254,22 @@
       "property_id": "535620018",
       "category": "ecommerce",
       "overview": {
-        "sessions": 27,
-        "totalUsers": 25,
-        "newUsers": 27,
-        "bounceRate": 0.7037037037037037,
-        "avgSessionDuration": 19.233998629629628,
-        "pageViews": 27,
+        "sessions": 21,
+        "totalUsers": 19,
+        "newUsers": 20,
+        "bounceRate": 0.7142857142857143,
+        "avgSessionDuration": 23.581086476190475,
+        "pageViews": 20,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 1,
-        "totalUsers": 1,
-        "pageViews": 1,
+        "sessions": 0,
+        "totalUsers": 0,
+        "pageViews": 0,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260916",
-          "sessions": 6,
-          "users": 6,
-          "pageViews": 7,
-          "conversions": 0.0
-        },
         {
           "date": "20260918",
           "sessions": 1,
@@ -1401,8 +1358,8 @@
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 21,
-          "users": 21
+          "sessions": 15,
+          "users": 15
         },
         {
           "channel": "Organic Search",
@@ -1523,77 +1480,6 @@
       ]
     },
     {
-      "domain": "ninja-tyden.cz",
-      "name": "Ninja Týden",
-      "property_id": "539768933",
-      "category": "leadgen",
-      "overview": {
-        "sessions": 9,
-        "totalUsers": 9,
-        "newUsers": 9,
-        "bounceRate": 0.8888888888888888,
-        "avgSessionDuration": 114.04355711111111,
-        "pageViews": 10,
-        "conversions": 0.0,
-        "revenue": 0.0
-      },
-      "last7": {
-        "sessions": 4,
-        "totalUsers": 4,
-        "pageViews": 5,
-        "conversions": 0.0
-      },
-      "daily": [
-        {
-          "date": "20260927",
-          "sessions": 3,
-          "users": 3,
-          "pageViews": 3,
-          "conversions": 0.0
-        },
-        {
-          "date": "20260929",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261006",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261010",
-          "sessions": 3,
-          "users": 3,
-          "pageViews": 3,
-          "conversions": 0.0
-        },
-        {
-          "date": "20261014",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 2,
-          "conversions": 0.0
-        }
-      ],
-      "sources": [
-        {
-          "channel": "Direct",
-          "sessions": 8,
-          "users": 8
-        },
-        {
-          "channel": "Cross-network",
-          "sessions": 1,
-          "users": 1
-        }
-      ]
-    },
-    {
       "domain": "kauzatjkrupka.cz",
       "name": "kauzatjkrupka.cz",
       "property_id": "549124961",
@@ -1630,6 +1516,13 @@
           "users": 1
         }
       ]
+    },
+    {
+      "domain": "ninja-tyden.cz",
+      "name": "Ninja Týden",
+      "property_id": "539768933",
+      "category": "leadgen",
+      "error": "The read operation timed out"
     }
   ]
 }
