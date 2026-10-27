@@ -8,8 +8,8 @@
   ▸ AUDIT: hosting (Vercel/VPS/Cloudflare) + e-maily (MX) + dostupnost.
     Na produkci běží serverless /api/audit (čte hlavičky odpovědí);
     MX přes dns.google. Lokálně (localhost bez API) = fallback up/down.
-  ▸ ÚDRŽBA "Posledních 5 úprav": pole UPDATES níže — nový záznam na začátek,
-    vykreslí se automaticky jako rozklikávací karta (co se změnilo / co je jinak).
+  ▸ ÚDRŽBA "Posledních 5 úprav": pole SYSTEM_UPDATES v registru system-sites.js —
+    nový záznam na začátek; vykreslí se automaticky jako rozklikávací karta.
   ▸ Snapshot dat: 2026-09-06.
 -->
 <!DOCTYPE html>
@@ -415,7 +415,9 @@ const GROUPS = [
 ];
 
 /* služby platformy (audit jako samostatné uzly) */
-const SERVICES = [
+const SERVICES = (window.SYSTEM_SERVICES && window.SYSTEM_SERVICES.length)
+  ? window.SYSTEM_SERVICES
+  : [ /* fallback, když se registr nenačte */
   { key:'api',  name:'Customer Platform API', tag:'FastAPI · Vercel', cls:'ic-cyan', url:'https://customer-platform-chi.vercel.app/health/ready', local:false },
   { key:'sup',  name:'Supabase',              tag:'Postgres + GoTrue', cls:'ic-pink', url:'https://mljqltwcdqknezuqpisb.supabase.co/auth/v1/health', local:false },
   { key:'por',  name:'Portál login.webybudoucnosti.cz', tag:'Next.js', cls:'ic-lime', url:'https://login.webybudoucnosti.cz/', local:false },
@@ -423,55 +425,7 @@ const SERVICES = [
   { key:'trb',  name:'TURBOW',                tag:'lokální :8877', cls:'ic-pink', url:'http://localhost:8877/', local:true },
 ];
 
-const UPDATES = [
-  { date:'2026-09-06', repo:'customers-portal', commit:'c781432', kind:'navrh',
-    title:'Návrh multi-značkového portálu — login.webyprobyznys.cz (registry zdrojů)', status:'NÁVRH',
-    changed:[
-      'Dokument MULTI-SOURCE-PORTALS.md: jedna aplikace portálu, branding podle domény (hostname).',
-      'Definice registru zdrojů: webybudoucnosti (teal), webyprobyznys (modrá), unknown (neutrální fallback).',
-      'Plán: source_key v Workspace.settings → bootstrap vrací jen workspaces dané značky.'
-    ],
-    meaning:'Zákazník z webyprobyznys.cz dnes v portálu vidí branding „Webdo24 Portál“ — návrh oddělí značky, e-maily i nabídky tak, aby se nikdy nesmíchaly.',
-    impact:'Zatím žádná změna provozu. TURBOW část je na nepublikované větvi (viz další záznam).' },
-  { date:'2026-09-06', repo:'turbow', commit:'081f916', kind:'feat',
-    title:'Registr zdrojů zákazníků v TURBOW — barevné rozlišení + brand odpovědí', status:'LOKÁLNĚ · NEPUBLIKOVÁNO',
-    changed:[
-      'app/sources.py — registry (key, barvy, e-mail, portál) + resolvery podle domény / source_detail.',
-      'Lead i customer nesou source_key; UI ukazuje barevný štítek zdroje.',
-      'Nabídky (quotes + public offer) používají e-mail a patičku ZDROJE — pryč pevné „WebyBudoucnosti“.',
-      'Migrace customers.source_key (aditivní) + 23 testů.'
-    ],
-    meaning:'Zákazník z webyprobyznys.cz už nedostane nabídku podepsanou jako WebyBudoucnosti.cz — podepíše se správná značka.',
-    impact:'Větev feature/first-customer-e2e (7 commitů před origin/main) — čeká na merge a publikaci.' },
-  { date:'2026-09-05', repo:'customers-portal', commit:'5247fd6', kind:'feat',
-    title:'AI správa webu v portálu — příkazy mění obsah webu (change set + publish)', status:'NASAZENO',
-    changed:[
-      'Nový režim: napíšeš příkaz česky → AI navrhne změny obsahu (propose).',
-      'Změny se seskupí do change setu, který publikuješ / zahodíš / rollback.',
-      'Editor sekcí ukazuje skutečný text z obsahu; náhled otevírá skutečný web.'
-    ],
-    meaning:'Úprava webu už není „najdi políčko a přepiš“ — AI připraví změnu a ty ji jedním klikem schválíš.',
-    impact:'Volá nové API /api/v1/.../websites/{id}/ai/* (viz další záznam).' },
-  { date:'2026-09-05', repo:'customers-platform', commit:'1013b80', kind:'feat',
-    title:'AI správa obsahu webu — propose → change set → publish (SDK pipeline)', status:'NASAZENO',
-    changed:[
-      'Nová doména ai_content: propose, change sets, publish, rollback, history, fields.',
-      'Stejná pipeline dostupná i mimo portál (SDK) — základ pro automatické AI úpravy.',
-      'Nové endpointy: /websites/{id}/ai/propose, /ai/change-sets, /ai/history, /ai/fields.'
-    ],
-    meaning:'Obsah webu je strojově čitelný/zapisovatelný — AI může web upravovat konzistentně jako člověk v portálu.',
-    impact:'Produkční API má 155 endpointů; change setů zatím 0 (feature čerstvě nasazená).' },
-  { date:'2026-09-02', repo:'customers-platform', commit:'2e72756', kind:'fix',
-    title:'Stabilizace produkce — DB pooler, connect přes worker, opravy importu', status:'NASAZENO',
-    changed:[
-      'Supabase transaction pooler (:6543) + malý pool + statement_cache_size=0 — konec odpojování v serverless.',
-      'Connect webu: import obsahu přes worker job (site_connect.import) místo sync requestu (60s limit).',
-      'Validátor: prázdná sekce OK při capabilities false; intake neblokuje osiřelý draft.',
-      'Import zachovává kategorie (category/categoryLabel) u produktů a služeb.'
-    ],
-    meaning:'Připojení většího webu už nepadá na limitu serverless requestu a databáze drží spojení.',
-    impact:'Běžný provoz; souvisí s prvním produkčním CONNECTED webem (Horizont).' },
-];
+const UPDATES = (window.SYSTEM_UPDATES && window.SYSTEM_UPDATES.length) ? window.SYSTEM_UPDATES : [];
 
 const $ = s => document.querySelector(s);
 const isLocalPage = location.protocol === 'http:' && ['localhost','127.0.0.1'].includes(location.hostname);
@@ -497,9 +451,12 @@ function renderSites(){
       const card = document.createElement('div');
       card.className = 'site-card';
       card.id = 'site-' + s.id;
+      /* mx:false = subdoména / platformní doména — e-mail se nekontroluje.
+         Štítek musí říkat, co web je, ne „zákazník“ u každého bez MX. */
+      const kindLabel = s.group==='portal' ? 'portál' : s.group==='customer' ? 'zákazník' : 'web';
       const badge2 = s.mx!==false
         ? '<span class="badge m">e-mail: —</span>'
-        : '<span class="badge gray">' + (s.expect==='planned'?'plán':s.expect==='wip'?'rozpracováno':(s.group==='portal'?'portál':'zákazník')) + '</span>';
+        : '<span class="badge gray">' + (s.expect==='planned'?'plán':s.expect==='wip'?'rozpracováno':kindLabel) + '</span>';
       card.innerHTML = `
         <div class="site-top">
           <img class="site-logo" alt="" data-acc="${s.acc}" data-mono="${s.mono}" data-cands='${JSON.stringify(s.icon||[])}'>
@@ -799,7 +756,9 @@ function renderUpdates(){
         <h4 class="ch">Co se změnilo</h4><ul>${u.changed.map(c=>'<li>'+c+'</li>').join('')}</ul>
         <h4 class="jn">Co je jinak / co to znamená</h4><p>${u.meaning}</p>
         <h4 class="do">Dopad / stav</h4><p>${u.impact}</p>
-        <a class="commit" target="_blank" rel="noopener" href="https://github.com/mirabeecko/${u.repo}/commit/${u.commit}">github.com/mirabeecko/${u.repo} · ${u.commit}</a>
+        ${(u.commit && u.commit !== '—')
+          ? `<a class="commit" target="_blank" rel="noopener" href="https://github.com/mirabeecko/${u.repo}/commit/${u.commit}">github.com/mirabeecko/${u.repo} · ${u.commit}</a>`
+          : `<span class="commit" style="cursor:default">${u.repo}</span>`}
       </div>`;
     list.appendChild(d);
   });
