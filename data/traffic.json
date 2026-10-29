@@ -1,6 +1,6 @@
 {
   "schema": "majlajf-traffic/v1",
-  "updated_at": "2026-10-28T09:00:00+01:00",
+  "updated_at": "2026-10-29T08:10:43+01:00",
   "windows": {
     "overview_days": 30,
     "short_days": 7
@@ -13,29 +13,22 @@
       "property_id": "547065994",
       "category": "content",
       "overview": {
-        "sessions": 538,
+        "sessions": 537,
         "totalUsers": 471,
         "newUsers": 467,
-        "bounceRate": 0.4684014869888476,
-        "avgSessionDuration": 141.73471838475834,
-        "pageViews": 1134,
+        "bounceRate": 0.46741154562383613,
+        "avgSessionDuration": 141.99865640782122,
+        "pageViews": 1133,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 20,
-        "totalUsers": 20,
-        "pageViews": 49,
+        "sessions": 4,
+        "totalUsers": 4,
+        "pageViews": 28,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260928",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
         {
           "date": "20260930",
           "sessions": 1,
@@ -192,7 +185,7 @@
         },
         {
           "channel": "Direct",
-          "sessions": 84,
+          "sessions": 83,
           "users": 59
         },
         {
@@ -218,29 +211,22 @@
       "property_id": "552474189",
       "category": "service",
       "overview": {
-        "sessions": 161,
-        "totalUsers": 147,
-        "newUsers": 151,
-        "bounceRate": 0.42857142857142855,
-        "avgSessionDuration": 97.0593059068323,
-        "pageViews": 327,
+        "sessions": 153,
+        "totalUsers": 143,
+        "newUsers": 146,
+        "bounceRate": 0.4444444444444444,
+        "avgSessionDuration": 91.22558775816994,
+        "pageViews": 292,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 22,
-        "totalUsers": 20,
-        "pageViews": 44,
+        "sessions": 24,
+        "totalUsers": 22,
+        "pageViews": 47,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260928",
-          "sessions": 12,
-          "users": 9,
-          "pageViews": 42,
-          "conversions": 0.0
-        },
         {
           "date": "20260929",
           "sessions": 5,
@@ -443,23 +429,30 @@
           "users": 5,
           "pageViews": 10,
           "conversions": 0.0
+        },
+        {
+          "date": "20261028",
+          "sessions": 4,
+          "users": 4,
+          "pageViews": 7,
+          "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Organic Search",
-          "sessions": 99,
-          "users": 85
+          "sessions": 89,
+          "users": 79
         },
         {
           "channel": "Direct",
-          "sessions": 61,
-          "users": 61
+          "sessions": 62,
+          "users": 62
         },
         {
           "channel": "AI Assistant",
-          "sessions": 1,
-          "users": 1
+          "sessions": 2,
+          "users": 2
         }
       ]
     },
@@ -469,19 +462,19 @@
       "property_id": "511361257",
       "category": "content",
       "overview": {
-        "sessions": 98,
-        "totalUsers": 86,
-        "newUsers": 86,
-        "bounceRate": 0.6530612244897959,
-        "avgSessionDuration": 75.44513701020409,
-        "pageViews": 200,
+        "sessions": 99,
+        "totalUsers": 87,
+        "newUsers": 87,
+        "bounceRate": 0.6565656565656566,
+        "avgSessionDuration": 74.73273383838385,
+        "pageViews": 201,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 10,
-        "totalUsers": 9,
-        "pageViews": 24,
+        "sessions": 5,
+        "totalUsers": 5,
+        "pageViews": 17,
         "conversions": 0.0
       },
       "daily": [
@@ -624,13 +617,20 @@
           "users": 2,
           "pageViews": 14,
           "conversions": 0.0
+        },
+        {
+          "date": "20261028",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 64,
-          "users": 54
+          "sessions": 65,
+          "users": 55
         },
         {
           "channel": "Organic Social",
@@ -660,29 +660,22 @@
       "property_id": "540216883",
       "category": "ecommerce",
       "overview": {
-        "sessions": 96,
-        "totalUsers": 92,
-        "newUsers": 91,
-        "bounceRate": 0.71875,
-        "avgSessionDuration": 51.57374831250001,
-        "pageViews": 139,
+        "sessions": 98,
+        "totalUsers": 94,
+        "newUsers": 93,
+        "bounceRate": 0.7040816326530612,
+        "avgSessionDuration": 50.713299969387755,
+        "pageViews": 143,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 17,
-        "totalUsers": 16,
-        "pageViews": 19,
+        "sessions": 19,
+        "totalUsers": 18,
+        "pageViews": 24,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260928",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
         {
           "date": "20260929",
           "sessions": 2,
@@ -766,6 +759,13 @@
           "users": 15,
           "pageViews": 18,
           "conversions": 0.0
+        },
+        {
+          "date": "20261029",
+          "sessions": 3,
+          "users": 3,
+          "pageViews": 6,
+          "conversions": 0.0
         }
       ],
       "sources": [
@@ -776,8 +776,8 @@
         },
         {
           "channel": "Direct",
-          "sessions": 37,
-          "users": 33
+          "sessions": 39,
+          "users": 35
         },
         {
           "channel": "Cross-network",
@@ -801,15 +801,15 @@
         "totalUsers": 88,
         "newUsers": 88,
         "bounceRate": 0.8888888888888888,
-        "avgSessionDuration": 36.88899328888889,
+        "avgSessionDuration": 36.94879363333333,
         "pageViews": 103,
         "conversions": 3.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 18,
-        "totalUsers": 17,
-        "pageViews": 20,
+        "sessions": 17,
+        "totalUsers": 16,
+        "pageViews": 19,
         "conversions": 0.0
       },
       "daily": [
@@ -911,11 +911,6 @@
           "channel": "Organic Search",
           "sessions": 1,
           "users": 1
-        },
-        {
-          "channel": "Unassigned",
-          "sessions": 1,
-          "users": 1
         }
       ]
     },
@@ -925,12 +920,12 @@
       "property_id": "530284583",
       "category": "leadgen",
       "overview": {
-        "sessions": 26,
-        "totalUsers": 25,
-        "newUsers": 23,
-        "bounceRate": 0.6153846153846154,
-        "avgSessionDuration": 43.199060307692314,
-        "pageViews": 23,
+        "sessions": 24,
+        "totalUsers": 23,
+        "newUsers": 21,
+        "bounceRate": 0.6666666666666666,
+        "avgSessionDuration": 28.621161041666667,
+        "pageViews": 21,
         "conversions": 2.0,
         "revenue": 0.0
       },
@@ -941,13 +936,6 @@
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260928",
-          "sessions": 2,
-          "users": 2,
-          "pageViews": 2,
-          "conversions": 0.0
-        },
         {
           "date": "20260929",
           "sessions": 3,
@@ -1039,8 +1027,8 @@
         },
         {
           "channel": "Referral",
-          "sessions": 4,
-          "users": 3
+          "sessions": 3,
+          "users": 2
         },
         {
           "channel": "Paid Social",
@@ -1051,11 +1039,6 @@
           "channel": "Unassigned",
           "sessions": 2,
           "users": 2
-        },
-        {
-          "channel": "AI Assistant",
-          "sessions": 1,
-          "users": 1
         }
       ]
     },
@@ -1150,29 +1133,22 @@
       "property_id": "552512090",
       "category": "leadgen",
       "overview": {
-        "sessions": 9,
-        "totalUsers": 8,
-        "newUsers": 8,
-        "bounceRate": 0.7777777777777778,
-        "avgSessionDuration": 50.00982777777777,
-        "pageViews": 11,
+        "sessions": 11,
+        "totalUsers": 10,
+        "newUsers": 10,
+        "bounceRate": 0.7272727272727273,
+        "avgSessionDuration": 42.49984472727272,
+        "pageViews": 13,
         "conversions": 3.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 0,
-        "totalUsers": 0,
-        "pageViews": 0,
+        "sessions": 3,
+        "totalUsers": 3,
+        "pageViews": 3,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20260928",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
-          "conversions": 0.0
-        },
         {
           "date": "20260929",
           "sessions": 1,
@@ -1207,13 +1183,112 @@
           "users": 1,
           "pageViews": 1,
           "conversions": 0.0
+        },
+        {
+          "date": "20261029",
+          "sessions": 3,
+          "users": 3,
+          "pageViews": 3,
+          "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 9,
-          "users": 8
+          "sessions": 11,
+          "users": 10
+        }
+      ]
+    },
+    {
+      "domain": "mirabee.cz",
+      "name": "mirabee.cz",
+      "property_id": "222057102",
+      "category": "leadgen",
+      "overview": {
+        "sessions": 9,
+        "totalUsers": 9,
+        "newUsers": 9,
+        "bounceRate": 1.0,
+        "avgSessionDuration": 2.0524097777777777,
+        "pageViews": 9,
+        "conversions": 0.0,
+        "revenue": 0.0
+      },
+      "last7": {
+        "sessions": 2,
+        "totalUsers": 2,
+        "pageViews": 2,
+        "conversions": 0.0
+      },
+      "daily": [
+        {
+          "date": "20261002",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261003",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261005",
+          "sessions": 2,
+          "users": 2,
+          "pageViews": 2,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261010",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261019",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261020",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261022",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261028",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        }
+      ],
+      "sources": [
+        {
+          "channel": "Direct",
+          "sessions": 7,
+          "users": 7
+        },
+        {
+          "channel": "Referral",
+          "sessions": 2,
+          "users": 2
         }
       ]
     },
@@ -1292,13 +1367,6 @@
           "users": 1
         }
       ]
-    },
-    {
-      "domain": "mirabee.cz",
-      "name": "mirabee.cz",
-      "property_id": "222057102",
-      "category": "leadgen",
-      "error": "<urlopen error [Errno 54] Connection reset by peer>"
     },
     {
       "domain": "kauzatjkrupka.cz",
