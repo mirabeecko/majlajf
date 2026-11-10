@@ -26,6 +26,11 @@
       "permanent": true
     },
     {
+      "source": "/webprompt",
+      "destination": "/webprompt/",
+      "permanent": true
+    },
+    {
       "source": "/ads-engine",
       "destination": "https://ads.webyprobyznys.cz",
       "permanent": false

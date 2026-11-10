@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebPrompt Studio — zadání pro AI webaře z webu zákazníka</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23cdf25b'/%3E%3Cpath d='M32 12l4.2 12.8L49 29l-12.8 4.2L32 46l-4.2-12.8L15 29l12.8-4.2z' fill='%2310140a'/%3E%3C/svg%3E">
+<meta name="description" content="Vlož web zákazníka, nástroj z něj vytáhne ověřená fakta a složí strukturovaný prompt pro AI webaře podle 15 šablon a formule z Promptessoru.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#0a0b09;
+  --bg2:#0e100c;
+  --card:#12150f;
+  --card2:#171b12;
+  --ink:#eef2e4;
+  --muted:#a9b19c;
+  --dim:#868e78;
+  --line:rgba(233,241,214,.10);
+  --line2:rgba(233,241,214,.18);
+  --accent:#cdf25b;
+  --accent2:#8fd94f;
+  --warm:#f0a35e;
+  --danger:#ff9b86;
+  --r:18px;
+  --pad:clamp(16px,3vw,26px);
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:15.5px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(900px 520px at 78% -12%,rgba(205,242,91,.10),transparent 62%),
+    radial-gradient(700px 420px at 6% 8%,rgba(240,163,94,.06),transparent 60%);
+  background-repeat:no-repeat;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+::selection{background:rgba(205,242,91,.28)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{width:100%;max-width:1240px;margin:0 auto;padding:0 clamp(16px,4vw,32px);position:relative;z-index:1}
+.ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:-.12em}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;
+  padding:12px clamp(16px,4vw,32px);
+  background:rgba(10,11,9,.78);backdrop-filter:blur(14px) saturate(1.2);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.brand:hover{text-decoration:none}
+.brand-mark{
+  width:34px;height:34px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--accent),var(--accent2));color:#10140a;
+  box-shadow:0 0 0 1px rgba(205,242,91,.35),0 8px 22px -8px rgba(205,242,91,.55);
+}
+.brand-mark .ic{width:18px;height:18px}
+.brand-txt{display:flex;flex-direction:column;line-height:1.05}
+.brand-txt strong{font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:-.01em}
+.brand-txt span{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim)}
+.brand-txt.sm strong{font-size:15px}
+.pillnav{display:flex;gap:4px;margin-left:10px;background:rgba(255,255,255,.03);border:1px solid var(--line);padding:4px;border-radius:999px;overflow:auto;scrollbar-width:none}
+.pillnav::-webkit-scrollbar{display:none}
+.pillnav a{
+  padding:7px 14px;border-radius:999px;font-size:13px;color:var(--muted);white-space:nowrap;
+  transition:background .18s,color .18s;
+}
+.pillnav a:hover{color:var(--ink);background:rgba(255,255,255,.05);text-decoration:none}
+.pillnav a.on{background:var(--accent);color:#10140a;font-weight:600}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.status{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(205,242,91,.14)}
+.src{font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:5px}
+.mcback{font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:5px 11px;white-space:nowrap}
+.mcback:hover{color:var(--ink);background:rgba(255,255,255,.04);text-decoration:none}
+@media (max-width:720px){.mcback{display:none}}
+.src .ic{width:12px;height:12px}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(38px,6vw,74px) 0 8px}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);
+}
+.eyebrow .ic{width:13px;height:13px}
+h1{
+  font-family:var(--serif);font-weight:500;letter-spacing:-.022em;line-height:1.02;
+  font-size:clamp(2.15rem,5.2vw,4.05rem);margin:0 0 20px;max-width:19ch;
+}
+h1 em{font-style:italic;color:var(--accent);font-weight:500}
+.lede{font-size:clamp(15px,1.5vw,17.5px);color:var(--muted);max-width:64ch;margin:0 0 26px}
+.stats{display:flex;flex-wrap:wrap;gap:10px 28px;margin:0 0 34px;padding:0}
+.stat{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--dim)}
+.stat b{font-family:var(--mono);font-size:19px;font-weight:500;color:var(--ink);letter-spacing:-.02em}
+.stat b i{font-style:normal;color:var(--accent)}
+
+/* ---------- studio ---------- */
+.studio{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:22px;align-items:start}
+.card{
+  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008)),var(--card);
+  border:1px solid var(--line);border-radius:var(--r);padding:var(--pad);
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 18px 40px -32px rgba(0,0,0,.9);
+}
+.form-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.step-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.step-no{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);
+  border:1px solid rgba(205,242,91,.35);background:rgba(205,242,91,.07);
+  border-radius:8px;padding:5px 7px;line-height:1;margin-top:3px;
+}
+.step h2{font-family:var(--serif);font-size:22px;font-weight:600;margin:0 0 3px;letter-spacing:-.01em}
+.step-head p{margin:0;font-size:12.8px;color:var(--dim);line-height:1.45}
+
+/* inputs */
+.loadrow{display:flex;gap:10px;align-items:stretch}
+.inputwrap{position:relative;display:flex;align-items:center}
+.inputwrap.grow{flex:1;min-width:0}
+.fieldic{position:absolute;left:13px;width:16px;height:16px;color:var(--dim);pointer-events:none}
+.inputwrap input{padding-left:38px}
+input[type=text],input[type=email],textarea,select{
+  width:100%;background:#0c0e0a;border:1px solid var(--line2);color:var(--ink);
+  border-radius:11px;padding:11px 13px;font-family:var(--sans);font-size:14px;line-height:1.45;
+  transition:border-color .16s,box-shadow .16s,background .16s;
+}
+input::placeholder,textarea::placeholder{color:#5d6455}
+input:focus,textarea:focus,select:focus{
+  outline:none;border-color:rgba(205,242,91,.7);box-shadow:0 0 0 3px rgba(205,242,91,.13);background:#0e110b;
+}
+textarea{resize:vertical;min-height:66px}
+.loadstatus{margin:10px 0 0;font-size:12.4px;color:var(--dim);display:flex;align-items:center;gap:7px}
+.loadstatus.err{color:var(--danger)}
+.loadstatus.ok{color:var(--accent)}
+.loadstatus .spin{width:12px;height:12px;border:2px solid rgba(205,242,91,.25);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.found{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.fchip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;color:var(--muted);
+  border:1px dashed var(--line2);border-radius:999px;padding:4px 9px;background:rgba(255,255,255,.02);
+}
+.fchip b{color:var(--ink);font-weight:500}
+.paste{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.paste summary{cursor:pointer;font-size:12.4px;color:var(--muted);list-style:none}
+.paste summary::-webkit-details-marker{display:none}
+.paste summary::before{content:"+ ";color:var(--accent);font-family:var(--mono)}
+.paste[open] summary::before{content:"– "}
+.paste textarea{margin-top:10px}
+.hint{font-size:12px;color:var(--dim);margin:8px 0}
+.privacy{font-size:11px;margin:4px 0 0;color:var(--dim)}
+.privacy a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+/* fields */
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld.wide{grid-column:1/-1}
+.fld label{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:6px}
+.fld label .req{color:var(--accent)}
+.fld label .auto{color:#0f130a;background:rgba(205,242,91,.75);border-radius:4px;padding:1px 4px;font-size:8.5px;letter-spacing:.08em}
+.fld textarea{min-height:74px}
+.mini-row{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px;margin-top:12px}
+.mini-row .fld label{font-size:9.5px}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chips + .chips{margin-top:14px}
+.chipgroup{width:100%;margin-top:4px}
+.chipgroup:first-child{margin-top:0}
+.chipgroup > span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 7px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);background:rgba(255,255,255,.02);
+  color:var(--muted);border-radius:999px;padding:7px 13px;font-size:12.8px;cursor:pointer;
+  transition:all .16s;font-family:var(--sans);
+}
+.chip .n{font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+.chip:hover{border-color:rgba(205,242,91,.4);color:var(--ink);background:rgba(205,242,91,.06)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#10140a;font-weight:600}
+.chip.on .n{color:#4a5a1c}
+.typedesc{
+  margin-top:16px;border-left:2px solid var(--accent);background:rgba(205,242,91,.045);
+  border-radius:0 14px 14px 0;padding:16px 16px 16px 18px;display:grid;gap:14px;
+}
+.typedesc-main p{margin:0;font-size:13px;line-height:1.5}
+.td-best{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-weight:500}
+.td-best .ic{width:14px;height:14px;color:var(--accent);margin-top:3px}
+.td-when{color:var(--muted);margin-top:5px!important}
+.td-verify{display:flex;gap:8px;color:var(--dim);font-size:12.2px!important;margin-top:7px!important}
+.td-verify .ic{width:13px;height:13px;color:var(--accent2);margin-top:3px}
+#extraFields:empty{display:none}
+
+/* generate bar */
+.genbar{position:relative;overflow:hidden}
+.genbar::after{content:"";position:absolute;inset:auto -40% -120% 30%;height:220px;background:radial-gradient(closest-side,rgba(205,242,91,.14),transparent);pointer-events:none}
+.opts{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin-bottom:16px}
+.seg{display:inline-flex;background:#0c0e0a;border:1px solid var(--line2);border-radius:999px;padding:3px}
+.segbtn{border:0;background:transparent;color:var(--muted);font-size:12.2px;padding:6px 13px;border-radius:999px;cursor:pointer;font-family:var(--sans)}
+.segbtn.on{background:rgba(205,242,91,.16);color:var(--ink);box-shadow:0 0 0 1px rgba(205,242,91,.3) inset}
+.chk{display:inline-flex;align-items:center;gap:8px;font-size:12.4px;color:var(--muted);cursor:pointer}
+.chk input{appearance:none;width:34px;height:19px;border-radius:999px;background:#0c0e0a;border:1px solid var(--line2);position:relative;cursor:pointer;transition:.18s;flex:none}
+.chk input::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:#5d6455;transition:.18s}
+.chk input:checked{background:rgba(205,242,91,.22);border-color:rgba(205,242,91,.5)}
+.chk input:checked::after{transform:translateX(15px);background:var(--accent)}
+.genrow{display:flex;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+
+/* buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;
+  font-family:var(--sans);font-size:13.5px;font-weight:600;padding:11px 18px;border:1px solid transparent;
+  cursor:pointer;transition:transform .16s,box-shadow .2s,background .16s,border-color .16s;white-space:nowrap;
+}
+.btn .ic{width:15px;height:15px}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn-primary{background:linear-gradient(160deg,var(--accent),var(--accent2));color:#10140a;box-shadow:0 10px 26px -14px rgba(205,242,91,.8)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 30px -12px rgba(205,242,91,.9)}
+.btn-ghost{background:rgba(255,255,255,.03);border-color:var(--line2);color:var(--ink)}
+.btn-ghost:hover:not(:disabled){background:rgba(205,242,91,.08);border-color:rgba(205,242,91,.4)}
+.btn-quiet{background:transparent;color:var(--muted)}
+.btn-quiet:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.btn.sm{padding:8px 13px;font-size:12.4px;border-radius:10px}
+.btn.sm .ic{width:13px;height:13px}
+
+/* ---------- output ---------- */
+.out-col{position:sticky;top:84px;min-width:0}
+.out{display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 104px)}
+.out-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.out-head .eyebrow{margin:0 0 2px}
+.out-head h2{font-family:var(--serif);font-size:20px;margin:0;font-weight:600}
+.badge{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.badge.ok{color:var(--accent);border-color:rgba(205,242,91,.4);background:rgba(205,242,91,.08)}
+.outmeta{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.outmeta b{color:var(--ink);font-weight:500}
+.missing{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.missing .lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--warm);margin-right:2px}
+.mchip{font-family:var(--sans);font-size:10.8px;color:var(--warm);border:1px solid rgba(240,163,94,.3);background:rgba(240,163,94,.07);border-radius:6px;padding:2px 7px;cursor:pointer;transition:background .16s,border-color .16s}
+.mchip:hover{background:rgba(240,163,94,.16);border-color:rgba(240,163,94,.55)}
+.prompt{
+  margin:0;flex:1;min-height:180px;max-height:min(46vh,520px);overflow:auto;
+  background:#0a0c08;border:1px solid var(--line);border-radius:12px;padding:16px;
+  font-family:var(--mono);font-size:11.7px;line-height:1.62;color:#dbe3cf;white-space:pre-wrap;word-break:break-word;
+  scrollbar-width:thin;scrollbar-color:rgba(205,242,91,.25) transparent;
+}
+.prompt .empty{color:var(--dim);white-space:pre-wrap;display:block;line-height:1.7}
+.prompt::-webkit-scrollbar{width:8px}
+.prompt::-webkit-scrollbar-thumb{background:rgba(205,242,91,.22);border-radius:8px}
+.prompt .k{color:var(--accent);font-weight:500}
+.prompt .sec{color:#fff;font-weight:500}
+.prompt .warn{color:var(--warm)}
+.outacts{display:flex;flex-wrap:wrap;gap:8px}
+.note{display:flex;gap:8px;margin:0;font-size:11.6px;color:var(--dim);line-height:1.5}
+.note .ic{width:14px;height:14px;color:var(--accent2);margin-top:2px}
+.hist{border-top:1px solid var(--line);padding-top:11px;display:flex;flex-direction:column;gap:6px;max-height:150px;overflow:auto}
+.hist .lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.hitem{display:flex;gap:8px;align-items:baseline;background:none;border:0;color:var(--muted);font-size:11.8px;text-align:left;cursor:pointer;padding:3px 0;font-family:var(--sans)}
+.hitem:hover{color:var(--accent)}
+.hitem .hn{font-family:var(--mono);font-size:9.5px;color:var(--dim);flex:none}
+.hitem .hb{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- sections ---------- */
+.sec{padding:clamp(56px,8vw,96px) 0;position:relative}
+.sec.alt{background:linear-gradient(180deg,transparent,rgba(205,242,91,.028),transparent);border-block:1px solid var(--line)}
+.sec-head{max-width:70ch;margin-bottom:clamp(24px,4vw,38px)}
+.sec-head h2{font-family:var(--serif);font-size:clamp(1.75rem,3.4vw,2.7rem);font-weight:500;letter-spacing:-.02em;line-height:1.08;margin:0 0 12px}
+.sec-head .lede{margin:0;font-size:15px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.card h3{font-family:var(--serif);font-size:19px;font-weight:600;margin:0 0 12px;letter-spacing:-.01em}
+.cardhead{margin-bottom:16px}
+.cardhead p{margin:2px 0 0;font-size:12.5px;color:var(--dim)}
+.quick p#quickAnswer{color:var(--muted);font-size:13.6px;margin:0 0 18px}
+.formula{display:flex;flex-direction:column;gap:0}
+.frow{display:grid;grid-template-columns:minmax(0,auto) 1fr;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line)}
+.frow:first-child{border-top:0}
+.frow code{font-family:var(--mono);font-size:10.2px;letter-spacing:.04em;color:var(--accent);white-space:nowrap}
+.frow span{font-size:12.4px;color:var(--muted)}
+.ticks{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+.ticks li{display:flex;gap:10px;font-size:13.2px;color:var(--muted);line-height:1.5}
+.ticks li::before{content:"";width:15px;height:15px;flex:none;margin-top:3px;border-radius:5px;background:rgba(205,242,91,.14);border:1px solid rgba(205,242,91,.35);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%23cdf25b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");background-size:11px;background-position:center;background-repeat:no-repeat}
+.tablecard{margin-bottom:16px}
+.tablewrap{overflow:auto;margin:0 calc(var(--pad) * -1) calc(var(--pad) * -1);padding:0 var(--pad) var(--pad)}
+table{width:100%;border-collapse:collapse;font-size:12.8px;min-width:560px}
+th{text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--dim);font-weight:400;padding:0 12px 9px 0;border-bottom:1px solid var(--line2)}
+td{padding:11px 12px 11px 0;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top;line-height:1.45}
+td:first-child{color:var(--ink);font-weight:500;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.mistakes{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;counter-reset:m}
+.mistakes li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:12.8px;line-height:1.5}
+.mistakes li::before{counter-increment:m;content:"×";font-family:var(--mono);color:var(--danger);width:18px;height:18px;border:1px solid rgba(255,155,134,.3);border-radius:5px;display:grid;place-items:center;font-size:12px;margin-top:1px}
+.mistakes b{display:block;color:var(--ink);font-weight:600;font-size:12.9px}
+.mistakes span{color:var(--dim)}
+.pipeline{list-style:none;margin:0;padding:0;counter-reset:p;display:flex;flex-direction:column;gap:0}
+.pipeline li{position:relative;padding:0 0 18px 30px;font-size:12.6px;color:var(--dim);border-left:1px solid var(--line2);margin-left:9px}
+.pipeline li:last-child{border-left-color:transparent;padding-bottom:0}
+.pipeline li::before{counter-increment:p;content:counter(p);position:absolute;left:-10px;top:-2px;width:19px;height:19px;border-radius:50%;background:var(--card2);border:1px solid rgba(205,242,91,.35);color:var(--accent);font-family:var(--mono);font-size:9.5px;display:grid;place-items:center}
+.pipeline b{display:block;color:var(--ink);font-weight:600;font-size:13.2px;margin-bottom:1px}
+
+/* template grid */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
+.tcard{display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;transition:border-color .18s,transform .18s}
+.tcard:hover{border-color:rgba(205,242,91,.32);transform:translateY(-2px)}
+.tcard .tnum{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--accent)}
+.tcard h3{font-family:var(--serif);font-size:17.5px;margin:0;font-weight:600}
+.tcard p{margin:0;font-size:12.4px;color:var(--dim);line-height:1.5}
+.tcard .tbest{color:var(--muted)}
+.tcard .tuse{margin-top:auto;padding-top:10px}
+
+/* checklist */
+.checkcard{padding:var(--pad)}
+.checktop{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.progress{flex:1;min-width:160px;height:5px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .3s}
+.checkcount{font-family:var(--mono);font-size:12px;color:var(--muted);margin:0}
+.checklist{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 26px}
+.checklist li{display:flex}
+.citem{display:flex;gap:11px;align-items:flex-start;padding:10px 0;font-size:13.2px;color:var(--muted);cursor:pointer;border-bottom:1px solid var(--line);width:100%}
+.citem input{appearance:none;width:18px;height:18px;flex:none;border-radius:5px;border:1px solid var(--line2);background:#0c0e0a;margin-top:2px;cursor:pointer;position:relative;transition:.16s}
+.citem input::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2310140a' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/11px no-repeat;opacity:0;transition:.16s}
+.citem input:checked{background:var(--accent);border-color:var(--accent)}
+.citem input:checked::after{opacity:1}
+.citem input:checked + span{color:var(--dim);text-decoration:line-through;text-decoration-color:rgba(205,242,91,.4)}
+.resources{margin-top:26px;display:grid;gap:8px}
+.resources h3{font-family:var(--serif);font-size:17px;margin:0}
+.resources ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.6px}
+.resources li{color:var(--dim)}
+.resources .note{margin-top:6px;max-width:80ch}
+
+/* footer */
+.foot{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:10px}
+.footin{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dim{color:var(--dim);font-size:11.8px}
+.foot .src{margin-left:auto}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* responsive */
+@media (max-width:1080px){
+  .studio{grid-template-columns:1fr}
+  .out-col{position:static}
+  .out{max-height:none}
+  .prompt{max-height:420px}
+  .pillnav{display:none}
+}
+@media (max-width:820px){
+  .topbar-right .status{display:none}
+  .grid2{grid-template-columns:1fr}
+  .checklist{grid-template-columns:1fr}
+  h1{max-width:24ch}
+}
+@media (max-width:640px){
+  body{font-size:15px}
+  .fields,.mini-row{grid-template-columns:1fr}
+  .loadrow{flex-direction:column}
+  .loadrow .btn{width:100%}
+  .step h2{font-size:19px}
+  .outacts .btn{flex:1 1 auto}
+  .tgrid{grid-template-columns:1fr}
+  .tablewrap{margin-inline:calc(var(--pad) * -1)}
+  .stats{gap:8px 18px}
+  .stat b{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+  html{scroll-behavior:auto}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="i-a11y" viewBox="0 0 24 24"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v5h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+</svg>
+
+<header class="topbar">
+  <a class="mcback" id="mcBack" href="http://127.0.0.1:5175/" hidden>← Mission Control</a>
+  <a class="brand" href="#generator" aria-label="WebPrompt Studio — domů">
+    <span class="brand-mark"><svg class="ic"><use href="#i-sparkles"/></svg></span>
+    <span class="brand-txt"><strong>WebPrompt</strong><span>studio</span></span>
+  </a>
+  <nav class="pillnav" aria-label="Sekce">
+    <a href="#generator" class="on">Generátor</a>
+    <a href="#principy">Principy</a>
+    <a href="#sablony">Šablony</a>
+    <a href="#checklist">Checklist</a>
+  </nav>
+  <div class="topbar-right">
+    <span class="status"><span class="dot"></span><span id="buildNote">offline nástroj</span></span>
+    <a class="src" href="https://promptessor.com/blog/ai-website-builder-prompts-2026" target="_blank" rel="noopener">Zdroj <svg class="ic"><use href="#i-external"/></svg></a>
+  </div>
+</header>
+
+<main>
+  <section id="generator" class="hero">
+    <div class="wrap">
+      <p class="eyebrow"><svg class="ic"><use href="#i-sparkles"/></svg> prompt studio pro weby</p>
+      <h1>Z webu zákazníka udělej <em>zadání</em>, které AI opravdu postaví web.</h1>
+      <p class="lede">Vlož adresu. Nástroj si stránku přečte, vytáhne ověřená fakta a složí strukturovaný prompt
+        podle 15 šablon a formule z Promptessoru — včetně toho, co AI nesmí vymyslet.</p>
+      <div class="stats" id="stats"></div>
+
+      <div class="studio">
+        <div class="form-col">
+          <form id="briefForm" novalidate>
+            <div class="card step">
+              <div class="step-head"><span class="step-no">01</span><div><h2>Web zákazníka</h2><p>Veřejná stránka. Čte se jen to, co je na ní vidět.</p></div></div>
+              <div class="loadrow">
+                <div class="inputwrap grow">
+                  <svg class="ic fieldic"><use href="#i-globe"/></svg>
+                  <input type="text" id="url" name="web" inputmode="url" autocomplete="url" placeholder="dousa-elektro.cz" aria-label="Web zákazníka">
+                </div>
+                <button type="button" class="btn btn-ghost" id="btnLoad"><svg class="ic"><use href="#i-search"/></svg> Načíst web</button>
+              </div>
+              <p class="loadstatus" id="loadStatus" role="status" aria-live="polite">Zadej doménu a klikni na Načíst — pole níž se předvyplní.</p>
+              <p class="hint privacy">Čte se přes veřejnou čtečku <a href="https://r.jina.ai" target="_blank" rel="noopener">r.jina.ai</a> — jen veřejné stránky, nikdy ne URL s přihlášením.</p>
+              <div class="found" id="found" hidden></div>
+              <details class="paste" id="pasteBox">
+                <summary>Načtení selhalo? Vlož text stránky ručně</summary>
+                <p class="hint">Zkopíruj obsah stránky (Ctrl/Cmd+A, Ctrl/Cmd+C) a vlož ho sem. Parser z něj vytáhne stejná fakta.</p>
+                <textarea id="pasteText" rows="5" placeholder="Vlož text nebo HTML stránky…"></textarea>
+                <button type="button" class="btn btn-ghost sm" id="btnParsePaste"><svg class="ic"><use href="#i-code"/></svg> Zpracovat text</button>
+              </details>
+            </div>
+
+            <div class="card step">
+              <div class="step-head"><span class="step-no">02</span><div><h2>Kontext zakázky</h2><p>Co musí web dokázat a jaká fakta k tomu máš.</p></div></div>
+              <div class="fields" id="globalFields"></div>
+              <div class="mini-row" id="contactRow"></div>
+            </div>
+
+            <div class="card step">
+              <div class="step-head"><span class="step-no">03</span><div><h2>Šablona promptu</h2><p>Vyber, co zrovna potřebuješ — od strategie po bodovou opravu.</p></div></div>
+              <div id="typeChips" class="chips"></div>
+              <div class="typedesc" id="typeDesc" hidden>
+                <div class="typedesc-main">
+                  <p class="td-best"><svg class="ic"><use href="#i-target"/></svg><span id="tdBest"></span></p>
+                  <p class="td-when" id="tdWhen"></p>
+                  <p class="td-verify"><svg class="ic"><use href="#i-check"/></svg><span id="tdVerify"></span></p>
+                </div>
+                <div class="fields" id="extraFields"></div>
+              </div>
+            </div>
+
+            <div class="card genbar">
+              <div class="opts">
+                <div class="seg" role="group" aria-label="Jazyk promptu">
+                  <button type="button" class="segbtn on" data-lang="cs">Česky</button>
+                  <button type="button" class="segbtn" data-lang="en">English</button>
+                </div>
+                <label class="chk"><input type="checkbox" id="optNoInvent" checked><span>Zákaz vymýšlení faktů</span></label>
+                <label class="chk"><input type="checkbox" id="optCriteria" checked><span>Akceptační kritéria</span></label>
+              </div>
+              <div class="genrow">
+                <button type="submit" class="btn btn-primary" id="btnGenerate"><svg class="ic"><use href="#i-sparkles"/></svg> Vygenerovat prompt</button>
+                <button type="button" class="btn btn-quiet" id="btnReset"><svg class="ic"><use href="#i-refresh"/></svg> Vyčistit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <aside class="out-col">
+          <div class="card out">
+            <div class="out-head">
+              <div><p class="eyebrow">výstup</p><h2 id="outTitle">Prompt</h2></div>
+              <span class="badge" id="outBadge">zatím nic</span>
+            </div>
+            <div class="outmeta" id="outMeta"></div>
+            <div class="missing" id="missing" hidden></div>
+            <pre class="prompt" id="promptOut" tabindex="0"><span class="empty">Vyplň web a kontext vlevo, vyber šablonu a nech si prompt složit.
+
+Uvnitř bude:
+· kontext projektu podle formule
+· ostré zadání bez „udělej moderní web“
+· zákazy vymyšlených referencí a falešných integrací
+· kritéria, podle kterých se dá výsledek změřit</span></pre>
+            <div class="outacts">
+              <button type="button" class="btn btn-primary sm" id="btnCopy" disabled><svg class="ic"><use href="#i-copy"/></svg> Kopírovat</button>
+              <button type="button" class="btn btn-ghost sm" id="btnDownload" disabled><svg class="ic"><use href="#i-download"/></svg> .md</button>
+              <button type="button" class="btn btn-ghost sm" id="btnClaude" disabled><svg class="ic"><use href="#i-arrow"/></svg> Kopírovat + Claude</button>
+            </div>
+            <p class="note"><svg class="ic"><use href="#i-shield"/></svg> Faktickým zdrojem je jen veřejná stránka a tvoje zadání. Nástroj nic nepublikuje ani neověřuje pravdivost tvrzení.</p>
+            <div class="hist" id="hist" hidden></div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="principy" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow"><svg class="ic"><use href="#i-list"/></svg> principy</p>
+        <h2>Nejdřív brief, potom generování</h2>
+        <p class="lede">Článek stojí na jedné věci: dobrý prompt popisuje, čeho má web dosáhnout, pro koho, z jakých
+          faktů a jak se to pozná. Následující řádky jsou z něj převzaté a přeložené.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="card quick">
+          <h3>Quick answer</h3>
+          <p id="quickAnswer"></p>
+          <div class="formula" id="formula"></div>
+        </div>
+        <div class="card">
+          <h3>Co si odnést</h3>
+          <ul class="ticks" id="takeaways"></ul>
+        </div>
+      </div>
+
+      <div class="card tablecard">
+        <div class="cardhead"><h3>Kvalita má důkaz, ne dojem</h3><p>Sedm oblastí a jak je ověřit na skutečném webu.</p></div>
+        <div class="tablewrap"><table id="qualityTable"><thead><tr><th>Oblast</th><th>Důkaz dobrého výsledku</th><th>Jak ověřit</th></tr></thead><tbody></tbody></table></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="cardhead"><h3>Časté chyby</h3><p>Devět vzorců, kvůli kterým AI weby selhávají.</p></div>
+          <ul class="mistakes" id="mistakes"></ul>
+        </div>
+        <div class="card pipelinecard">
+          <div class="cardhead"><h3>Postup, který drží</h3><p>Z nápadu na stránku, ne naopak.</p></div>
+          <ol class="pipeline">
+            <li><span>Zadání</span>cíl, publikum, nabídka</li>
+            <li><span>Fakta</span>co je ověřené a co chybí</li>
+            <li><span>Prompt</span>formule + šablona</li>
+            <li><span>Stavba</span>webař nebo coding agent</li>
+            <li><span>Kontrola</span>reálná stránka v prohlížeči</li>
+            <li><span>Oprava</span>jedna věc, úzký rozsah</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sablony" class="sec alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow"><svg class="ic"><use href="#i-grid"/></svg> knihovna</p>
+        <h2>15 šablon + jedna bodová oprava</h2>
+        <p class="lede">Každá šablona má vlastní pole, vlastní akceptační kritéria a vlastní „co ověřit“.
+          Klikni na Použít a nastaví se v generátoru.</p>
+      </div>
+      <div class="tgrid" id="templatesGrid"></div>
+    </div>
+  </section>
+
+  <section id="checklist" class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow"><svg class="ic"><use href="#i-clipboard"/></svg> před publikací</p>
+        <h2>Checklist, který se odškrtává</h2>
+        <p class="lede">Dvanáct bodů z konce článku. Stav se ukládá do prohlížeče, takže se k tomu dá vrátit.</p>
+      </div>
+      <div class="card checkcard">
+        <div class="checktop">
+          <div class="progress"><span id="checkBar"></span></div>
+          <p class="checkcount" id="checkProgress">0 / 12</p>
+          <button type="button" class="btn btn-quiet sm" id="btnCheckReset"><svg class="ic"><use href="#i-refresh"/></svg> Reset</button>
+        </div>
+        <ul class="checklist" id="checklistList"></ul>
+      </div>
+      <div class="resources">
+        <h3>Oficiální zdroje</h3>
+        <ul id="resources"></ul>
+        <p class="note">Principy a znění šablon vycházejí z článku <a href="https://promptessor.com/blog/ai-website-builder-prompts-2026" target="_blank" rel="noopener">15 AI Website Builder Prompts (2026)</a> na Promptessoru. Nástroj je lokální pomůcka, ne služba PrompTessoru.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap footin">
+    <span class="brand-txt sm"><strong>WebPrompt</strong><span>studio</span></span>
+    <span class="dim">Postaveno pro Miroslava Brožka · <span id="buildDate"></span></span>
+    <a class="src" href="https://promptessor.com/blog/ai-website-builder-prompts-2026" target="_blank" rel="noopener">Původní článek <svg class="ic"><use href="#i-external"/></svg></a>
+  </div>
+</footer>
+
+<script id="appdata" type="application/json">{"templates":[{"id":"strategie","num":1,"group":"plan","name":"Strategie a zadání","name_en":"Website Strategy and Requirements","best":"Před generováním čehokoli — když existuje jen nápad nebo starý web.","when":"Ujasní publikum, jednu konverzi, rozsah stránek a chybějící podklady.","extras":[],"cs":"Pracuj jako webový stratég a UX plánovač. Připrav použitelné zadání pro {znacka} — {obor}. Web slouží publiku: {publikum}. Primární cíl je {cil}; hlavní nabídka: {nabidka}. Dostupné podklady jsou vypsané v kontextu projektu. Technický kontext: {stack}. Omezení: {nemenit}.\n\nNejprve urči tři hlavní potřeby návštěvníka, jednu primární konverzní akci a informace, které člověk potřebuje znát před rozhodnutím. Navrhni realistický rozsah stránek — účel každé stránky, obsahové vstupy, primární CTA a potřebné interakce. Chybějící informace vypiš zvlášť. Nevymýšlej reference, čísla, certifikace, ceny ani fakta o firmě.\n\nVrať: (1) odstavec s cílem webu, (2) potřeby a námitky publika, (3) tabulku požadavků na jednotlivé stránky, (4) checklist obsahu a podkladů, (5) kritéria úspěchu, (6) otázky, které reálně blokují realizaci. Toto je pouze plán — zatím nic nestavěj ani nepublikuj.","en":"Act as a website strategist and UX planner. Create an actionable website brief for {znacka} — {obor}, serving {publikum}. The primary goal is {cil}; the core offer is {nabidka}. Existing assets are listed in the project context. Tech context: {stack}. Constraints: {nemenit}.\n\nFirst identify the top user needs, one primary conversion action, and the information visitors need before acting. Propose a realistic page scope, each page's purpose, content inputs, primary CTA, and required interactions. List missing information separately. Do not invent testimonials, metrics, certifications, prices, or business facts.\n\nReturn: (1) one-paragraph website objective, (2) audience jobs and objections, (3) page requirements table, (4) content/assets checklist, (5) success criteria, (6) questions that materially block implementation. This is a plan only: do not build or publish yet.","crit_cs":["Každá navržená stránka má jasnou roli a vlastní obsahový úhel.","Seznam chybějících podkladů je konkrétní, ne obecný."],"crit_en":["Every proposed page has a clear role and a distinct content angle.","The missing-assets list is specific, not generic."]},{"id":"sitemap","num":2,"group":"plan","name":"Sitemapa a architektura","name_en":"Sitemap and Page Architecture","best":"Když je navigace nejasná nebo web potřebuje víc samostatných stránek.","when":"Řeší menu, hierarchii, interní odkazy a cesty ke konverzi.","extras":[{"key":"obsah_inventar","label":"Dostupné stránky a nabídky","ph":"služby, ceník, reference, kontakt","type":"textarea"},{"key":"navigacni_limit","label":"Max. položek v menu","ph":"6","type":"text","default":"6"}],"cs":"Navrhni informační architekturu pro web {znacka} ({obor}) určený publiku {publikum}. Dostupné stránky a nabídky: {obsah_inventar}. Primární konverze: {cil}. Maximum položek v hlavním menu: {navigacni_limit}.\n\nVytvoř sitemapu a hierarchii navigace tak, aby se nový návštěvník dostal k cíli s minimem zmatku. Seskup stránky podle záměru uživatele, navrhni popisné názvy v menu, definuj vztahy nadřazených a podřazených stránek a popiš nejlepší cestu z homepage k primární konverzi. Odliš povinné stránky od budoucích volitelných.\n\nVrať stromovou sitemapu, inventář stránek s účelem a unikátním úhlem, doporučenou navigaci v hlavičce a patičce, plán interních odkazů a chování menu na mobilu. Označ duplicitní nebo překrývající se stránky. Nepřidávej stránky jen kvůli klíčovým slovům — každá musí řešit konkrétní potřebu.","en":"Design the information architecture for {znacka} ({obor}) serving {publikum}. Available content and offers: {obsah_inventar}. Primary conversion: {cil}. Maximum preferred primary-nav items: {navigacni_limit}.\n\nCreate a sitemap and navigation hierarchy that helps first-time visitors discover the right page with minimal confusion. Group pages by user intent, propose descriptive navigation labels, define parent-child relationships, and identify the best path from the homepage to the primary conversion. Distinguish required pages from optional future pages.\n\nOutput a tree-style sitemap, a page inventory with page purpose and unique content angle, recommended header/footer navigation, an internal-linking plan, and mobile navigation behaviour. Flag duplicate or overlapping pages. Do not add pages only to target more keywords; every page needs a distinct audience need.","crit_cs":["Každá důležitá stránka je dosažitelná z menu nebo kontextového odkazu.","Podobné stránky mají odlišný účel, ne jen jiný nadpis."],"crit_en":["Every important page is reachable from navigation or contextual links.","Similar pages have distinct purposes, not just different headings."]},{"id":"landing","num":3,"group":"build","name":"Konverzní landing page","name_en":"Conversion-Focused Landing Page","best":"Kampaň, uvedení služby nebo jednorázová nabídka na jedné stránce.","when":"Hero, přínosy, důkazy, FAQ a jedno CTA — bez balastu.","extras":[{"key":"problem","label":"Problém zákazníka","ph":"bojí se, že řemeslník nedodrží termín","type":"text"},{"key":"prinos","label":"Hlavní přínos","ph":"jasná cena a termín předem, práce na klíč","type":"text"}],"cs":"Vytvoř (nebo specifikuj) responzivní landing page pro {nabidka}, cílenou na {publikum}. Problém uživatele: {problem}. Hlavní přínos: {prinos}. Primární CTA: {cta}. Vizuální směr: {design}. Použij pouze ověřené důkazy uvedené v kontextu projektu.\n\nPřiprav jasný hero s headline zaměřeným na výsledek, podpůrným podtitulkem, produktovým nebo příkladovým vizuálem a viditelným CTA. Pokračuj krátkou sekcí problému, přínosy, jak to funguje, dostupné důkazy, námitky/FAQ a závěrečné CTA. Drž jeden primární konverzní cíl, konzistentní text CTA, čitelnou typografii a nezaplněný mobil. Funkční odkazy a stavy implementuj tam, kde to platforma umí; jinak vypiš požadavky na integrace.\n\nNikdy nevymýšlej reference, loga klientů, statistiky, ocenění ani urgenci. Předej stránku a zdůvodnění sekce po sekci, seznam předpokladů a kontrolu chování CTA, přetečení na mobilu a přesnosti obsahu.","en":"Build or specify a responsive landing page for {nabidka}, targeted at {publikum}. The user problem is {problem}; the main benefit is {prinos}; the primary CTA is {cta}. Use this design direction: {design}. Only use authentic proof listed in the project context.\n\nCreate a clear hero with outcome-led headline, supporting subheadline, product/example visual, and visible CTA. Follow with a concise problem section, benefits, how it works, available proof, objections/FAQ, and final CTA. Keep one primary conversion goal, consistent CTA wording, readable typography, and uncluttered mobile layouts. Implement functional links and states where the platform supports them; otherwise list integration requirements.\n\nNever fabricate testimonials, client logos, statistics, awards, or urgency claims. Provide the page and a section-by-section rationale. Include a short list of assumptions and checks for CTA behaviour, mobile overflow, and content accuracy.","crit_cs":["Každá sekce odpovídá na jednu otázku návštěvníka a směřuje k CTA.","Důkazy na stránce pocházejí pouze ze zadání."],"crit_en":["Each section answers one visitor question and points to the CTA.","Every proof element comes from the supplied facts only."]},{"id":"saas","num":4,"group":"build","name":"SaaS marketingový web","name_en":"SaaS Marketing Website","best":"Více stránek pro software — produkt, řešení, ceník, FAQ.","when":"Vysvětluje produkt jako výsledek pro uživatele, ne výčet featur.","extras":[{"key":"idealni","label":"Ideální zákazník","ph":"menší účetní kanceláře do 10 lidí","type":"text"},{"key":"funkce","label":"Ověřené funkce","ph":"import faktur, schvalování, export do PDF","type":"textarea"},{"key":"plany","label":"Ceník / tarify","ph":"jen pokud existuje; jinak [DOPLNIT]","type":"textarea"},{"key":"signup","label":"Odkaz na registraci","ph":"https://app.example.cz/registrace","type":"text"}],"cs":"Vytvoř marketingový web pro SaaS produkt {znacka}. Ideální zákazník: {idealni}; jeho problém: {problem}. Ověřené funkce: {funkce}. Schválené informace o tarifech: {plany}. Cíl registrace: {signup}. Vizuální směr: {design}.\n\nNavrhni homepage a rozumnou navigaci pro produkt/funkce, užití, ceník (pouze pokud ceník existuje), FAQ a kontakt/dokumentaci. Homepage musí odpovědět: co to je, pro koho, jak to funguje a proč jednat. Funkce popisuj jako výsledky pro uživatele s přesným doplněním. Používej opakované komponenty, jasné nadpisy, jedno demo/vizuální místo a konzistentní CTA.\n\nNevymýšlej integrace, bezpečnostní certifikace, počty zákazníků, zkušební verze ani dostupnost funkcí. Chybějící obsah označ jako explicitní placeholder. Vrať implementaci nebo specifikaci pro builder, seznam potřebných podkladů a ověřovací checklist.","en":"Create a marketing website for the SaaS product {znacka}. Its ideal customers are {idealni}; their problem is {problem}. Verified capabilities: {funkce}. Approved plan information: {plany}. Sign-up destination: {signup}. Brand direction: {design}.\n\nDesign a homepage plus a sensible navigation blueprint for product/features, use cases, pricing (only if pricing exists), FAQ, and contact/docs. Make the homepage answer: what is this, who is it for, how does it work, and why should I act? Explain features as user outcomes with accurate supporting detail. Use reusable components, clear headings, a focused demo/visual area, and a consistent CTA.\n\nDo not invent integrations, security certifications, customer counts, free trials, or feature availability. Mark missing content as explicit placeholders. Return the implementation or builder specification, required assets, and verification checklist.","crit_cs":["Každé tvrzení o funkci nebo ceně jde dohledat v zadání.","Registrace a navigace fungují na mobilu i na desktopu."],"crit_en":["Every feature or pricing claim traces back to the brief.","Sign-up and navigation work on mobile and desktop."]},{"id":"lokalni","num":5,"group":"build","name":"Web lokální firmy","name_en":"Local Business Website","best":"Řemeslníci a služby, kde rozhoduje telefon, adresa a důvěra.","when":"Kontaktní cesty, působnost, hodiny a rezervace bez vymyšlených recenzí.","extras":[{"key":"oblast","label":"Působnost","ph":"Chabařovice a 30 km okolí","type":"text"},{"key":"hodiny","label":"Otevírací doba","ph":"Po–Pá 7–17, So po domluvě","type":"text"},{"key":"kontakty","label":"Kontaktní cesty","ph":"telefon, e-mail, WhatsApp","type":"text"},{"key":"rezervace","label":"Objednání / poptávka","ph":"telefonát, formulář, rezervační kalendář","type":"text"}],"cs":"Vytvoř profesionální a přístupný web pro firmu {znacka} působící v oblasti {oblast}. Skutečné služby: {nabidka}; potvrzená otevírací doba: {hodiny}; kontaktní cesty: {kontakty}; způsob objednání: {rezervace}; tón: {ton}.\n\nNaplánuj homepage s přehledem služeb, detailními stránkami klíčových služeb, informací o působnosti, skutečnými důvěryhodnostními signály, kontakty a výrazným CTA na objednání/kontakt. Telefon, e-mail i objednání musí být použitelné na mobilu. Adresu a lokalitu přidej jen tehdy, když je dodaná. FAQ stavěj na skutečných otázkách zákazníků, ne na vymyšlených místních faktech.\n\nNevyráběj hodnocení, recenze, ocenění, adresu, otevírací dobu ani dostupnost pohotovosti. Pokud mapa, formulář, rezervace nebo platba vyžadují integraci, výslovně odliš funkční integraci od vizuálního placeholderu. Vrať web, seznam chybějících podkladů a akční kontrolní seznam.","en":"Build a professional, accessible website for {znacka}, serving {oblast}. Actual services: {nabidka}; confirmed hours: {hodiny}; contact methods: {kontakty}; appointment or inquiry flow: {rezervace}; tone: {ton}.\n\nPlan a homepage with service overview, key service detail pages, service area information, genuinely provided trust signals, contact information, and a prominent booking/contact CTA. Make phone, email, and booking interactions usable on mobile. Add descriptive address/location elements only when supplied. Structure service FAQs around actual customer questions, not invented local facts.\n\nDo not manufacture star ratings, reviews, awards, address details, business hours, or emergency availability. If maps, forms, booking, or payment require integrations, explicitly distinguish a functioning integration from a visual placeholder. Return the site, missing-assets list, and actionable review checklist.","crit_cs":["Telefon a formulář jdou na mobilu opravdu použít, ne jen vypadají jako tlačítko.","Otevírací doba, adresa a působnost odpovídají zadání."],"crit_en":["Phone and form are genuinely usable on a phone, not just button-shaped.","Hours, address and service area match the brief."]},{"id":"portfolio","num":6,"group":"build","name":"Portfolio","name_en":"Portfolio Website","best":"Designér, vývojář, fotograf, konzultant nebo freelancer.","when":"Práce jako důkaz: projekt → role → postup → výsledek.","extras":[{"key":"role","label":"Profese","ph":"elektrikář / fotograf / konzultant","type":"text"},{"key":"projekty","label":"Reálné projekty","ph":"3–6 projektů s popisem a fotkami","type":"textarea"},{"key":"specializace","label":"Specializace","ph":"rekonstrukce bytů, chytré instalace","type":"text"}],"cs":"Vytvoř portfolio web pro {role} cílený na {publikum}. Specializace: {specializace}. Reálné projekty a podklady: {projekty}. CTA: {cta}. Vizuální směr: {design}.\n\nPostav hero, které vysvětlí odbornost a výsledky bez přehnaných tvrzení. Zařaď vybrané práce, případové studie ve struktuře problém → role → postup → výsledek, sekci o mně, schopnosti a přístupnou kontaktní cestu. Upřednostni důkazy projektů, silné popisky fotek a konzistentní rozestupy před dekorativními efekty. Karty projektů musí fungovat na mobilní šířce a každý detail projektu musí být dosažitelný.\n\nNevymýšlej klienty, výsledky, reference, certifikace ani screenshoty projektů. Kde výsledek chybí, napiš „doplnit ověřený výsledek“. Předej obsah a komponenty stránky, seznam doporučených podkladů a kontrolu načtení obrázků, ovládání klávesnicí a funkčnost kontaktních odkazů.","en":"Create a portfolio website for a {role} targeting {publikum}. Specialties: {specializace}. Real projects/case-study inputs: {projekty}. Contact CTA: {cta}. Desired visual tone: {design}.\n\nDevelop a hero that explains expertise and outcomes without exaggerated claims. Include selected work, case studies with problem → role → process → result, about section, capabilities, and an accessible contact path. Prioritise project evidence, strong image captions, and consistent spacing over decorative effects. Design project cards to work at mobile widths and make each project detail reachable.\n\nDo not invent clients, outcomes, testimonials, credentials, or project screenshots. If results are missing, mark the field as 'add verified result'. Produce page content/components, suggested asset list, and checks for image load, keyboard navigation, and contact links.","crit_cs":["Každý projekt je skutečný a jeho odkaz vede na existující stránku.","Kontaktní akce funguje na telefonu."],"crit_en":["Every project is genuine and its link resolves.","The contact action works on a phone."]},{"id":"design","num":7,"group":"ux","name":"Design systém a směr","name_en":"Visual Design System and Style Direction","best":"Když AI generované stránky mezi sebou nedrží jednotný styl.","when":"Tokeny, typografická škála, komponenty a stavy na jednom místě.","extras":[{"key":"atributy","label":"Vlastnosti značky","ph":"řemeslná, důvěryhodná, klidná","type":"text"},{"key":"barvy","label":"Existující barvy","ph":"#0f1110, #c8f751","type":"text"},{"key":"typografie","label":"Typografie","ph":"serifové nadpisy, sans tělo","type":"text"},{"key":"inspirace","label":"Povolená inspirace","ph":"2–3 weby, které se líbí","type":"text"}],"cs":"Pracuj jako produktový designér. Vytvoř ucelený a opakovaně použitelný design systém pro stránky {znacka} s těmito vlastnostmi značky: {atributy}. Existující barvy: {barvy}; typografické preference: {typografie}; povolená inspirace: {inspirace}; omezení: {nemenit}.\n\nDefinuj sémantické barevné tokeny, typografickou škálu, rozestupovou škálu, šířky gridu a kontejneru, radiusy, bordery, vzory karet, varianty tlačítek, styly formulářů, interaktivní stavy a pravidla použití komponent. Nadpisy a CTA musí být vizuálně odlišitelné. Popiš, jak se design přizpůsobuje světlému a tmavému podkladu. Upřednostni čitelný kontrast a hierarchii před módní dekorací.\n\nAplikuj systém na jednu reprezentativní stránku a vypiš, co je potřeba změnit jinde. Zachovej existující brandové podklady přesně. Logo nepřekresluj ani neupravuj. Vrať design tokeny, pravidla komponent, příklad složení stránky a implementační checklist; bez výslovného zadání nedělej celkový redesign.","en":"Act as a product designer. Create a coherent, reusable website design system for {znacka} using these brand attributes: {atributy}. Existing colours: {barvy}; typography preferences: {typografie}; allowed inspiration: {inspirace}; constraints: {nemenit}.\n\nDefine semantic colour tokens, type scale, spacing scale, grid/container widths, radii, borders, card patterns, button variants, form styles, interactive states, and component usage rules. Make headings and CTAs visually distinguishable. Describe how the design adapts to dark and light surfaces if applicable. Prioritise readable contrast and hierarchy over fashionable decoration.\n\nApply the system to one representative page and list changes needed elsewhere. Preserve existing brand assets exactly. Do not recreate or alter logos. Return design tokens, component rules, example page composition, and an implementation checklist; avoid wholesale redesign unless requested.","crit_cs":["Tři různé stránky používají stejné tokeny, CTA a hierarchii nadpisů.","Kontrast textu vůči podkladu je alespoň 4,5:1."],"crit_en":["Three different pages share the same tokens, CTA styles and heading hierarchy.","Text-to-background contrast is at least 4.5:1."]},{"id":"mobil","num":8,"group":"ux","name":"Mobilní responzivita","name_en":"Mobile-First Responsive Layout","best":"Desktop vypadá dobře, ale na telefonu přetéká nebo se nedá ovládat.","when":"Konkrétní breakpointy, dotykové plochy a žádné skrývání obsahu.","extras":[{"key":"breakpointy","label":"Breakpointy","ph":"375, 390, 768, 1024, 1440 px","type":"text","default":"375, 390, 768, 1024, 1440 px"},{"key":"kriticke","label":"Kritické úkoly","ph":"zavolat, odeslat poptávku, najít cenu","type":"text"}],"cs":"Vylepši responzivitu {web} pro šířky {breakpointy} na stávajícím stacku {stack}. Nejdůležitější úkoly uživatele: {kriticke}.\n\nNež cokoli změníš, projdi dodanou stránku nebo kód a pojmenuj konkrétní problémy: pevné šířky, vodorovné scrollování, natěsnanou navigaci, přetékající tabulky, malé dotykové plochy, neohrabané obrázky a příliš hustý text. Navrhni responzivní pravidla pro hlavičku a menu, mřížky sekcí, typografii, rozestupy, média, karty a formuláře. Preferuj intrinsické rozměry a flexibilní layout před hacky pro konkrétní zařízení.\n\nZachovej význam obsahu i primární CTA na všech šířkách. Neskrývej důležitý obsah na mobilu jen proto, aby se layout vešel. Implementuj nejmenší souvislou sadu změn, přidej matici testovaných viewportů a vypiš, co vyžaduje test na skutečném zařízení.","en":"Improve the responsiveness of {web} for {breakpointy} using the existing stack {stack}. The most important user tasks are {kriticke}.\n\nInspect or reason from the supplied page/code before changing anything. Identify rigid widths, horizontal scrolling, cramped navigation, overflowing tables, tiny targets, awkward images, and overly dense text. Propose responsive rules for header/nav, section grids, typography, spacing, media, cards, and forms. Prefer intrinsic sizing and flexible layout over device-specific hacks.\n\nPreserve content meaning and primary CTAs across screen sizes. Do not remove important content from mobile simply to make the layout fit. Implement the smallest coherent set of changes, then provide a viewport testing matrix and list anything that still needs real-device verification.","crit_cs":["Na 390 px je vodorovné přetečení 0–2 px a žádné CTA není oříznuté.","Dotykové plochy mají alespoň 40 px."],"crit_en":["At 390 px horizontal overflow is 0–2 px and no CTA is clipped.","Touch targets are at least 40 px."]},{"id":"navigace","num":9,"group":"ux","name":"Navigace a srozumitelnost","name_en":"Navigation and UX Clarity","best":"Lidé bloudí, nerozpoznají další krok nebo přehlédnou CTA.","when":"Mapa cesty, priority oprav a test se třemi úkoly.","extras":[{"key":"top_ukoly","label":"Hlavní úkoly","ph":"najít službu, ověřit cenu, zavolat","type":"text"},{"key":"problemy","label":"Pozorované problémy","ph":"„nevím, kde je ceník“","type":"textarea"}],"cs":"Zhodnoť UX {web} pro publikum {publikum}. Jejich hlavní úkoly: {top_ukoly}. Pozorované problémy: {problemy}. Prvky, které musí zůstat: {nemenit}.\n\nZmapuj cestu uživatele od vstupu po splnění úkolu. Pojmenuj nejasné popisky, soupeřící CTA, slepé uličky, zbytečné kliky, zavádějící afordance a chybějící zpětnou vazbu. Navrhni prioritizovaná zlepšení navigace, hierarchie stránky, umístění CTA, chování vyhledávání a filtrů tam, kde dává smysl, a prázdné i chybové stavy. U každé změny vysvětli, jaký problém uživatele řeší a co z existujícího chování se musí zachovat.\n\nImplementuj jen tam, kde je dost kontextu; jinak předej testovatelnou specifikaci. Vrať tabulku problémů před/po, navržené mikrocopy, interaktivní stavy a krátký skript usability testu se třemi realistickými úkoly. Nepřidávej funkce bez jasné potřeby.","en":"Review the UX of {web} for {publikum}. Their top tasks are {top_ukoly}. Observed issues: {problemy}. Elements that must remain: {nemenit}.\n\nMap the user's path from entry to task completion. Identify unclear labels, competing CTAs, dead ends, unnecessary clicks, misleading affordances, and feedback gaps. Propose prioritised improvements to navigation, page hierarchy, CTA placement, search/filter behaviour where appropriate, and empty/error states. For each change, explain the user problem it solves and which existing behaviour must be preserved.\n\nImplement changes only where enough context exists; otherwise propose a testable specification. Return a before/after issue table, suggested microcopy, interaction states, and a quick usability test script with three realistic tasks. Do not add features without a clear need.","crit_cs":["Nový uživatel najde tři hlavní úkoly bez nápovědy.","Každá změna má v zadání pojmenovaný problém, který řeší."],"crit_en":["A new user completes three key tasks without guidance.","Every change names the user problem it solves."]},{"id":"a11y","num":10,"group":"ux","name":"Přístupnost","name_en":"Accessibility Audit and Fix","best":"Klávesnice, čtečka, kontrast a formuláře — nebo když to žádá klient.","when":"Audit s prioritou bariér, ne jen seznam WCAG frází.","extras":[{"key":"standard","label":"Cílová norma","ph":"WCAG 2.2 AA","type":"text","default":"WCAG 2.2 AA"},{"key":"komponenty","label":"Komponenty v rozsahu","ph":"menu, formulář, akordeon","type":"text"}],"cs":"Audituj {web} z hlediska přístupnosti, cílově {standard} a s těmito komponentami: {komponenty}. Stack: {stack}.\n\nZkontroluj pořadí sémantických nadpisů, landmarky, odkazy, názvy tlačítek, alternativy obrázků, popisky vstupů, chybová hlášení, pořadí fokusu a jeho viditelnost, kontrast barev, dialogy a smysluplnou zpětnou vazbu stavů. Odliš problémy viditelné v kódu od těch, které vyžadují test v prohlížeči nebo s asistivní technologií. Prioritu mají bariéry, které brání dokončení hlavních úkolů.\n\nU každého potvrzeného problému vrať místo, dotčené uživatele, pozorované chování, opravu a ruční test. Implementuj rozsahově ohraničené sémantické a interakční úpravy bez změny nesouvisejícího vzhledu. Netvrď shodu s WCAG jen na základě AI kontroly; vypiš testy klávesnicí a se čtečkou, které ještě musí proběhnout.","en":"Audit {web} for accessible website use, targeting {standard} and these components: {komponenty}. Stack: {stack}.\n\nCheck semantic heading order, landmarks, links, button names, image alternatives, input labels, error messages, keyboard focus order and visible indicators, colour contrast, dialogs, and meaningful state feedback. Distinguish issues visible in the provided code from those needing browser or assistive-technology testing. Prioritise barriers that prevent completing core tasks.\n\nFor each confirmed issue return location, impacted users, observed behaviour, fix, and manual test. Implement scoped semantic and interaction improvements without changing unrelated visuals. Do not claim WCAG conformance from an AI review alone; include keyboard and screen-reader tests still required.","crit_cs":["Tab projde celou stránku, fokus je vždy vidět.","Žádný formulářový prvek není bez popisku."],"crit_en":["Tab reaches the whole page and focus is always visible.","No form control is missing a label."]},{"id":"copy","num":11,"group":"content","name":"Copywriting a sdělení","name_en":"Website Copywriting and Messaging","best":"Stránka je hezká, ale text je obecný nebo zní jako AI.","when":"Headline, přínosy, námitky a FAQ z ověřených faktů.","extras":[{"key":"bolesti","label":"Bolesti zákazníka","ph":"bojí se předražené zakázky","type":"textarea"},{"key":"prinosy","label":"Ověřené přínosy","ph":"rozpočet předem, 12 let praxe","type":"textarea"}],"cs":"Přepiš texty webu {znacka}, který nabízí {nabidka} publiku {publikum}. Bolesti: {bolesti}. Ověřené přínosy: {prinosy}. Tón značky: {ton}. Hlavní CTA: {cta}.\n\nNapiš hero headline zaměřené na přínos, stručný vysvětlující podtitulek, texty překlápějící funkce na výsledky, sekci pro námitky, mikrocopy k CTA a užitečné FAQ pouze z dodaných informací. Preferuj konkrétní jazyk před „revoluční“, „bezproblémový“ a dalšími nepodloženými přídavnými jmény. Používej skenovatelné nadpisy, srozumitelný jazyk a konzistentní hierarchii sdělení.\n\nU každé sekce uveď otázku čtenáře, na kterou odpovídá, a doporučené umístění. Nabídni dvě alternativní varianty hero s jiným důrazem. Výslovně označ tvrzení, která potřebují důkaz, a nevymýšlej reference, číselné výsledky, partnery ani garance. Finální text předej jako tabulku sekce po sekci s poznámkami k ověření.","en":"Rewrite website copy for {znacka}, which offers {nabidka} to {publikum}. Pain points: {bolesti}. Verified benefits: {prinosy}. Brand voice: {ton}. Main CTA: {cta}.\n\nWrite a benefit-led hero headline, concise explanatory subheadline, feature-to-outcome copy, objection-handling section, CTA microcopy, and a helpful FAQ based only on the information provided. Favour concrete language over 'revolutionary', 'seamless', or other unsupported adjectives. Use scannable headings, plain language, and a consistent message hierarchy.\n\nFor each section state the reader question it answers and recommended placement. Offer two alternative hero directions with different emphasis. Explicitly flag claims that need evidence and do not invent testimonials, numerical outcomes, partner names, or guarantees. Return final copy as a section-by-section table plus verification notes.","crit_cs":["Každý slib na stránce lze doložit dodaným faktem.","Text zní jako konkrétní firma, ne jako šablona."],"crit_en":["Every promise on the page can be substantiated by supplied facts.","The copy sounds like this specific business, not a template."]},{"id":"seo","num":12,"group":"content","name":"On-page SEO","name_en":"On-Page SEO and Content Structure","best":"Až když je jasný účel stránky a existuje skutečný obsah.","when":"Title, meta, H1/H2, interní odkazy a alt texty bez keyword stuffingu.","extras":[{"key":"dotaz","label":"Hlavní dotaz","ph":"elektrikář Chabařovice","type":"text"},{"key":"intent","label":"Záměr hledání","ph":"chce najít místního řemeslníka a zavolat","type":"text"},{"key":"souvisejici","label":"Související stránky webu","ph":"ceník, reference, kontakt","type":"text"}],"cs":"Vylepši on-page SEO stránky {web}. Hlavní dotaz: {dotaz}; zamýšlený záměr hledání: {intent}; publikum: {publikum}; existující související stránky: {souvisejici}.\n\nNejprve urči, co stránka skutečně odpovídá a zda se nepřekrývá s jinou stránkou webu. Navrhni jeden přesný a odlišitelný title, užitečný meta popis, popisnou strukturu H1/H2, přirozenou terminologii, relevantní interní odkazy, jasný text odkazů a alt texty, které popisují informativní obrázky. Zachovej čitelný text psaný pro lidi. Strukturovaná data navrhni jen tam, kde to obsah a podmínky opravdu podporují.\n\nNecpi přesná klíčová slova, negeneruj doorway stránky, nevymýšlej hodnocení ani negarantuj pozice. Chybějící informace vypiš zvlášť. Vrať tabulku SEO změn: současný stav, navržená změna, důvod a jak to ověřit ve vyrenderovaném HTML a v Search Console.","en":"Improve on-page SEO for {web}. Main search query: {dotaz}; intended search intent: {intent}; audience: {publikum}; existing related pages: {souvisejici}.\n\nFirst identify what the page genuinely answers and whether it overlaps with another site page. Recommend one accurate, distinctive title element; a useful meta description; descriptive H1/H2 structure; natural terminology; relevant internal links; clear link text; and image alt text that describes informative imagery. Retain readable copy written for users. Suggest schema markup only where content and eligibility genuinely support it.\n\nDo not stuff exact-match keywords, generate doorway pages, invent ratings, or guarantee rankings. Explain missing information separately. Return an SEO change table with current issue, proposed change, reason, and how to verify in rendered HTML and Search Console.","crit_cs":["Title i H1 jsou unikátní a popisné, ne dvakrát stejné.","Stránka řeší jiný záměr než ostatní stránky webu."],"crit_en":["Title and H1 are unique and descriptive, not duplicated.","The page serves a different intent than the site's other pages."]},{"id":"performance","num":13,"group":"improve","name":"Výkon a Core Web Vitals","name_en":"Website Performance and Core Web Vitals","best":"Když reálná měření ukazují pomalé vykreslení nebo poskakování layoutu.","when":"LCP do 2,5 s, INP do 200 ms, CLS do 0,1 — bez vymyšlených skóre.","extras":[{"key":"mereni","label":"Reálná měření","ph":"LCP 4,1 s na mobilu, PageSpeed 38","type":"textarea"},{"key":"platforma","label":"Platforma","ph":"WordPress + Elementor / Next.js","type":"text"}],"cs":"Pomoz diagnostikovat výkon {web} postaveného na {platforma}. Dostupné reálné měření: {mereni}. Omezení: {nemenit}.\n\nPrioritu mají uživatelsky viditelné načítání, odezva interakce a stabilita layoutu. Pojmenuj pravděpodobné příčiny jen tam, kde existuje důkaz: předimenzovaný hero obrázek, blokující zdroje, drahé skripty, načítání fontů, média bez rozměrů nebo zbytečné third-party vložky. Odděl pozorované problémy od hypotéz. Navrhni měřenou posloupnost změn s očekávanými kompromisy a tím, které metriky se každá změna dotkne.\n\nNevymýšlej skóre před/po a netvrď, že optimalizace je hotová, dokud se testy neopakovaly. Vrať prioritizovanou tabulku akcí, bezpečné implementační kroky, možnosti rollbacku a plán remeasurementu na mobilu i desktopu, ideálně z reálných uživatelských dat.","en":"Help diagnose performance problems on {web} built with {platforma}. Available real measurements: {mereni}. Constraints: {nemenit}.\n\nPrioritise user-facing loading, interaction responsiveness, and layout stability. Identify likely causes only where evidence exists: oversized hero images, render-blocking resources, expensive scripts, font loading, unsized media, or unnecessary third-party embeds. Separate observed issues from hypotheses. Suggest a measured sequence of changes with expected tradeoffs and which metric each change may affect.\n\nDo not fabricate before/after scores or claim optimisations are complete without rerunning tests. Provide a prioritised action table, safe implementation steps, rollback considerations, and a remeasurement plan for mobile and desktop using real-user data where available.","crit_cs":["Každá navržená změna má metriku, kterou má zlepšit.","Před/po hodnoty pocházejí z opakovaného měření, ne z odhadu."],"crit_en":["Every proposed change names the metric it should improve.","Before/after values come from a rerun measurement, not an estimate."]},{"id":"cro","num":14,"group":"improve","name":"Konverzní optimalizace","name_en":"Conversion Rate Optimization","best":"Lidé na web chodí, ale nedokončí hlavní akci.","when":"Prioritizovaný experiment backlog s hypotézou a metrikou.","extras":[{"key":"konverze","label":"Cílová konverze","ph":"odeslaná poptávka","type":"text"},{"key":"evidence","label":"Data a výzkum","ph":"GA4, 800 návštěv/měs, 4 poptávky","type":"textarea"}],"cs":"Audituj {web} pro publikum {publikum}. Požadovaná konverze: {konverze}. Dostupné důkazy z analytiky, zpětné vazby a chování: {evidence}. Omezení: {nemenit}.\n\nZkontroluj srozumitelnost hodnotové nabídky, vizuální hierarchii, výraznost CTA, tření ve formuláři, relevantní důvěryhodnostní informace, srozumitelnost ceny, použitelnost na mobilu a práci s námitkami. Seřaď potenciální problémy podle dopadu a jistoty na základě důkazů; kde data chybí, označ to jako hypotézu. Navrhuj změny, které zachovávají pravdivá tvrzení a svobodu volby uživatele.\n\nNepřidávej falešnou urgenci, klamné předvolby, vymyšlené reference ani skryté poplatky. Vrať prioritizovaný experiment backlog s hypotézou, navrženou variantou, primární metrikou, guardrail metrikou a minimem QA kroků. Pokud je návštěvnost příliš nízká na statisticky smysluplný test, doporuč kvalitativní výzkum místo tvrzení, že A/B test přinese jistotu.","en":"Audit {web} for the audience {publikum}. Desired conversion is {konverze}. Available analytics, feedback, and behaviour evidence: {evidence}. Constraints: {nemenit}.\n\nReview value proposition clarity, visual hierarchy, CTA prominence, form friction, relevant trust information, pricing clarity, mobile usability, and objection handling. Rank potential issues by impact and confidence based on the evidence; explicitly label hypotheses when data is missing. Propose changes that preserve truthful claims and user choice.\n\nDo not add fake urgency, deceptive defaults, fabricated testimonials, or hidden fees. Return a prioritised experiment backlog with hypothesis, proposed variation, primary metric, guardrail metric, and minimum QA steps. If traffic is too low for meaningful statistical testing, suggest qualitative research instead of claiming an A/B test will produce certainty.","crit_cs":["Každá hypotéza má primární a guardrail metriku.","Formulář a CTA jsou ověřené end-to-end, ne jen klikatelné."],"crit_en":["Every hypothesis names a primary and a guardrail metric.","Form and CTA are verified end-to-end, not just clickable."]},{"id":"audit","num":15,"group":"improve","name":"Audit webu a plán","name_en":"Full Website Audit and Prioritized Improvement Plan","best":"Když web existuje a potřebuješ další hodnotný backlog.","when":"Kritické / vysoké / střední / nízké nálezy s dopadem a odhadem.","extras":[{"key":"zname","label":"Známé problémy","ph":"nepřehledné menu, pomalý mobil","type":"textarea"},{"key":"dukazy","label":"Dostupné důkazy","ph":"screenshoty, GA4, PageSpeed","type":"textarea"},{"key":"rozsah","label":"Rozsah změn","ph":"jen homepage a menu, zbytek později","type":"text"}],"cs":"Proveď strukturovanou kontrolu kvality webu {web} pro publikum {publikum}. Hlavní cíl: {cil}. Známé problémy: {zname}. Dodané důkazy: {dukazy}. Rozsah změn: {rozsah}.\n\nZhodnoť informační architekturu, sdělení, vizuální hierarchii, responzivitu, navigaci, přístupnost, základy SEO, výkonnostní důkazy, chování formulářů a CTA a konverzní cestu. Odděl potvrzené nálezy od předpokladů, které vyžadují živou kontrolu. Klasifikuj nálezy jako kritické, vysoké, střední a nízké, s dopadem na uživatele, odhadem práce, závislostmi a navrženým vlastníkem úkolu.\n\nVrať: (1) executive summary, (2) prioritizovaný backlog, (3) quick wins, (4) větší strukturální změny, (5) akceptační kritéria a testovací plán. Nepřepisuj celý web, pokud to důkazy nevyžadují. Zachovej funkční komponenty a vysvětli, co nelze zhodnotit bez přístupu k webu, analytice nebo reálnému prohlížeči.","en":"Perform a structured website quality review of {web} for {publikum}. The main business/user goal is {cil}. Known problems: {zname}. Supplied evidence: {dukazy}. Change scope: {rozsah}.\n\nAssess information architecture, messaging, visual hierarchy, responsiveness, navigation, accessibility, SEO basics, performance evidence, forms and CTA behaviour, and conversion path. Separate confirmed issues from assumptions requiring live checks. Classify findings as critical, high, medium, or low priority, with user impact, effort estimate, dependencies, and suggested owner/task.\n\nProduce: (1) executive summary, (2) prioritised backlog, (3) quick wins, (4) larger structural changes, (5) acceptance criteria and test plan. Do not rewrite the whole site unless the evidence warrants it. Preserve existing working components; explain what cannot be assessed without site access, analytics, or a real browser.","crit_cs":["Každý nález má dopad, odhad práce a způsob ověření.","Quick wins jsou oddělené od strukturálních změn."],"crit_en":["Every finding has impact, effort estimate and a way to verify it.","Quick wins are separated from structural changes."]},{"id":"oprava","num":16,"group":"improve","name":"Bodová oprava (bez přegenerování)","name_en":"Focused Fix Without Regenerating","best":"Existující web funguje — mění se jedna konkrétní věc.","when":"Nejmenší rozumná změna + co zůstane nedotčené.","extras":[{"key":"stranka","label":"Stránka / komponenta","ph":"cenová tabulka na homepage","type":"text"},{"key":"pozorovany","label":"Pozorovaný problém","ph":"na 375 px se tabulka rozpadá","type":"text"},{"key":"povoleno","label":"Co se smí měnit","ph":"jen CSS tabulky a její rozložení","type":"text"},{"key":"zachovat","label":"Co musí zůstat","ph":"texty, ceny, endpoint formuláře","type":"text"}],"cs":"Zhodnoť současný stav {stranka} na webu {web} proti cíli: {cil}. Pozorovaný problém: {pozorovany}. Měň pouze: {povoleno}. Zachovej beze změny: {zachovat}.\n\nNahraď skutečné texty ani schválené brandové podklady placeholdery. Vysvětli pravděpodobnou příčinu, proveď nejmenší rozumnou opravu a potom vypiš, jak změnu ověřit na mobilu a na desktopu. Pokud nemáš zdrojový kód nebo důkaz z prohlížeče, napiš, co nelze ověřit.\n\nVrať: příčinu, změněné soubory nebo blok kódu, kontrolu na 375 px a 1440 px, a potvrzení, že se nic mimo povolený rozsah nezměnilo.","en":"Review the current {stranka} on {web} against this goal: {cil}. Observed problem: {pozorovany}. Change only: {povoleno}. Keep unchanged: {zachovat}.\n\nDo not replace real copy or approved brand assets with placeholders. Explain the likely cause, make the smallest reasonable correction, then list how to verify the change at mobile and desktop sizes. If you lack the source or browser evidence, state what you cannot verify.\n\nReturn: the cause, changed files or code block, a 375 px and 1440 px check, and confirmation that nothing outside the allowed scope changed.","crit_cs":["Změna je vidět jen v povoleném rozsahu.","Ověření proběhlo na 375 px i na desktopu."],"crit_en":["The change is visible only within the allowed scope.","Verification ran at 375 px and on desktop."]}],"groups":{"plan":"Plánování a struktura","build":"Návrh a stavba","ux":"UI a UX","content":"Obsah a SEO","improve":"Vylepšování"},"globalFields":[{"key":"web","label":"Web zákazníka","ph":"https://dousa-elektro.cz","type":"url","required":false},{"key":"znacka","label":"Název / značka","ph":"Pavel Douša — elektrikář","type":"text","required":true},{"key":"obor","label":"Obor a kontext","ph":"elektrikář, Chabařovice + 30 km","type":"text","required":false},{"key":"publikum","label":"Cílová skupina","ph":"majitelé domů a bytů 35–65 v okolí","type":"text","required":true},{"key":"cil","label":"Primární cíl (jeden)","ph":"telefonát nebo odeslaná poptávka","type":"text","required":true},{"key":"nabidka","label":"Nabídka / služby","ph":"rozvaděče, kompletní instalace, rekonstrukce, LED","type":"textarea","required":true},{"key":"cta","label":"Hlavní CTA","ph":"Zavolat a domluvit termín","type":"text","required":true},{"key":"fakta","label":"Ověřená fakta a podklady","ph":"telefon, e-mail, otevírací doba, reference, fotky realizací…","type":"textarea","required":true},{"key":"design","label":"Vizuální směr","ph":"tmavý řemeslný styl, fotky práce, žádné sterilní šablony","type":"textarea","required":false},{"key":"stack","label":"Technický kontext","ph":"stávající web na WordPressu, cíl je nová jednostránka","type":"text","required":false},{"key":"ton","label":"Tón komunikace","ph":"věcně, lidsky, bez marketingu","type":"text","required":false},{"key":"nemenit","label":"Co neměnit / nevymýšlet","ph":"neměnit logo, nezveřejňovat ceny, nepřidávat reference","type":"textarea","required":false},{"key":"telefon","label":"Telefon (ověřený)","ph":"+420 …","type":"text","required":false},{"key":"email","label":"E-mail (ověřený)","ph":"info@…","type":"email","required":false},{"key":"adresa","label":"Adresa / působnost","ph":"Chabařovice, okres Ústí nad Labem","type":"text","required":false}],"criteria":{"cs":["Na 375 px, 768 px a 1440 px není vodorovné přetékání ani skryté CTA.","Všechny odkazy vedou na existující cíl a všechny formuláře mají buď funkční endpoint, nebo jsou viditelně označené jako nefunkční.","Klávesnicí se dá projít celá stránka, fokus je vidět a každý formulářový prvek má popisek.","Žádná reference, číslo, certifikace ani cena, které nejsou v zadání — nevymyšlené údaje jsou označené [DOPLNIT].","Výstup obsahuje seznam předpokladů a toho, co nešlo ověřit bez přístupu k webu, analytice nebo reálnému prohlížeči."],"en":["No horizontal overflow and no hidden CTA at 375 px, 768 px and 1440 px.","Every link resolves and every form either posts to a working endpoint or is visibly marked as non-functional.","The whole page is keyboard operable, focus is visible and every form control has a label.","No testimonial, number, certification or price that is not in the brief — unknown facts are marked [MISSING].","The output lists assumptions and anything that cannot be verified without site access, analytics or a real browser."]},"noInvent":{"cs":["Nevymýšlej reference, počty zákazníků, hodnocení, ocenění, certifikace ani ceny. Co není v zadání, označ jako [DOPLNIT].","Neprezentuj vizuální placeholder jako funkční integraci. Formulář, rezervace, platba i mapa musí být buď zapojené, nebo výslovně označené jako nefunkční.","Neměň logo, barvy ani jiné existující brandové prvky, pokud to není výslovně v zadání.","Nepřidávej stránky ani sekce jen kvůli klíčovým slovům; každá musí řešit konkrétní potřebu návštěvníka.","Netvrď, že je web hotový nebo přístupný, dokud neproběhl test v reálném prohlížeči."],"en":["Never invent testimonials, customer counts, ratings, awards, certifications or prices. Anything not supplied is [MISSING].","Do not present a visual placeholder as a working integration. Forms, booking, payment and maps must be connected or explicitly labelled non-functional.","Do not change the logo, brand colours or existing brand assets unless the brief asks for it.","Do not add pages or sections for keywords alone; each one must serve a distinct audience need.","Do not claim the site is finished or accessible before it has been tested in a real browser."]},"formula":[["PROJECT","Projekt / firma"],["AUDIENCE","Cílová skupina"],["PRIMARY OUTCOME","Co má návštěvník udělat"],["SITE TYPE / PAGES","Typ webu a stránky"],["VERIFIED CONTENT / ASSETS","Ověřená fakta a podklady"],["DESIGN DIRECTION","Vizuální směr"],["KEY COMPONENTS","Sekce a interakce"],["RESPONSIVE / ACCESSIBILITY","Responzivita a přístupnost"],["TECHNICAL CONTEXT","Stack a limity nástroje"],["DO NOT CHANGE / DO NOT INVENT","Hranice a zákazy"],["OUTPUT","Co přesně dodat"],["DONE WHEN","Testovatelná kritéria"]],"quickAnswer":"Silný prompt pro stavbu webu určuje publikum, cíl webu, potřebné stránky, obsah a důkazy, vizuální směr, chování, přístupnost, responzivní pravidla, technické limity a akceptační kritéria. U existujícího webu navíc říká, co se smí změnit a co musí zůstat nedotčené.","takeaways":["Začni jedním primárním výsledkem pro uživatele, ne seznamem vizuálních buzzwordů.","Odděl prompt na plánování od promptu na stavbu a na vylepšování.","Řekni AI, jestli je web nový, nebo existující — a co má při úpravě zůstat funkční.","Dodej skutečný obsah, loga, ceny, reference a tvrzení — nebo je označ jako chybějící.","Mobil, přístupnost, chování odkazů a formuláře patří do akceptačních kritérií.","Vyžádej si explicitní seznam předpokladů a neověřených integrací.","Iteruj cílenou revizí, ne regenerací celé stránky kvůli jednomu problému.","Hezký náhled není důkaz, že je web připravený na produkci."],"mistakes":[["Popisuješ jen estetiku","„moderní, čistý, minimalistický“ neříká nic o účelu, obsahu ani interakci."],["Chceš celý web najednou a bez obsahu","Výsledkem je neověřený text, falešné důkazy a placeholdery."],["Žádné hranice u existujícího webu","Malá designová oprava může přepsat funkční komponenty."],["Ignoruješ mobil","Dokonalý desktopový screenshot schová natěsnané formuláře a přetékající tabulky."],["Dekorativní, ale nepřístupné ovládání","Odkazy, dialogy a tlačítka nemusí jít ovládat klávesnicí."],["Předpokládáš, že každá integrace funguje","Demo tlačítko rezervace není napojená rezervace."],["Cpeš klíčová slova do každé sekce","Srozumitelnost a odlišný záměr jsou důležitější než opakování."],["Nahrazuješ lidské ověření AI sebevědomím","Jen skutečný test potvrdí, že web v nasazení funguje."],["Přestavuješ místo ladění","Široká regenerace smaže schválené detaily a přinese nové chyby."]],"checklist":["Jeden primární výsledek návštěvníka a jedno hlavní CTA.","Pojmenované publikum, účel stránek a schválené brandové podklady.","Každý placeholder před publikací nahrazený — nebo jasně označený jako nehotový.","Ověřené texty, tvrzení o funkcích, ceny, loga, recenze i právní texty.","Otestovaná navigace a všechny externí odkazy.","Formuláře a napojené služby otestované end-to-end.","Chování na telefonu, tabletu a desktopu.","Ovládání klávesnicí, viditelný fokus, přístupné názvy a chyby formulářů.","Page title, hierarchie nadpisů, užitečný obsah a interní odkazy.","Změřený výkon a vyřešená největší reálná úzká hrdla.","Popsané neověřené integrace a nedokončená práce.","Po každé změně komponenty nebo textu nový test."],"quality":[["Sdělení","Stránka rychle vysvětlí co, pro koho a proč","Přečti hero a nech prvního návštěvníka shrnout nabídku"],["Navigace","Důležité stránky a další krok jsou snadno k nalezení","Vyzkoušej tři běžné úkoly návštěvníka"],["Responzivita","Kritický obsah a akce zůstanou použitelné na mobilu","Několik šířek viewportu a reálná zařízení"],["Přístupnost","Klávesnice, formuláře, fokus, nadpisy a alternativy fungují","Klávesnice + čtečka + kontrola sémantiky"],["SEO základy","Jasné title, nadpisy, užitečný obsah, procházitelné interní odkazy","Vyrenderované HTML a Search Console"],["Výkon","Dostatečně rychlé a stabilní v reálném provozu","PageSpeed Insights a terénní měření"],["Konverze","Relevantní návštěvník dokončí zamýšlenou akci","Odešli formulář a ověř doručení end-to-end"]],"resources":[["Google Search Central — SEO Starter Guide","https://developers.google.com/search/docs/fundamentals/seo-starter-guide"],["Google Search Central — Mobile-First Indexing","https://developers.google.com/search/docs/crawling-indexing/mobile/mobile-sites-mobile-first-indexing"],["web.dev — Core Web Vitals","https://web.dev/articles/vitals"],["W3C WAI — Forms Tutorial","https://www.w3.org/WAI/tutorials/forms/"],["W3C — Understanding Focus Visible","https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html"]],"build":"10. 11. 2026"}</script>
+<script>/* WebPrompt Studio — app logic (bez závislostí) */
+(function () {
+  "use strict";
+
+  var DATA = JSON.parse(document.getElementById("appdata").textContent);
+  var T = DATA.templates, G = DATA.groups, GLOBAL = DATA.globalFields;
+  var STORE_KEY = "wps-v1", CHECK_KEY = "wps-check-v1", HIST_KEY = "wps-hist-v1";
+
+  var state = {
+    values: {}, dirty: {}, auto: {}, type: "strategie", lang: "cs",
+    noInvent: true, criteria: true, manualType: false,
+    prompt: "", missing: [], found: []
+  };
+
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var byKey = {}; GLOBAL.forEach(function (f) { byKey[f.key] = f; });
+  T.forEach(function (t) { (t.extras || []).forEach(function (f) { if (!byKey[f.key]) byKey[f.key] = f; }); });
+  var tpl = function (id) { return T.filter(function (t) { return t.id === id; })[0] || T[0]; };
+
+  var LABELS = {
+    cs: {
+      znacka: "PROJEKT", obor: "OBOR / KONTEXT", publikum: "PUBLIKUM",
+      cil: "PRIMÁRNÍ CÍL", nabidka: "NABÍDKA / SLUŽBY", cta: "HLAVNÍ CTA",
+      fakta: "OVĚŘENÁ FAKTA A PODKLADY", design: "VIZUÁLNÍ SMĚR",
+      stack: "TECHNICKÝ KONTEXT", ton: "TÓN KOMUNIKACE", nemenit: "CO NEMĚNIT / NEVYMÝŠLET"
+    },
+    en: {
+      znacka: "PROJECT", obor: "DOMAIN / CONTEXT", publikum: "AUDIENCE",
+      cil: "PRIMARY OUTCOME", nabidka: "OFFER / SERVICES", cta: "PRIMARY CTA",
+      fakta: "VERIFIED CONTENT / ASSETS", design: "DESIGN DIRECTION",
+      stack: "TECHNICAL CONTEXT", ton: "VOICE", nemenit: "DO NOT CHANGE / DO NOT INVENT"
+    }
+  };
+  var TXT = {
+    cs: {
+      title: "ZADÁNÍ PRO AI WEBAŘE", generated: "Vygenerováno", template: "šablona", source: "podklad",
+      context: "KONTEXT PROJEKTU", task: "ÚKOL", dont: "CO NEDĚLAT", done: "HOTOVO, KDYŽ",
+      notes: "POZNÁMKA K PODKLADŮM",
+      note: "Fakta výše pocházejí z veřejné stránky {host} (načteno {date}) a ze zadání klienta. Co v zadání není, je neověřené — označ to [DOPLNIT] a nic nedomýšlej.",
+      noteLocal: "Fakta výše pocházejí ze zadání klienta. Co v zadání není, je neověřené — označ to [DOPLNIT] a nic nedomýšlej.",
+      missing: "DOPLNIT", unknown: "nevyplněno", typeLabel: "Typ", words: "slov", chars: "znaků", tokens: "~tokenů"
+    },
+    en: {
+      title: "BRIEF FOR AN AI WEBSITE BUILDER", generated: "Generated", template: "template", source: "source",
+      context: "PROJECT CONTEXT", task: "TASK", dont: "DO NOT", done: "DONE WHEN",
+      notes: "NOTE ON SOURCES",
+      note: "The facts above come from the public site {host} (fetched {date}) and from the client brief. Anything not listed is unverified — mark it [MISSING] and do not improvise.",
+      noteLocal: "The facts above come from the client brief. Anything not listed is unverified — mark it [MISSING] and do not improvise.",
+      missing: "MISSING", unknown: "empty", typeLabel: "Type", words: "words", chars: "chars", tokens: "~tokens"
+    }
+  };
+  var FOUND_LABEL = { znacka: "Název", obor: "Kontext", publikum: "Publikum", cil: "Cíl", nabidka: "Služby", fakta: "Fakta", telefon: "Telefon", email: "E-mail", adresa: "Adresa", design: "Design" };
+
+  /* ---------- persistence ---------- */
+  var saveT;
+  function save() {
+    clearTimeout(saveT);
+    saveT = setTimeout(function () {
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify({
+          values: state.values, dirty: state.dirty, type: state.type, lang: state.lang,
+          noInvent: state.noInvent, criteria: state.criteria, manualType: state.manualType
+        }));
+      } catch (e) {}
+    }, 250);
+  }
+  function restore() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (s && typeof s === "object") {
+        state.values = s.values || {};
+        state.dirty = s.dirty || {};
+        state.type = s.type || state.type;
+        state.lang = s.lang === "en" ? "en" : "cs";
+        state.noInvent = s.noInvent !== false;
+        state.criteria = s.criteria !== false;
+        state.manualType = !!s.manualType;
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- field rendering ---------- */
+  function fieldEl(f, opts) {
+    opts = opts || {};
+    var wrap = document.createElement("div");
+    wrap.className = "fld" + (f.type === "textarea" ? " wide" : "");
+    var id = "f_" + f.key;
+    var lab = document.createElement("label");
+    lab.setAttribute("for", id);
+    lab.innerHTML = "<span>" + esc(f.label) + (opts.req ? ' <span class="req" title="doporučené">*</span>' : "") + "</span>";
+    if (state.auto[f.key]) {
+      var b = document.createElement("span"); b.className = "auto"; b.textContent = "z webu"; lab.appendChild(b);
+    }
+    var el;
+    if (f.type === "textarea") {
+      el = document.createElement("textarea");
+      el.rows = 2;
+    } else {
+      el = document.createElement("input");
+      el.type = f.type === "email" ? "email" : "text";
+      el.autocomplete = f.type === "email" ? "email" : "off";
+      if (f.key === "web") el.setAttribute("inputmode", "url");
+    }
+    el.id = id; el.name = f.key; el.placeholder = f.ph || "";
+    el.value = state.values[f.key] || "";
+    el.addEventListener("input", function () {
+      state.values[f.key] = el.value;
+      state.dirty[f.key] = true;
+      if (state.auto[f.key]) { delete state.auto[f.key]; var bb = lab.querySelector(".auto"); if (bb) bb.remove(); }
+      if (f.key === "web") { var u = $("#url"); if (u && u.value !== el.value) u.value = el.value; }
+      save();
+      if (state.prompt) markStale();
+    });
+    wrap.appendChild(lab); wrap.appendChild(el);
+    return wrap;
+  }
+
+  function renderFields() {
+    var host = $("#globalFields"), mini = $("#contactRow");
+    host.innerHTML = ""; mini.innerHTML = "";
+    GLOBAL.forEach(function (f) {
+      if (["telefon", "email", "adresa"].indexOf(f.key) > -1) { mini.appendChild(fieldEl(f)); return; }
+      host.appendChild(fieldEl(f, { req: f.required }));
+    });
+  }
+
+  /* ---------- type chips ---------- */
+  function renderChips() {
+    var box = $("#typeChips"); box.innerHTML = "";
+    Object.keys(G).forEach(function (g) {
+      var group = document.createElement("div");
+      group.className = "chipgroup";
+      var gl = document.createElement("span"); gl.textContent = G[g]; group.appendChild(gl);
+      var row = document.createElement("div"); row.className = "chips";
+      T.filter(function (t) { return t.group === g; }).forEach(function (t) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "chip" + (t.id === state.type ? " on" : "");
+        b.dataset.type = t.id;
+        b.innerHTML = '<span class="n">' + pad(t.num) + "</span> " + esc(t.name);
+        b.addEventListener("click", function () { selectType(t.id, true); });
+        row.appendChild(b);
+      });
+      group.appendChild(row); box.appendChild(group);
+    });
+  }
+
+  function selectType(id, manual) {
+    state.type = id;
+    if (manual) state.manualType = true;
+    $$("#typeChips .chip").forEach(function (c) { c.classList.toggle("on", c.dataset.type === id); });
+    var t = tpl(id);
+    $("#typeDesc").hidden = false;
+    $("#tdBest").textContent = t.best;
+    $("#tdWhen").textContent = t.when;
+    $("#tdVerify").textContent = (state.lang === "en" ? (t.crit_en || [])[0] || "" : (t.crit_cs || [])[0] || "");
+    $("#outTitle").textContent = t.name;
+    var ex = $("#extraFields"); ex.innerHTML = "";
+    (t.extras || []).forEach(function (f) {
+      if (state.values[f.key] === undefined && f["default"]) state.values[f.key] = f["default"];
+      ex.appendChild(fieldEl(f));
+    });
+    if (state.prompt) markStale();
+    save();
+  }
+
+  /* ---------- prompt ---------- */
+  function labelOf(k) {
+    var f = byKey[k]; return f ? f.label : k;
+  }
+  function fillMarks(s, lang) {
+    return s.replace(/\{(\w+)\}/g, function (m, k) {
+      var v = (state.values[k] || "").trim();
+      if (!v) return "[" + TXT[lang].missing + ": " + labelOf(k) + "]";
+      if (v.indexOf("\n") > -1) return "\n" + v.split("\n").map(function (l) { return "  " + l; }).join("\n");
+      return v;
+    });
+  }
+  function block(label, val, multi) {
+    if (!val) return "";
+    if (multi || val.indexOf("\n") > -1) {
+      return label + ":\n" + val.split("\n").map(function (l) { return "  " + l; }).join("\n");
+    }
+    return label + ": " + val;
+  }
+  function buildPrompt() {
+    var t = tpl(state.type), lang = state.lang, x = TXT[lang], L = LABELS[lang];
+    var body = fillMarks(t[lang], lang);
+    var lines = [];
+    var brand = (state.values.znacka || "").trim() || (lang === "cs" ? "nový web" : "new website");
+    lines.push(x.title + " — " + brand);
+    lines.push(x.generated + ": " + new Date().toLocaleDateString(lang === "cs" ? "cs-CZ" : "en-GB") +
+      " · " + x.template + " " + t.num + "/" + T.length + ": " + (lang === "cs" ? t.name : t.name_en) +
+      (state.values.web ? " · " + x.source + ": " + state.values.web : ""));
+
+    var ctx = Object.keys(L).map(function (k) {
+      var f = byKey[k];
+      return block(L[k], (state.values[k] || "").trim(), f && f.type === "textarea");
+    }).filter(Boolean);
+    if (ctx.length) lines.push("", x.context, ctx.join("\n"));
+
+    lines.push("", x.task, body);
+
+    if (state.noInvent) {
+      lines.push("", x.dont);
+      (lang === "cs" ? DATA.noInvent.cs : DATA.noInvent.en).forEach(function (r) { lines.push("- " + r); });
+      var extra = (state.values.nemenit || "").trim();
+      if (extra) lines.push("- " + extra.replace(/\n/g, " "));
+    }
+
+    if (state.criteria) {
+      var crit = (lang === "cs" ? DATA.criteria.cs : DATA.criteria.en).concat(lang === "cs" ? (t.crit_cs || []) : (t.crit_en || []));
+      lines.push("", x.done);
+      crit.forEach(function (c) { lines.push("- " + c); });
+    }
+
+    var host = "";
+    try { host = new URL(state.values.web || "").hostname.replace(/^www\./, ""); } catch (e) {}
+    lines.push("", x.notes);
+    lines.push(host ? x.note.replace("{host}", host).replace("{date}", new Date().toLocaleDateString(lang === "cs" ? "cs-CZ" : "en-GB")) : x.noteLocal);
+
+    var text = lines.join("\n").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim() + "\n";
+
+    var miss = [];
+    var seen = {};
+    var re = /\{(\w+)\}/g, m;
+    while ((m = re.exec(t[lang])) !== null) {
+      if (!(state.values[m[1]] || "").trim() && !seen[m[1]]) { seen[m[1]] = 1; miss.push({ key: m[1], label: labelOf(m[1]) }); }
+    }
+    GLOBAL.forEach(function (f) {
+      if (f.required && !(state.values[f.key] || "").trim() && !seen[f.key]) { seen[f.key] = 1; miss.push({ key: f.key, label: f.label }); }
+    });
+    return { text: text, missing: miss };
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; });
+  }
+  function highlight(text) {
+    return text.split("\n").map(function (line) {
+      var out = esc(line);
+      if (/^\[/.test(line) && /^\[[A-ZÁ-Ž]+:/.test(line)) return '<span class="sec">' + out + "</span>";
+      if (/^[A-ZÁ-Ž0-9][A-ZÁ-Ž0-9 \/–—\-()]{2,}$/.test(line)) return '<span class="sec">' + out + "</span>";
+      out = out.replace(/^([A-ZÁ-Ž0-9][A-ZÁ-Ž0-9 \/–—\.\(\)]{2,}):/, '<span class="k">$1:</span>');
+      out = out.replace(/\[(DOPLNIT|MISSING): ([^\]]+)\]/g, '<span class="warn">[$1: $2]</span>');
+      if (/^- /.test(line)) out = out.replace(/^-/, '<span class="k">-</span>');
+      return out;
+    }).join("\n");
+  }
+
+  function generate() {
+    if (state.type === "oprava" || true) { /* no-op, kept for clarity */ }
+    var res = buildPrompt();
+    state.prompt = res.text; state.missing = res.missing;
+    $("#promptOut").innerHTML = highlight(res.text);
+    var chars = res.text.length, words = res.text.split(/\s+/).filter(Boolean).length;
+    $("#outMeta").innerHTML =
+      "<span>" + TXT[state.lang].chars + ": <b>" + chars.toLocaleString("cs-CZ") + "</b></span>" +
+      "<span>" + TXT[state.lang].words + ": <b>" + words.toLocaleString("cs-CZ") + "</b></span>" +
+      "<span>" + TXT[state.lang].tokens + ": <b>" + Math.round(chars / 4).toLocaleString("cs-CZ") + "</b></span>";
+    var badge = $("#outBadge");
+    badge.className = "badge ok";
+    badge.textContent = (state.lang === "cs" ? "šablona " : "template ") + tpl(state.type).num + "/" + T.length;
+
+    var missBox = $("#missing");
+    if (res.missing.length) {
+      missBox.hidden = false;
+      missBox.innerHTML = '<span class="lab">' + (state.lang === "cs" ? "chybí" : "missing") + "</span>" +
+        res.missing.map(function (m) { return '<button type="button" class="mchip" data-key="' + esc(m.key) + '">' + esc(m.label) + "</button>"; }).join("");
+    } else { missBox.hidden = true; missBox.innerHTML = ""; }
+
+    ["#btnCopy", "#btnDownload", "#btnClaude"].forEach(function (s) { $(s).disabled = false; });
+    addHistory(res.text);
+    if (window.innerWidth < 1080) $("#promptOut").scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function markStale() {
+    var b = $("#outBadge");
+    b.className = "badge";
+    b.textContent = state.lang === "cs" ? "upravit" : "edited";
+  }
+
+  /* ---------- history ---------- */
+  function addHistory(text) {
+    try {
+      var h = JSON.parse(localStorage.getItem(HIST_KEY) || "[]");
+      h.unshift({ ts: Date.now(), type: state.type, lang: state.lang, brand: (state.values.znacka || "").trim(), text: text, values: state.values });
+      h = h.slice(0, 6);
+      localStorage.setItem(HIST_KEY, JSON.stringify(h));
+      renderHistory();
+    } catch (e) {}
+  }
+  function renderHistory() {
+    var box = $("#hist"), h = [];
+    try { h = JSON.parse(localStorage.getItem(HIST_KEY) || "[]"); } catch (e) {}
+    if (!h.length) { box.hidden = true; return; }
+    box.hidden = false;
+    box.innerHTML = '<span class="lab">' + (state.lang === "cs" ? "poslední" : "recent") + "</span>";
+    h.forEach(function (it, i) {
+      var b = document.createElement("button");
+      b.type = "button"; b.className = "hitem";
+      var d = new Date(it.ts);
+      b.innerHTML = '<span class="hn">' + pad(d.getDate()) + "." + pad(d.getMonth() + 1) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + "</span>" +
+        '<span class="hb">' + esc(tpl(it.type).name) + " — " + esc(it.brand || "bez názvu") + "</span>";
+      b.addEventListener("click", function () {
+        it.values = it.values || {};
+        state.values = it.values; state.type = it.type; state.lang = it.lang || "cs";
+        state.prompt = it.text; state.missing = [];
+        state.dirty = {}; state.auto = {};
+        renderFields(); renderChips(); selectType(it.type, false);
+        applyLang(); $("#promptOut").innerHTML = highlight(it.text);
+        $("#missing").hidden = true;
+        $("#outBadge").className = "badge ok";
+        $("#outBadge").textContent = tpl(it.type).name;
+        ["#btnCopy", "#btnDownload", "#btnClaude"].forEach(function (s) { $(s).disabled = false; });
+        updateMetaFromText(it.text);
+      });
+      box.appendChild(b);
+    });
+  }
+  function updateMetaFromText(text) {
+    var chars = text.length;
+    $("#outMeta").innerHTML = "<span>" + TXT[state.lang].chars + ": <b>" + chars.toLocaleString("cs-CZ") + "</b></span>" +
+      "<span>" + TXT[state.lang].tokens + ": <b>" + Math.round(chars / 4).toLocaleString("cs-CZ") + "</b></span>";
+  }
+
+  /* ---------- site loading ---------- */
+  function normalizeUrl(raw) {
+    raw = (raw || "").trim();
+    if (!raw) return "";
+    raw = raw.replace(/^\/\//, "");
+    if (!/^https?:\/\//i.test(raw)) raw = "https://" + raw;
+    try { var u = new URL(raw); return u.href; } catch (e) { return ""; }
+  }
+  function pad(n) { return String(n).padStart(2, "0"); }
+
+  function setStatus(msg, cls, spin) {
+    var el = $("#loadStatus");
+    el.className = "loadstatus" + (cls ? " " + cls : "");
+    el.innerHTML = (spin ? '<span class="spin"></span>' : "") + esc(msg);
+  }
+
+  function cleanText(el) {
+    if (!el) return "";
+    var c = el.cloneNode(true);
+    Array.prototype.forEach.call(c.querySelectorAll("script,style,noscript,svg"), function (n) { n.remove(); });
+    Array.prototype.forEach.call(c.querySelectorAll("br"), function (b) { b.replaceWith(" "); });
+    c.innerHTML = c.innerHTML.replace(/<\/(a|span|b|strong|em|i|small|code|h1|h2|h3|p|li|div)>/gi, "</$1> ");
+    return (c.textContent || "").replace(/\s+/g, " ").replace(/\s+([.,;:!?])/g, "$1").trim();
+  }
+  function mostFrequent(arr) {
+    var m = {}, best = "", n = 0;
+    arr.forEach(function (v) { m[v] = (m[v] || 0) + 1; if (m[v] > n) { n = m[v]; best = v; } });
+    return best;
+  }
+  function parseHtml(html, url) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    Array.prototype.forEach.call(doc.querySelectorAll("script,style,noscript,svg,iframe,canvas"), function (n) { n.remove(); });
+    var info = { url: url, title: "", desc: "", heads: [], phone: "", email: "", address: "", h1: "" };
+    var ogt = doc.querySelector('meta[property="og:title"]');
+    info.title = (doc.title || (ogt && ogt.content) || "").trim();
+    var ogSite = doc.querySelector('meta[property="og:site_name"]');
+    info.site = (ogSite && ogSite.getAttribute("content") || "").trim();
+    var mdesc = doc.querySelector('meta[name="description"]') || doc.querySelector('meta[property="og:description"]');
+    info.desc = (mdesc && mdesc.getAttribute("content") || "").trim();
+    var h1 = doc.querySelector("h1"); if (h1) info.h1 = cleanText(h1);
+    var h2nodes = Array.prototype.slice.call(doc.querySelectorAll("h2"));
+    var h3nodes = Array.prototype.slice.call(doc.querySelectorAll("h3"));
+    var h2 = h2nodes.map(cleanText).filter(function (x) { return x.length > 2 && x.length < 90; });
+    var h3 = h3nodes.map(cleanText).filter(function (x) { return x.length > 2 && x.length < 90; });
+
+    var svc = [];
+    var all = h2nodes.concat(h3nodes);
+    for (var i = 0; i < all.length; i++) {
+      var node = all[i];
+      var label = cleanText(node);
+      if (/slu[žz]b|co d[ěe]l[áa]m|co um[íi]m|nab[íi]z|realizace|portfolio/i.test(label)) {
+        var sec = node.closest("section") || node.parentElement;
+        if (sec) {
+          var items = Array.prototype.slice.call(sec.querySelectorAll("h3")).map(cleanText)
+            .filter(function (x) { return x.length > 3 && x.length < 90; });
+          if (items.length) { svc = items; break; }
+        }
+      }
+    }
+    if (!svc.length) svc = h3.slice(0, 8);
+    var navTexts = Array.prototype.slice.call(doc.querySelectorAll("header a, nav a")).map(cleanText);
+    svc = svc.filter(function (x) {
+      return navTexts.indexOf(x) === -1 && x.length >= 4 && !/\?$/.test(x) && !/^(co je|jak |proč |kolik |kde |kdy |můžu |je )/i.test(x);
+    });
+    info.heads = svc.length ? svc : h2.slice(0, 8);
+    info.sections = h2.slice(0, 8);
+
+    if (!info.desc) {
+      var ps = Array.prototype.slice.call(doc.querySelectorAll("main p, section p, article p, body p")).map(cleanText)
+        .filter(function (x) { return x.length > 60; });
+      if (ps.length) info.desc = ps[0].slice(0, 300);
+    }
+    var tels = Array.prototype.slice.call(doc.querySelectorAll('a[href^="tel:"]')).map(function (a) {
+      var txt = cleanText(a);
+      return /\d[\d\s]{6,}/.test(txt) ? txt : a.getAttribute("href").replace(/^tel:/i, "").trim();
+    }).filter(function (v) { return (v.replace(/\D/g, "").length >= 9); });
+    if (tels.length) info.phone = mostFrequent(tels).replace(/\s+/g, " ").trim();
+    var mails = Array.prototype.slice.call(doc.querySelectorAll('a[href^="mailto:"]')).map(function (a) {
+      return a.getAttribute("href").replace(/^mailto:/i, "").split("?")[0].trim();
+    }).filter(function (v) { return /.+@.+\..+/.test(v); });
+    if (mails.length) info.email = mostFrequent(mails);
+    var bodyText = (doc.body ? doc.body.textContent : "").replace(/\s+/g, " ");
+    if (!info.phone) {
+      var ph = bodyText.match(/(\+?420[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{3})|(\b\d{3}[\s-]\d{3}[\s-]\d{3}\b)/);
+      if (ph) info.phone = ph[0].replace(/\s+/g, " ").trim();
+    }
+    if (!info.email) {
+      var em = bodyText.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i);
+      if (em) info.email = em[0];
+    }
+    var cands = Array.prototype.slice.call(doc.querySelectorAll("address, footer p, footer div, p, li")).map(cleanText)
+      .filter(function (x) { return /\b\d{3}\s?\d{2}\b/.test(x) && x.length < 120; });
+    if (cands.length) {
+      var bits = cands[0].split(/\s*[,·|]\s*/).filter(Boolean);
+      var bi = bits.findIndex(function (b) { return /\b\d{3}\s?\d{2}\b/.test(b); });
+      var pick = bi > -1 ? bits[bi] : cands[0];
+      pick = pick.replace(/\s*(Navigovat|IČO|Zobrazit na mapě|Mapa|Otevírací doba).*$/i, "").replace(/\s*→.*$/, "").trim();
+      if (bi > 0 && pick.replace(/\d/g, "").trim().length < 4 && !/@|tel|\+\d/.test(bits[bi - 1])) pick = bits[bi - 1] + ", " + pick;
+      info.address = pick.trim().slice(0, 80);
+    }
+    var dm = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i);
+    info.domain = dm ? dm[1] : url;
+    info.brand = detectBrand(doc, info, info.domain);
+    if (!info.title) {
+      var first = info.domain.split(".")[0].replace(/[-_]/g, " ");
+      info.title = first.replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+    return info;
+  }
+
+  function domainBrand(domain) {
+    var first = String(domain || "").split(".")[0].replace(/^www\./, "").replace(/[-_]+/g, " ").trim();
+    return first.replace(/\b\w/g, function (c) { return c.toUpperCase(); }).slice(0, 48);
+  }
+  function detectBrand(doc, info, domain) {
+    var cand = "";
+    if (info.site && info.site.length <= 48) cand = info.site;
+    if (!cand) {
+      var els = Array.prototype.slice.call(doc.querySelectorAll('header [class*="brand"], header a[class*="logo"], a.logo, .brand-name, [class*="brand-name"]'));
+      els = els.map(function (el) {
+        var img = el.querySelector("img");
+        return (el.getAttribute("aria-label") || (img && img.alt) || cleanText(el) || "").trim();
+      }).filter(function (x) { return x.length > 1 && x.length < 70; });
+      els.sort(function (a, b) { return a.length - b.length; });
+      if (els.length) cand = els[0].split(/\s+[—–|·]\s+/)[0].trim();
+    }
+    if (!cand) cand = splitBrand(info.title || "");
+    cand = cand.split(/\s+[—–|·]\s+/)[0].replace(/[,;]+$/, "").trim();
+    if (cand.length > 48 || /[,;]/.test(cand) || /\b(web|tvorba|služby)\b.*\b(pro|do)\b/i.test(cand)) cand = domainBrand(domain);
+    return cand;
+  }
+
+  function parseSite(text, url) {
+    var t = String(text || "").trim();
+    if (/^<(?:!doctype|html|head|body|div|main|section)/i.test(t) || /<html[\s>]/i.test(t.slice(0, 400))) return parseHtml(t, url);
+    return parseMarkdown(text, url);
+  }
+
+  function parseMarkdown(text, url) {
+    var info = { url: url, title: "", desc: "", heads: [], phone: "", email: "", address: "" };
+    var t = String(text || "");
+    var mt = t.match(/^Title:\s*(.+)$/m); if (mt) info.title = mt[1].trim();
+    var md = t.match(/^Description:\s*(.+)$/m); if (md) info.desc = md[1].trim();
+
+    var body = t.indexOf("Markdown Content:") > -1 ? t.slice(t.indexOf("Markdown Content:") + 17) : t;
+    if (/<\w+[\s>]/.test(body) && /<\/(p|div|h[1-6]|li)>/i.test(body)) {
+      try { body = new DOMParser().parseFromString(body, "text/html").body.innerText; } catch (e) {}
+    }
+    body = body.replace(/!\[[^\]]*\]\([^)]*\)/g, " ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1");
+
+    var lines = body.split(/\r?\n/).map(function (l) { return l.trim(); });
+    var generic = /^(menu|navigace|navigation|kontakt|contact|o nás|o mně|about|reference|recenze|reviews|ceník|pricing|faq|blog|home|domů|úvod|služby|services|gdpr|cookies|partners|partneři|portfolio|galerie|gallery|news|novinky)\s*$/i;
+    info.heads = lines.filter(function (l) { return /^#{2,3}\s+\S/.test(l); })
+      .map(function (l) { return l.replace(/^#+\s*/, "").replace(/[*_`]/g, "").replace(/\s+/g, " ").trim(); })
+      .filter(function (h) { return h.length > 2 && h.length < 70 && !generic.test(h); });
+
+    var svc = [], collecting = false;
+    lines.forEach(function (l) {
+      if (/^#{2,4}\s+/.test(l)) {
+        var h = l.replace(/^#+\s*/, "");
+        collecting = /slu[žz]b|nab[íi]z|co d[ěe]l[áa]m|co um[íi]m/i.test(h);
+        return;
+      }
+      if (collecting) {
+        var m = l.match(/^[-*•]\s+(.{2,80})$/);
+        if (m) svc.push(m[1].replace(/[*_`]/g, "").trim());
+        else if (l && !/^[-*•]/.test(l)) collecting = false;
+      }
+    });
+    if (svc.length >= 2) info.heads = svc.slice(0, 8);
+    var uniq = []; info.heads.forEach(function (h) { if (uniq.indexOf(h) === -1) uniq.push(h); }); info.heads = uniq.slice(0, 8);
+
+    if (!info.desc) {
+      var para = lines.filter(function (l) {
+        return l.length > 60 && !/^#/.test(l) && !/^[-*>|]/.test(l) && !/^https?:/.test(l);
+      })[0];
+      if (para) info.desc = para.replace(/[*_]/g, "").replace(/\s+/g, " ").slice(0, 300);
+    }
+    var ph = t.match(/(\+?420[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{3})|(\b\d{3}[\s-]\d{3}[\s-]\d{3}\b)/);
+    if (ph) info.phone = ph[0].replace(/\s+/g, " ").trim();
+    var em = t.match(/[\w.+-]+@[\w-]+\.[a-z]{2,}/i);
+    if (em) info.email = em[0];
+    var ad = lines.filter(function (l) { return /\b\d{3}\s?\d{2}\b/.test(l) && l.length < 120; })[0];
+    if (ad) {
+      var bits = ad.replace(/[*_]/g, "").split(/\s*[,·|]\s*/).filter(Boolean);
+      var idx = bits.findIndex(function (b) { return /\b\d{3}\s?\d{2}\b/.test(b); });
+      if (idx > -1) {
+        var pick = bits[idx];
+        if (pick.replace(/\d/g, "").trim().length < 4 && idx > 0 && !/@|tel|\+\d/.test(bits[idx - 1])) pick = bits[idx - 1] + ", " + pick;
+        pick = pick.replace(/\s*(Navigovat|IČO|Zobrazit na mapě|Mapa).*$/i, "").trim();
+        info.address = pick.trim().slice(0, 80);
+      }
+    }
+
+    var dm = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/]+)/i);
+    info.domain = dm ? dm[1] : url;
+    if (!info.title) {
+      var first = info.domain.split(".")[0].replace(/[-_]/g, " ");
+      info.title = first.replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    }
+    return info;
+  }
+
+  function splitBrand(title) {
+    var parts = title.split(/\s+[—–|·]\s+|\s+-\s+|:\s+/);
+    return (parts[0] || title).trim().slice(0, 70);
+  }
+
+  function detectType(text) {
+    var t = (text || "").toLowerCase();
+    var score = { lokalni: 0, saas: 0, portfolio: 0, landing: 0, ecommerce: 0 };
+    var kw = {
+      lokalni: ["elektrikář", "instalatér", "truhlář", "zedník", "pokrývač", "autoservis", "servis", "revize", "montáž", "řemesl", "objedn", "poptávk", "hodin", "působ", "km", "v okolí", "na klíč", "oprav", "klinika", "ordinace", "veterin", "zubař", "lékař", "stomatolog", "kadeřnictv", "kosmetik"],
+      saas: ["software", "platforma", "saas", "api", "tarif", "registrac", "dashboard", "integrace", "předplatn", "appka", "aplikace"],
+      portfolio: ["portfolio", "case study", "případov", "fotograf", "designér", "architekt", "realizace", "moje práce", "projekty"],
+      landing: ["zdarma", "webinář", "ebook", "stáhni", "waitlist", "kurz", "koučink"],
+      ecommerce: ["košík", "e-shop", "eshop", "skladem", "doprava", "produkt", "objednávka zboží"]
+    };
+    Object.keys(kw).forEach(function (k) {
+      kw[k].forEach(function (w) { var i = t.indexOf(w); if (i > -1) score[k] += (w.length > 6 ? 2 : 1); });
+    });
+    var best = "lokalni", val = -1;
+    Object.keys(score).forEach(function (k) { if (score[k] > val) { val = score[k]; best = k; } });
+    if (score.ecommerce > val) best = "ecommerce";
+    if (val < 3) return { type: "strategie", why: "" };
+    var map = { lokalni: "lokalni", saas: "saas", portfolio: "portfolio", landing: "landing", ecommerce: "landing" };
+    return { type: map[best], why: best };
+  }
+
+  function plural(n, one, few, many) {
+    if (n === 1) return one;
+    if (n >= 2 && n <= 4) return few;
+    return many;
+  }
+  function applySite(info, rawText) {
+    var autoKeys = [];
+    // hodnoty z předchozího webu, které uživatel ručně neupravil, se nepřenášejí
+    Object.keys(state.auto).forEach(function (k) {
+      if (!state.dirty[k]) { delete state.values[k]; }
+      delete state.auto[k];
+    });
+    function set(k, v, force) {
+      if (!v) return;
+      if (state.dirty[k]) return;
+      if (!force && (state.values[k] || "").trim() && !state.auto[k]) return;
+      state.values[k] = v; state.auto[k] = true; autoKeys.push(k);
+    }
+    var brand = info.brand || splitBrand(info.title || "");
+    set("znacka", brand);
+    var det = detectType(rawText + " " + info.title + " " + info.heads.join(" "));
+    var context = (info.desc || "").split(/(?<=[.!?])\s/)[0].replace(/\s+/g, " ").slice(0, 130);
+    if (context) set("obor", context);
+    if (info.heads.length) set("nabidka", info.heads.slice(0, 6).join(", "));
+    if (info.phone) set("telefon", info.phone);
+    if (info.email) set("email", info.email);
+    if (info.address) set("adresa", info.address);
+    var contacts = [];
+    if (info.phone) contacts.push("telefon " + info.phone);
+    if (info.email) contacts.push("e-mail " + info.email);
+    if (contacts.length) set("kontakty", contacts.join(", "));
+    var facts = [];
+    if (info.title) facts.push("Název: " + info.title);
+    if (info.desc) facts.push("Popis: " + info.desc);
+    if (info.heads.length) facts.push("Služby / nabídka: " + info.heads.slice(0, 8).join(" · "));
+    if (info.sections && info.sections.length) facts.push("Sekce webu: " + info.sections.slice(0, 8).join(" · "));
+    if (info.phone) facts.push("Telefon: " + info.phone);
+    if (info.email) facts.push("E-mail: " + info.email);
+    if (info.address) facts.push("Adresa: " + info.address);
+    facts.push("Zdroj: " + info.url + " (načteno " + new Date().toLocaleDateString("cs-CZ") + ")");
+    if (facts.length > 1) set("fakta", facts.join("\n"));
+
+    state.found = [
+      info.title ? ["Název", brand] : null,
+      info.heads.length ? ["Sekcí", String(info.heads.length)] : null,
+      info.phone ? ["Telefon", info.phone] : null,
+      info.email ? ["E-mail", info.email] : null,
+      info.address ? ["Adresa", info.address.slice(0, 38)] : null
+    ].filter(Boolean);
+    renderFound();
+
+    if (!state.manualType && det.type) selectType(det.type, false);
+    renderFields();
+    setStatus("Načteno: " + state.found.length + " " + plural(state.found.length, "podklad", "podklady", "podkladů") +
+      ", doplněno " + autoKeys.length + " " + plural(autoKeys.length, "pole", "pole", "polí") +
+      ". Zkontroluj je — označená jsou „z webu“." + (det.why ? " Odhad šablony: " + tpl(det.type).name + "." : ""), "ok");
+    if (innerWidth < 1080) setTimeout(function () { $("#globalFields").scrollIntoView({ behavior: "smooth", block: "start" }); }, 250);
+  }
+
+  function renderFound() {
+    var box = $("#found");
+    if (!state.found.length) { box.hidden = true; box.innerHTML = ""; return; }
+    box.hidden = false;
+    box.innerHTML = state.found.map(function (f) { return '<span class="fchip">' + esc(f[0]) + ": <b>" + esc(f[1]) + "</b></span>"; }).join("");
+  }
+
+  function loadSite() {
+    var url = normalizeUrl($("#url").value);
+    if (!url) { setStatus("Zadej adresu webu, třeba dousa-elektro.cz.", "err"); $("#url").focus(); return; }
+    state.values.web = url; $("#url").value = url;
+    var btn = $("#btnLoad"); btn.disabled = true;
+    setStatus("Čtu " + url.replace(/^https?:\/\//, "").replace(/\/$/, "") + " …", "", true);
+    var ctrl = new AbortController();
+    var to = setTimeout(function () { ctrl.abort(); }, 30000);
+    fetch("https://r.jina.ai/" + url, { signal: ctrl.signal, headers: { "Accept": "text/html", "X-Return-Format": "html" } })
+      .then(function (r) {
+        if (r.status === 429) throw new Error("rate");
+        if (!r.ok) throw new Error("http " + r.status);
+        return r.text();
+      })
+      .then(function (txt) {
+        clearTimeout(to);
+        if (!txt || txt.length < 40) throw new Error("empty");
+        if (/dom[ée]na je registrov[áa]na|tato dom[ée]na|parked (domain|page)|domain (is )?for sale|kupte (si )?tuto dom[ée]nu/i.test(txt.slice(0, 30000))) throw new Error("parked");
+        var info = parseSite(txt, url);
+        applySite(info, txt);
+        save();
+      })
+      .catch(function (err) {
+        clearTimeout(to);
+        var http = err && /^http (\d+)$/.exec(err.message);
+        var code = http ? http[1] : "";
+        var msg = err && err.name === "AbortError"
+          ? "Stránka neodpověděla do 30 s."
+          : (err.message === "rate" ? "Čtečka dočasně omezila počet požadavků (20/min). Zkus to za minutu."
+            : code === "404" ? "Web na této adrese neexistuje (404)."
+            : code === "403" ? "Web blokuje automatické čtení (403)."
+            : err.message === "parked" ? "Na adrese je parkovací stránka, ne web zákazníka. Zkontroluj URL."
+            : code === "422" ? "Adresa nevypadá jako funkční web (422) — zkontroluj překlep."
+            : "Web se nepodařilo načíst (HTTP " + (code || "?") + ").");
+        var hint = (err.message === "parked" || code === "404" || code === "422") ? "" : " Může jít o ochranu proti robotům — vlož text stránky ručně níže.";
+        setStatus(msg + hint, "err");
+        $("#pasteBox").open = true;
+      })
+      .then(function () { btn.disabled = false; });
+  }
+
+  function parsePaste() {
+    var txt = $("#pasteText").value.trim();
+    if (txt.length < 30) { setStatus("Vlož prosím víc textu — aspoň odstavec ze stránky.", "err"); return; }
+    var url = normalizeUrl($("#url").value) || "";
+    var info = parseSite(txt, url || "vlozeny-text");
+    if (!info.url || info.url === "vlozeny-text") info.url = url || "vložený text";
+    applySite(info, txt);
+    save();
+  }
+
+  /* ---------- language ---------- */
+  function applyLang() {
+    $$(".segbtn").forEach(function (b) { b.classList.toggle("on", b.dataset.lang === state.lang); });
+    $$("#typeChips .chip").forEach(function (c) { /* labels stay Czech, it's a Czech UI */ });
+    document.documentElement.lang = "cs";
+  }
+
+  /* ---------- static sections ---------- */
+  function renderStatic() {
+    $("#quickAnswer").textContent = DATA.quickAnswer;
+    $("#formula").innerHTML = DATA.formula.map(function (f) {
+      return '<div class="frow"><code>' + esc(f[0]) + "</code><span>" + esc(f[1]) + "</span></div>";
+    }).join("");
+    $("#takeaways").innerHTML = DATA.takeaways.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+    $("#qualityTable").querySelector("tbody").innerHTML = DATA.quality.map(function (q) {
+      return "<tr><td>" + esc(q[0]) + "</td><td>" + esc(q[1]) + "</td><td>" + esc(q[2]) + "</td></tr>";
+    }).join("");
+    $("#mistakes").innerHTML = DATA.mistakes.map(function (m) {
+      return "<li><div><b>" + esc(m[0]) + "</b><span>" + esc(m[1]) + "</span></div></li>";
+    }).join("");
+    $("#resources").innerHTML = DATA.resources.map(function (r) {
+      return '<li><a href="' + esc(r[1]) + '" target="_blank" rel="noopener">' + esc(r[0]) + "</a></li>";
+    }).join("");
+
+    $("#stats").innerHTML = [
+      [T.length, "šablon promptů"],
+      [DATA.formula.length, "polí formule"],
+      [DATA.checklist.length, "bodů checklistu"],
+      ["1", "klik od zadání"]
+    ].map(function (s) { return '<span class="stat"><b>' + s[0] + "</b>" + esc(s[1]) + "</span>"; }).join("");
+
+    $("#buildDate").textContent = DATA.build;
+    try {
+      if (new URLSearchParams(location.search).get("mc") === "1") {
+        var back = document.getElementById("mcBack");
+        if (back) back.hidden = false;
+      }
+    } catch (e) {}
+
+    var grid = $("#templatesGrid");
+    grid.innerHTML = "";
+    T.forEach(function (t) {
+      var card = document.createElement("article");
+      card.className = "tcard";
+      card.innerHTML = '<span class="tnum">' + pad(t.num) + " · " + esc(G[t.group]) + "</span>" +
+        "<h3>" + esc(t.name) + "</h3>" +
+        '<p class="tbest">' + esc(t.best) + "</p><p>" + esc(t.when) + "</p>" +
+        '<div class="tuse"><button type="button" class="btn btn-ghost sm" data-use="' + t.id + '">Použít šablonu</button></div>';
+      grid.appendChild(card);
+    });
+    grid.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-use]"); if (!b) return;
+      selectType(b.dataset.use, true);
+      document.getElementById("generator").scrollIntoView({ behavior: "smooth" });
+      setTimeout(function () { $("#btnGenerate").focus(); }, 500);
+    });
+
+    renderChecklist();
+    renderHistory();
+  }
+
+  /* ---------- checklist ---------- */
+  function checkState() {
+    try { var a = JSON.parse(localStorage.getItem(CHECK_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function renderChecklist() {
+    var on = checkState(), list = $("#checklistList");
+    list.innerHTML = "";
+    DATA.checklist.forEach(function (text, i) {
+      var li = document.createElement("li");
+      var lab = document.createElement("label");
+      lab.className = "citem";
+      var inp = document.createElement("input");
+      inp.type = "checkbox"; inp.checked = !!on[i]; inp.dataset.i = i;
+      var sp = document.createElement("span"); sp.textContent = text;
+      inp.addEventListener("change", function () {
+        var arr = checkState(); arr[i] = inp.checked;
+        try { localStorage.setItem(CHECK_KEY, JSON.stringify(arr)); } catch (e) {}
+        updateProgress();
+      });
+      lab.appendChild(inp); lab.appendChild(sp); li.appendChild(lab); list.appendChild(li);
+    });
+    updateProgress();
+  }
+  function updateProgress() {
+    var arr = checkState(), n = DATA.checklist.filter(function (_, i) { return arr[i]; }).length;
+    var pct = Math.round(n / DATA.checklist.length * 100);
+    $("#checkProgress").textContent = n + " / " + DATA.checklist.length;
+    $("#checkBar").style.width = pct + "%";
+  }
+
+  /* ---------- clipboard / download ---------- */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (res, rej) {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy") ? res() : rej(new Error("copy")); } catch (e) { rej(e); }
+      document.body.removeChild(ta);
+    });
+  }
+  function flash(btn, msg) {
+    var old = btn.innerHTML;
+    btn.innerHTML = '<svg class="ic"><use href="#i-check"/></svg> ' + msg;
+    setTimeout(function () { btn.innerHTML = old; }, 1600);
+  }
+  function download() {
+    var name = "prompt-" + state.type + "-" + ((state.values.znacka || "web").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "web") + ".md";
+    var blob = new Blob([state.prompt], { type: "text/markdown;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+
+  /* ---------- init ---------- */
+  function init() {
+    restore();
+    renderStatic();
+    renderFields();
+    renderChips();
+    selectType(state.type, state.manualType);
+    $("#url").value = state.values.web || "";
+    $("#optNoInvent").checked = state.noInvent;
+    $("#optCriteria").checked = state.criteria;
+    applyLang();
+
+    $("#url").addEventListener("input", function () {
+      state.values.web = this.value; state.dirty.web = true; save();
+    });
+    $("#btnLoad").addEventListener("click", loadSite);
+    $("#url").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); loadSite(); }
+    });
+    $("#btnParsePaste").addEventListener("click", parsePaste);
+    $("#briefForm").addEventListener("submit", function (e) { e.preventDefault(); generate(); });
+    $("#btnReset").addEventListener("click", function () {
+      state.values = {}; state.dirty = {}; state.auto = {}; state.found = [];
+      state.prompt = ""; state.missing = []; state.manualType = false;
+      try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+      renderFound(); renderFields(); renderChips(); selectType("strategie", false);
+      $("#url").value = ""; $("#pasteText").value = "";
+      $("#promptOut").innerHTML = '<span class="empty">Formulář je vyčištěný. Vlož web zákazníka a začni znovu.</span>';
+      $("#outMeta").innerHTML = ""; $("#missing").hidden = true;
+      $("#outBadge").className = "badge"; $("#outBadge").textContent = "zatím nic";
+      ["#btnCopy", "#btnDownload", "#btnClaude"].forEach(function (s) { $(s).disabled = true; });
+      $("#hist").hidden = true;
+      setStatus("Zadej doménu a klikni na Načíst — pole níž se předvyplní.");
+    });
+    $$(".segbtn").forEach(function (b) {
+      b.addEventListener("click", function () { state.lang = b.dataset.lang; applyLang(); save(); if (state.prompt) markStale(); });
+    });
+    $("#optNoInvent").addEventListener("change", function () { state.noInvent = this.checked; save(); if (state.prompt) markStale(); });
+    $("#optCriteria").addEventListener("change", function () { state.criteria = this.checked; save(); if (state.prompt) markStale(); });
+
+    $("#btnCopy").addEventListener("click", function () {
+      if (!state.prompt) return;
+      copyText(state.prompt).then(function () { flash($("#btnCopy"), "Zkopírováno"); })
+        .catch(function () { flash($("#btnCopy"), "Zkopíruj ručně"); });
+    });
+    $("#missing").addEventListener("click", function (e) {
+      var b = e.target.closest(".mchip"); if (!b) return;
+      var f = document.getElementById("f_" + b.dataset.key);
+      if (!f) return;
+      f.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(function () { f.focus({ preventScroll: true }); }, 350);
+    });
+    $("#btnDownload").addEventListener("click", download);
+    $("#btnClaude").addEventListener("click", function () {
+      if (!state.prompt) return;
+      copyText(state.prompt).then(function () { window.open("https://claude.ai/new", "_blank", "noopener"); })
+        .catch(function () { window.open("https://claude.ai/new", "_blank", "noopener"); });
+    });
+    $("#btnCheckReset").addEventListener("click", function () {
+      try { localStorage.removeItem(CHECK_KEY); } catch (e) {}
+      $$("#checklistList input").forEach(function (i) { i.checked = false; });
+      updateProgress();
+    });
+    document.addEventListener("keydown", function (e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); generate(); }
+    });
+
+    if (window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+      $$(".card, .tcard, .sec-head").forEach(function (el) { el.classList.add("reveal"); io.observe(el); });
+    }
+    if (state.prompt) { /* starý prompt neobnovujeme, je v historii */ }
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+</body>
+</html>
