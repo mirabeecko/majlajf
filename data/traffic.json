@@ -1,6 +1,6 @@
 {
   "schema": "majlajf-traffic/v1",
-  "updated_at": "2026-11-17T08:11:28+01:00",
+  "updated_at": "2026-11-18T08:10:45+01:00",
   "windows": {
     "overview_days": 30,
     "short_days": 7
@@ -17,25 +17,18 @@
         "totalUsers": 140,
         "newUsers": 138,
         "bounceRate": 0.4807692307692308,
-        "avgSessionDuration": 127.70760067948719,
+        "avgSessionDuration": 127.47489081410255,
         "pageViews": 357,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 29,
-        "totalUsers": 24,
-        "pageViews": 56,
+        "sessions": 26,
+        "totalUsers": 22,
+        "pageViews": 49,
         "conversions": 0.0
       },
       "daily": [
-        {
-          "date": "20261018",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 3,
-          "conversions": 0.0
-        },
         {
           "date": "20261019",
           "sessions": 3,
@@ -237,6 +230,13 @@
           "sessions": 3,
           "users": 3,
           "pageViews": 4,
+          "conversions": 0.0
+        },
+        {
+          "date": "20261117",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 3,
           "conversions": 0.0
         }
       ],
@@ -600,19 +600,19 @@
       "property_id": "511361257",
       "category": "content",
       "overview": {
-        "sessions": 32,
-        "totalUsers": 27,
-        "newUsers": 26,
-        "bounceRate": 0.65625,
-        "avgSessionDuration": 96.90985328125001,
-        "pageViews": 58,
+        "sessions": 36,
+        "totalUsers": 31,
+        "newUsers": 30,
+        "bounceRate": 0.6666666666666666,
+        "avgSessionDuration": 90.25808583333334,
+        "pageViews": 63,
         "conversions": 0.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 2,
-        "totalUsers": 2,
-        "pageViews": 2,
+        "sessions": 6,
+        "totalUsers": 6,
+        "pageViews": 7,
         "conversions": 0.0
       },
       "daily": [
@@ -715,6 +715,13 @@
           "conversions": 0.0
         },
         {
+          "date": "20261114",
+          "sessions": 1,
+          "users": 1,
+          "pageViews": 1,
+          "conversions": 0.0
+        },
+        {
           "date": "20261116",
           "sessions": 1,
           "users": 1,
@@ -723,17 +730,17 @@
         },
         {
           "date": "20261117",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
+          "sessions": 4,
+          "users": 4,
+          "pageViews": 5,
           "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 19,
-          "users": 17
+          "sessions": 23,
+          "users": 21
         },
         {
           "channel": "Organic Search",
@@ -763,19 +770,19 @@
       "property_id": "530284583",
       "category": "leadgen",
       "overview": {
-        "sessions": 21,
-        "totalUsers": 19,
-        "newUsers": 18,
-        "bounceRate": 0.7142857142857143,
-        "avgSessionDuration": 87.34400957142857,
-        "pageViews": 19,
+        "sessions": 22,
+        "totalUsers": 20,
+        "newUsers": 19,
+        "bounceRate": 0.7272727272727273,
+        "avgSessionDuration": 83.37382731818182,
+        "pageViews": 20,
         "conversions": 1.0,
         "revenue": 0.0
       },
       "last7": {
-        "sessions": 5,
-        "totalUsers": 5,
-        "pageViews": 4,
+        "sessions": 6,
+        "totalUsers": 6,
+        "pageViews": 5,
         "conversions": 0.0
       },
       "daily": [
@@ -893,17 +900,17 @@
         },
         {
           "date": "20261117",
-          "sessions": 1,
-          "users": 1,
-          "pageViews": 1,
+          "sessions": 2,
+          "users": 2,
+          "pageViews": 2,
           "conversions": 0.0
         }
       ],
       "sources": [
         {
           "channel": "Direct",
-          "sessions": 15,
-          "users": 15
+          "sessions": 16,
+          "users": 16
         },
         {
           "channel": "Organic Search",
